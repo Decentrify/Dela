@@ -51,33 +51,33 @@ public class TorrentUploadREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vod = null;
+    private DozySyncI vodTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vod = interfaces.get(DozyVoD.torrentDozyName);
-        if (vod == null) {
+        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
+        if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
     /**
-     * @param fileInfo {@link se.sics.dozy.vod.model.FileDescJSON type}
+     * @param fileDesc {@link se.sics.dozy.vod.model.FileDescJSON type}
      * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
      * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
      * case of error
      */
     @PUT
-    public Response pendingUpload(FileDescJSON fileInfo) {
-        LOG.info("received upload torrent request:{}", fileInfo.getName());
+    public Response upload(FileDescJSON fileDesc) {
+        LOG.info("received upload torrent request:{}", fileDesc.getName());
 
-        if (!vod.isReady()) {
+        if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentUploadEvent.Request request = new TorrentUploadEvent.Request(fileInfo.getName(), new IntIdentifier(fileInfo.getIdentifier()));
+        TorrentUploadEvent.Request request = new TorrentUploadEvent.Request(fileDesc.getName(), new IntIdentifier(fileDesc.getIdentifier()));
         LOG.debug("waiting for upload:{}<{}> response", request.fileName, request.eventId);
-        DozyResult<TorrentUploadEvent.Response> result = vod.sendReq(request, timeout);
+        DozyResult<TorrentUploadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveTorrentUpload(result);
         LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

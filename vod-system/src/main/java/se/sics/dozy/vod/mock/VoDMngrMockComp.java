@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import se.sics.gvod.mngr.LibraryPort;
 import se.sics.gvod.mngr.TorrentPort;
 import se.sics.gvod.mngr.VideoPort;
+import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
 import se.sics.gvod.mngr.event.LibraryElementEvent;
@@ -65,6 +66,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
         subscribe(handleStart, control);
         subscribe(handleLibraryContent, libraryPort);
         subscribe(handleLibraryElement, libraryPort);
+        subscribe(handleLibraryAdd, libraryPort);
         subscribe(handleTorrentUpload, torrentPort);
         subscribe(handleTorrentDownload, torrentPort);
         subscribe(handleTorrentStop, torrentPort);
@@ -112,6 +114,25 @@ public class VoDMngrMockComp extends ComponentDefinition {
             }
         }
     };
+    
+    Handler handleLibraryAdd = new Handler<LibraryAddEvent.Request>() {
+        @Override
+        public void handle(LibraryAddEvent.Request req) {
+            LOG.info("{}received:{}", logPrefix, req);
+            if (!libraryContents.containsKey(req.overlayId)) {
+                Map<Identifier, KAddress> partners = new HashMap<>();
+                TorrentInfo torrentInfo = new TorrentInfo(TorrentStatus.NONE, partners, 0, 0, 0);
+                libraryContents.put(req.overlayId, Pair.with(req.fileInfo, torrentInfo));
+                LibraryAddEvent.Response resp = req.success();
+                LOG.info("{}answering:{}", logPrefix, resp);
+                answer(req, resp);
+            } else {
+                LibraryAddEvent.Response resp = req.badRequest("element already in library");
+                LOG.info("{}answering:{}", logPrefix, resp);
+                answer(req, resp);
+            }
+        }
+    };
 
     Handler handleTorrentUpload = new Handler<TorrentUploadEvent.Request>() {
         @Override
@@ -128,7 +149,6 @@ public class VoDMngrMockComp extends ComponentDefinition {
                     libraryContents.put(req.overlayId, Pair.with(elementInfo.getValue0(), torrentInfo));
                     resp = req.success();
                 }
-
             } else {
                 resp = req.badRequest("missing");
             }

@@ -75,4 +75,8 @@ public class FileInfoJSON {
     public static FileInfoJSON resolve(FileInfo fileInfo) {
         return new FileInfoJSON(fileInfo.name, fileInfo.uri, fileInfo.size, fileInfo.shortDescription);
     }
+    
+    public static FileInfo resolve(FileInfoJSON fileInfoJSON) {
+        return new FileInfo(fileInfoJSON.name, fileInfoJSON.uri, fileInfoJSON.size, fileInfoJSON.description);
+    }
 }

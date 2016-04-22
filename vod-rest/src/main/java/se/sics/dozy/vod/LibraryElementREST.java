@@ -51,33 +51,33 @@ public class LibraryElementREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vod = null;
+    private DozySyncI vodLibraryI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vod = interfaces.get(DozyVoD.libraryDozyName);
-        if (vod == null) {
+        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
+        if (vodLibraryI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
     /**
-     * @param fileInfo {@link se.sics.dozy.vod.model.FileDescJSON type}
+     * @param fileDesc {@link se.sics.dozy.vod.model.FileDescJSON type}
      * @return Response[{@link se.sics.dozy.vod.model.LibraryElementJSON type}]
      * with OK status or
      * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
      * error
      */
     @PUT
-    public Response getLibraryContents(FileDescJSON fileInfo) {
+    public Response getLibraryElement(FileDescJSON fileDesc) {
         LOG.info("received library element request");
-        if (!vod.isReady()) {
+        if (!vodLibraryI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        LibraryElementEvent.Request request = new LibraryElementEvent.Request(fileInfo.getName(), new IntIdentifier(fileInfo.getIdentifier()));
+        LibraryElementEvent.Request request = new LibraryElementEvent.Request(fileDesc.getName(), new IntIdentifier(fileDesc.getIdentifier()));
         LOG.debug("waiting for library element:{} response", request.eventId);
-        DozyResult<LibraryElementEvent.Response> result = vod.sendReq(request, timeout);
+        DozyResult<LibraryElementEvent.Response> result = vodLibraryI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryElement(result);
         LOG.info("library element:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

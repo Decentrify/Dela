@@ -47,12 +47,12 @@ public class LibraryContentsREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vod = null;
+    private DozySyncI vodLibraryI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vod = interfaces.get(DozyVoD.libraryDozyName);
-        if (vod == null) {
+        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
+        if (vodLibraryI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
@@ -66,13 +66,13 @@ public class LibraryContentsREST implements DozyResource {
     @GET
     public Response getLibraryContents() {
         LOG.info("received library contents request");
-        if (!vod.isReady()) {
+        if (!vodLibraryI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
         LibraryContentsEvent.Request request = new LibraryContentsEvent.Request();
         LOG.debug("waiting for library contents:{} response", request.eventId);
-        DozyResult<LibraryContentsEvent.Response> result = vod.sendReq(request, timeout);
+        DozyResult<LibraryContentsEvent.Response> result = vodLibraryI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryContents(result);
         LOG.info("library contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

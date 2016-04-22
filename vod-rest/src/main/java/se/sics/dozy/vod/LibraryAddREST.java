@@ -31,57 +31,60 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.vod.model.AddFileJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.FileDescJSON;
-import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.FileInfoJSON;
+import se.sics.dozy.vod.model.LibraryElementJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.TorrentDownloadEvent;
+import se.sics.gvod.mngr.event.LibraryAddEvent;
+import se.sics.gvod.mngr.event.LibraryElementEvent;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/torrent/download")
-@Produces(MediaType.APPLICATION_JSON)
+@Path("/library/add")
 @Consumes(MediaType.APPLICATION_JSON)
-public class TorrentDownloadREST implements DozyResource {
+@Produces(MediaType.APPLICATION_JSON)
+public class LibraryAddREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodTorrentI = null;
+    private DozySyncI vodLibraryI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
-        if (vodTorrentI == null) {
-            throw new RuntimeException("no sync interface found for vod torrent REST API");
+        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
+        if (vodLibraryI == null) {
+            throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
     /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.FileDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON}] with OK
-     * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
-     * case of error
+     * @param addFile {@link se.sics.dozy.vod.model.AddFileJSON type}
+     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}]
+     * with OK status or
+     * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
+     * error
      */
     @PUT
-    public Response download(FileDescJSON fileDesc) {
-        LOG.info("received download torrent request:{}", fileDesc.getName());
-
-        if (!vodTorrentI.isReady()) {
+    public Response getLibraryContents(AddFileJSON addFile) {
+        LOG.info("received library add file request");
+        if (!vodLibraryI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentDownloadEvent.Request request = new TorrentDownloadEvent.Request(fileDesc.getName(), new IntIdentifier(fileDesc.getIdentifier()));
-        LOG.debug("waiting for upload:{}<{}> response", request.fileName, request.eventId);
-        DozyResult<TorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveTorrentDownload(result);
-        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        LibraryAddEvent.Request request = new LibraryAddEvent.Request(new IntIdentifier(addFile.getIdentifier()), FileInfoJSON.resolve(addFile.getFileInfo()));
+        LOG.debug("waiting for library add file:{} response", request.eventId);
+        DozyResult<LibraryElementEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryElement(result);
+        LOG.info("library add file:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
+            return Response.status(Response.Status.OK).entity(LibraryElementJSON.resolve(result.getValue())).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }
