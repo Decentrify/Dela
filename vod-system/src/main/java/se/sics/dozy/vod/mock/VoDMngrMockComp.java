@@ -114,7 +114,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
             }
         }
     };
-    
+
     Handler handleLibraryAdd = new Handler<LibraryAddEvent.Request>() {
         @Override
         public void handle(LibraryAddEvent.Request req) {
@@ -141,16 +141,25 @@ public class VoDMngrMockComp extends ComponentDefinition {
             TorrentUploadEvent.Response resp;
             if (libraryContents.containsKey(req.overlayId)) {
                 Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.overlayId);
-                if (!elementInfo.getValue1().status.equals(TorrentStatus.NONE)) {
-                    resp = req.badRequest("bad status");
-                } else {
-                    Map<Identifier, KAddress> partners = new HashMap<>();
-                    TorrentInfo torrentInfo = new TorrentInfo(TorrentStatus.UPLOADING, partners, 1, 0, 0);
-                    libraryContents.put(req.overlayId, Pair.with(elementInfo.getValue0(), torrentInfo));
-                    resp = req.success();
+                TorrentStatus status = elementInfo.getValue1().status;
+                switch (status) {
+                    case UPLOADING:
+                        resp = req.success();
+                        break;
+                    case DOWNLOADING:
+                        resp = req.badRequest("can't upload file with none status");
+                        break;
+                    case NONE:
+                        Map<Identifier, KAddress> partners = new HashMap<>();
+                        TorrentInfo torrentInfo = new TorrentInfo(TorrentStatus.UPLOADING, partners, 1, 0, 0);
+                        libraryContents.put(req.overlayId, Pair.with(elementInfo.getValue0(), torrentInfo));
+                        resp = req.success();
+                        break;
+                    default:
+                        resp = req.fail("missing logic");
                 }
             } else {
-                resp = req.badRequest("missing");
+                resp = req.badRequest("no such file in library");
             }
             LOG.info("{}answering:{}", logPrefix, resp);
             answer(req, resp);
@@ -162,6 +171,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
         public void handle(TorrentDownloadEvent.Request req) {
             LOG.info("{}received:{}", logPrefix, req);
             TorrentDownloadEvent.Response resp;
+
             if (!libraryContents.containsKey(req.overlayId)) {
                 FileInfo fileInfo = new FileInfo(req.fileName, "", 0, "");
                 Map<Identifier, KAddress> partners = new HashMap<>();
@@ -169,7 +179,21 @@ public class VoDMngrMockComp extends ComponentDefinition {
                 libraryContents.put(req.overlayId, Pair.with(fileInfo, torrentInfo));
                 resp = req.success();
             } else {
-                resp = req.badRequest("file exists");
+                Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.overlayId);
+                TorrentStatus status = elementInfo.getValue1().status;
+                switch (status) {
+                    case UPLOADING:
+                        resp = req.badRequest("can't download file with uploading status");
+                        break;
+                    case DOWNLOADING:
+                        resp = req.success();
+                        break;
+                    case NONE:
+                        resp = req.badRequest("can't download file with none status");
+                        break;
+                    default:
+                        resp = req.fail("missing logic");
+                }
             }
             LOG.info("{}answering:{}", logPrefix, resp);
             answer(req, resp);
@@ -185,7 +209,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
                 Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.overlayId);
                 switch (elementInfo.getValue1().status) {
                     case NONE:
-                        resp = req.badRequest("bad status");
+                        resp = req.badRequest("can't stop file with none status");
                         break;
                     case UPLOADING:
                         Map<Identifier, KAddress> partners = new HashMap<>();
@@ -198,10 +222,10 @@ public class VoDMngrMockComp extends ComponentDefinition {
                         resp = req.success();
                         break;
                     default:
-                        resp = req.badRequest("mock logic error");
+                        resp = req.badRequest("missing logic");
                 }
             } else {
-                resp = req.badRequest("missing");
+                resp = req.badRequest("no such file in library");
             }
             LOG.info("{}answering:{}", logPrefix, resp);
             answer(req, resp);

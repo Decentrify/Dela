@@ -8,7 +8,7 @@
     </parent>
     <groupId>se.sics.dozy</groupId>
     <artifactId>vod-system</artifactId>
-    <name>VoD System</name>
+    <name>VoD REST System</name>
     <packaging>jar</packaging>
     
     <dependencies>
@@ -28,6 +28,7 @@
             <version>${project.version}</version>
         </dependency>
         
+        <!-- KompicsToolbox -->
         <dependency>
             <groupId>se.sics.ktoolbox.netmngr</groupId>
             <artifactId>core</artifactId>
@@ -37,7 +38,7 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> 
         </dependency>
         <dependency>
             <groupId>se.sics.ktoolbox.overlaymngr</groupId>
@@ -48,7 +49,7 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> 
         </dependency>
         <dependency>
             <groupId>se.sics.ktoolbox.cc</groupId>
@@ -59,9 +60,21 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> 
         </dependency>
         
+        <!-- -->
+        <dependency>
+            <groupId>se.sics.gvod</groupId>
+            <artifactId>system</artifactId>
+            <version>${vod.version}</version>   
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions> 
+        </dependency>
         <!-- network -->
         <dependency>
             <groupId>se.sics.ktoolbox.overlaymngr</groupId>
@@ -83,7 +96,7 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> 
         </dependency>
         <dependency>
             <groupId>se.sics.gvod</groupId>
@@ -94,7 +107,7 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions> 
         </dependency>
     </dependencies>
     

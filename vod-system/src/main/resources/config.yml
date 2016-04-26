@@ -20,6 +20,7 @@ logging:
     "Kompics": WARN
     "se.sics.kompics": WARN
     "se.sics.dozy": INFO 
+    "se.sics.ktoolbox.cc": WARN
     
   console:
       enabled: true
