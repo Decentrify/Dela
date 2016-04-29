@@ -33,6 +33,7 @@ import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.LibraryAddREST;
 import se.sics.dozy.vod.LibraryContentsREST;
 import se.sics.dozy.vod.LibraryElementREST;
+import se.sics.dozy.vod.StatusREST;
 import se.sics.dozy.vod.TorrentDownloadREST;
 import se.sics.dozy.vod.TorrentStopREST;
 import se.sics.dozy.vod.TorrentUploadREST;
@@ -127,6 +128,7 @@ public class MockLauncher extends ComponentDefinition {
         synchronousInterfaces.put(DozyVoD.torrentDozyName, (DozySyncI) torrentSyncIComp.getComponent());
 
         List<DozyResource> resources = new ArrayList<>();
+        resources.add(new StatusREST());
         resources.add(new LibraryContentsREST());
         resources.add(new LibraryElementREST());
         resources.add(new LibraryAddREST());
