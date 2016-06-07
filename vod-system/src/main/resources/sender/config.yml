@@ -1,0 +1,30 @@
+http:
+  port: 18180
+  adminPort: 18181
+  gzip:
+    enabled: false
+
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: TRACE
+
+  # Logger-specific levels.
+  loggers:
+    "javax.management": WARN
+    "org.eclipse.jetty": WARN
+    "com.sun.jersey": WARN
+    "org.hibernate": WARN
+    "com.yammer.dropwizard.config": INFO
+    
+    "Kompics": WARN
+    "se.sics.kompics": WARN
+    "se.sics.dozy": INFO 
+    
+  console:
+      enabled: true
+
+  file:
+      enabled: true
+      currentLogFilename: "vodRest.log"
+      archivedLogFilenamePattern: "vodRest-%d{yyyy-mm-dd}.log.gz"

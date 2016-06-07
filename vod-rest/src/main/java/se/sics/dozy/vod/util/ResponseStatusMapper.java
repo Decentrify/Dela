@@ -20,6 +20,8 @@ package se.sics.dozy.vod.util;
 
 import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
+import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
 import se.sics.gvod.mngr.event.LibraryElementGetEvent;
@@ -53,6 +55,14 @@ public class ResponseStatusMapper {
     }
 
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveTorrentStop(DozyResult<TorrentStopEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentUpload(DozyResult<HopsTorrentUploadEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentDownload(DozyResult<HopsTorrentDownloadEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
