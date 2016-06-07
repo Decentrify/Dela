@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.event.LibraryElementEvent;
+import se.sics.gvod.mngr.event.LibraryElementGetEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -60,7 +60,7 @@ public class LibraryElementJSON {
         this.torrentInfo = torrentInfo;
     }
 
-    public static LibraryElementJSON resolve(LibraryElementEvent.Response vodResp) {
+    public static LibraryElementJSON resolve(LibraryElementGetEvent.Response vodResp) {
         return new LibraryElementJSON(FileInfoJSON.resolve(vodResp.fileInfo), vodResp.torrentInfo.status.name(), TorrentInfoJSON.resolve(vodResp.torrentInfo));
     }
 }

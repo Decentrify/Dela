@@ -18,7 +18,11 @@
  */
 package se.sics.dozy.vod.mock;
 
+import com.google.common.base.Optional;
+import com.google.common.primitives.Ints;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -29,12 +33,13 @@ import se.sics.gvod.mngr.VideoPort;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementEvent;
+import se.sics.gvod.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.mngr.event.TorrentStopEvent;
 import se.sics.gvod.mngr.event.TorrentUploadEvent;
 import se.sics.gvod.mngr.event.VideoPlayEvent;
 import se.sics.gvod.mngr.event.VideoStopEvent;
 import se.sics.gvod.mngr.util.FileInfo;
+import se.sics.gvod.mngr.util.LibraryElementSummary;
 import se.sics.gvod.mngr.util.TorrentInfo;
 import se.sics.gvod.mngr.util.TorrentStatus;
 import se.sics.kompics.ComponentDefinition;
@@ -42,7 +47,8 @@ import se.sics.kompics.Handler;
 import se.sics.kompics.Negative;
 import se.sics.kompics.Start;
 import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
+import se.sics.ktoolbox.util.managedStore.resources.LocalDiskResource;
 import se.sics.ktoolbox.util.network.KAddress;
 
 /**
@@ -79,11 +85,11 @@ public class VoDMngrMockComp extends ComponentDefinition {
         public void handle(Start event) {
             LOG.info("{}starting...", logPrefix);
 
-            libraryContents.put(new IntIdentifier(1), Pair.with(
-                    new FileInfo("test1", "/root/test1", 1024, "test file 1"),
+            libraryContents.put(new OverlayIdentifier(Ints.toByteArray(1)), Pair.with(
+                    new FileInfo(LocalDiskResource.type, "test1", "/root/test1", 1024, "test file 1"),
                     TorrentInfo.none()));
-            libraryContents.put(new IntIdentifier(2), Pair.with(
-                    new FileInfo("test2", "/root/test2", 2024, "test file 2"),
+            libraryContents.put(new OverlayIdentifier(Ints.toByteArray(2)), Pair.with(
+                    new FileInfo(LocalDiskResource.type, "test2", "/root/test2", 2024, "test file 2"),
                     TorrentInfo.none()));
         }
     };
@@ -92,23 +98,29 @@ public class VoDMngrMockComp extends ComponentDefinition {
         @Override
         public void handle(LibraryContentsEvent.Request req) {
             LOG.info("{}received:{}", logPrefix, req);
-            LibraryContentsEvent.Response resp = req.success(libraryContents);
+            List<LibraryElementSummary> lesList = new ArrayList<>();
+            for(Map.Entry<Identifier, Pair<FileInfo, TorrentInfo>> e : libraryContents.entrySet()) {
+                LibraryElementSummary les = new LibraryElementSummary(e.getValue().getValue0().uri, 
+                        e.getValue().getValue0().name, e.getValue().getValue1().status, Optional.of(e.getKey()));
+                lesList.add(les);
+            }
+            LibraryContentsEvent.Response resp = req.success(lesList);
             LOG.info("{}answering:{}", logPrefix, resp);
             answer(req, resp);
         }
     };
 
-    Handler handleLibraryElement = new Handler<LibraryElementEvent.Request>() {
+    Handler handleLibraryElement = new Handler<LibraryElementGetEvent.Request>() {
         @Override
-        public void handle(LibraryElementEvent.Request req) {
+        public void handle(LibraryElementGetEvent.Request req) {
             LOG.info("{}received:{}", logPrefix, req);
-            if (libraryContents.containsKey(req.overlayId)) {
-                Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.overlayId);
-                LibraryElementEvent.Response resp = req.success(elementInfo.getValue0(), elementInfo.getValue1());
+            if (libraryContents.containsKey(req.les.overlayId.get())) {
+                Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.les.overlayId.get());
+                LibraryElementGetEvent.Response resp = req.success(elementInfo.getValue0(), elementInfo.getValue1());
                 LOG.info("{}answering:{}", logPrefix, resp);
                 answer(req, resp);
             } else {
-                LibraryElementEvent.Response resp = req.badRequest("missing library element");
+                LibraryElementGetEvent.Response resp = req.badRequest("missing library element");
                 LOG.info("{}answering:{}", logPrefix, resp);
                 answer(req, resp);
             }
@@ -173,7 +185,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
             TorrentDownloadEvent.Response resp;
 
             if (!libraryContents.containsKey(req.overlayId)) {
-                FileInfo fileInfo = new FileInfo(req.fileName, "", 0, "");
+                FileInfo fileInfo = new FileInfo(LocalDiskResource.type, req.fileName, "", 0, "");
                 Map<Identifier, KAddress> partners = new HashMap<>();
                 TorrentInfo torrentInfo = new TorrentInfo(TorrentStatus.DOWNLOADING, partners, 0, 0, 0);
                 libraryContents.put(req.overlayId, Pair.with(fileInfo, torrentInfo));

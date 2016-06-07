@@ -22,7 +22,7 @@ import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementEvent;
+import se.sics.gvod.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.mngr.event.TorrentStopEvent;
 import se.sics.gvod.mngr.event.TorrentUploadEvent;
@@ -36,7 +36,7 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveLibraryElement(DozyResult<LibraryElementEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveLibraryElement(DozyResult<LibraryElementGetEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     

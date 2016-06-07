@@ -42,7 +42,7 @@ import se.sics.gvod.mngr.LibraryPort;
 import se.sics.gvod.mngr.TorrentPort;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementEvent;
+import se.sics.gvod.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.mngr.event.TorrentStopEvent;
 import se.sics.gvod.mngr.event.TorrentUploadEvent;
@@ -105,7 +105,7 @@ public class MockLauncher extends ComponentDefinition {
     private void setLibrarySyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(LibraryContentsEvent.Response.class);
-        resp.add(LibraryElementEvent.Response.class);
+        resp.add(LibraryElementGetEvent.Response.class);
         resp.add(LibraryAddEvent.Response.class);
         librarySyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(LibraryPort.class, resp));
         connect(librarySyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);

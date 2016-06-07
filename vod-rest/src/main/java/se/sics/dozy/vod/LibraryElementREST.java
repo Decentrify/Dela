@@ -18,6 +18,8 @@
  */
 package se.sics.dozy.vod;
 
+import com.google.common.base.Optional;
+import com.google.common.primitives.Ints;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -35,8 +37,12 @@ import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.FileDescJSON;
 import se.sics.dozy.vod.model.LibraryElementJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.LibraryElementEvent;
+import se.sics.gvod.mngr.event.LibraryElementGetEvent;
+import se.sics.gvod.mngr.util.LibraryElementSummary;
+import se.sics.gvod.mngr.util.TorrentStatus;
+import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -75,9 +81,11 @@ public class LibraryElementREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        LibraryElementEvent.Request request = new LibraryElementEvent.Request(fileDesc.getName(), new IntIdentifier(fileDesc.getIdentifier()));
+        Identifier overlayId = new OverlayIdentifier(Ints.toByteArray(fileDesc.getIdentifier()));
+        LibraryElementSummary les = new LibraryElementSummary("", fileDesc.getName(), TorrentStatus.NONE, Optional.of(overlayId));
+        LibraryElementGetEvent.Request request = new LibraryElementGetEvent.Request(les);
         LOG.debug("waiting for library element:{} response", request.eventId);
-        DozyResult<LibraryElementEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        DozyResult<LibraryElementGetEvent.Response> result = vodLibraryI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryElement(result);
         LOG.info("library element:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

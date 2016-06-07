@@ -19,6 +19,7 @@
 package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.util.FileInfo;
+import se.sics.ktoolbox.util.managedStore.resources.LocalDiskResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -77,6 +78,6 @@ public class FileInfoJSON {
     }
     
     public static FileInfo resolve(FileInfoJSON fileInfoJSON) {
-        return new FileInfo(fileInfoJSON.name, fileInfoJSON.uri, fileInfoJSON.size, fileInfoJSON.description);
+        return new FileInfo(LocalDiskResource.type, fileInfoJSON.name, fileInfoJSON.uri, fileInfoJSON.size, fileInfoJSON.description);
     }
 }

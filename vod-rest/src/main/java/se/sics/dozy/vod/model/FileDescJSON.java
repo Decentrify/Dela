@@ -21,6 +21,7 @@ package se.sics.dozy.vod.model;
 import se.sics.gvod.mngr.util.FileInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -76,6 +77,6 @@ public class FileDescJSON {
     }
     
     public static FileDescJSON resolve(Identifier overlayId, FileInfo fileInfo) {
-        return new FileDescJSON(((IntIdentifier)overlayId).id, fileInfo.name);
+        return new FileDescJSON(((OverlayIdentifier)overlayId).getInt(), fileInfo.name);
     }
 }

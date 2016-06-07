@@ -24,6 +24,7 @@ import java.util.Map;
 import se.sics.gvod.mngr.util.TorrentInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 import se.sics.ktoolbox.util.network.KAddress;
 
 /**
@@ -84,7 +85,7 @@ public class TorrentInfoJSON {
         }
         Map<Integer, InetAddress> partners = new HashMap<>();
         for(Map.Entry<Identifier, KAddress> e : torrentInfo.partners.entrySet()) {
-            partners.put(((IntIdentifier)e.getKey()).id, e.getValue().getIp());
+            partners.put(((OverlayIdentifier)e.getKey()).getInt(), e.getValue().getIp());
         }
         return new TorrentInfoJSON(partners, torrentInfo.progress, torrentInfo.downloadSpeed, torrentInfo.uploadSpeed);
     }

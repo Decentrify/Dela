@@ -19,9 +19,11 @@
 package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.util.FileInfo;
+import se.sics.gvod.mngr.util.LibraryElementSummary;
 import se.sics.gvod.mngr.util.TorrentInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -65,7 +67,7 @@ public class FileSummaryJSON {
         this.status = status;
     }
 
-    public static FileSummaryJSON resolve(Identifier overlayId, FileInfo fileInfo, TorrentInfo torrentInfo) {
-        return new FileSummaryJSON(fileInfo.name, ((IntIdentifier)overlayId).id, torrentInfo.status.name());
+    public static FileSummaryJSON resolve(LibraryElementSummary les) {
+        return new FileSummaryJSON(les.name, ((OverlayIdentifier)les.overlayId.get()).getInt(), les.status.name());
     }
 }

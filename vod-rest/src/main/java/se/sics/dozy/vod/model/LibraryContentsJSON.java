@@ -24,6 +24,7 @@ import java.util.Map;
 import org.javatuples.Pair;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
 import se.sics.gvod.mngr.util.FileInfo;
+import se.sics.gvod.mngr.util.LibraryElementSummary;
 import se.sics.gvod.mngr.util.TorrentInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 
@@ -52,8 +53,8 @@ public class LibraryContentsJSON {
 
     public static LibraryContentsJSON resolve(LibraryContentsEvent.Response vodResp) {
         List<FileSummaryJSON> contents = new ArrayList<>();
-        for (Map.Entry<Identifier, Pair<FileInfo, TorrentInfo>> e : vodResp.content.entrySet()) {
-            contents.add(FileSummaryJSON.resolve(e.getKey(), e.getValue().getValue0(), e.getValue().getValue1()));
+        for (LibraryElementSummary les : vodResp.content) {
+            contents.add(FileSummaryJSON.resolve(les));
         }
         return new LibraryContentsJSON(contents);
     }

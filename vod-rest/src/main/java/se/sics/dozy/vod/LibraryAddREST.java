@@ -18,6 +18,7 @@
  */
 package se.sics.dozy.vod;
 
+import com.google.common.primitives.Ints;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -33,14 +34,11 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.AddFileJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.FileDescJSON;
 import se.sics.dozy.vod.model.FileInfoJSON;
-import se.sics.dozy.vod.model.LibraryElementJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
-import se.sics.gvod.mngr.event.LibraryElementEvent;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -79,7 +77,7 @@ public class LibraryAddREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        LibraryAddEvent.Request request = new LibraryAddEvent.Request(new IntIdentifier(addFile.getIdentifier()), FileInfoJSON.resolve(addFile.getFileInfo()));
+        LibraryAddEvent.Request request = new LibraryAddEvent.Request(new OverlayIdentifier(Ints.toByteArray(addFile.getIdentifier())), FileInfoJSON.resolve(addFile.getFileInfo()));
         LOG.debug("waiting for library add file:{} response", request.eventId);
         DozyResult<LibraryAddEvent.Response> result = vodLibraryI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryAdd(result);
