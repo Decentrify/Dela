@@ -18,29 +18,25 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.util.FileInfo;
 import se.sics.gvod.mngr.util.LibraryElementSummary;
-import se.sics.gvod.mngr.util.TorrentInfo;
-import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class FileSummaryJSON {
+public class LibraryElementSummaryJSON {
 
     private String name;
-    private int identifier;
+    private int torrentId;
     private String status;
     
-    public FileSummaryJSON(String name, int identifier, String status) {
+    public LibraryElementSummaryJSON(String name, int torrentId, String status) {
         this.name = name;
-        this.identifier = identifier;
+        this.torrentId = torrentId;
         this.status = status;
     }
 
-    public FileSummaryJSON() {
+    public LibraryElementSummaryJSON() {
     }
 
     public String getName() {
@@ -52,11 +48,11 @@ public class FileSummaryJSON {
     }
 
     public int getIdentifier() {
-        return identifier;
+        return torrentId;
     }
 
     public void setIdentifier(int identifier) {
-        this.identifier = identifier;
+        this.torrentId = identifier;
     }
 
     public String getStatus() {
@@ -67,7 +63,7 @@ public class FileSummaryJSON {
         this.status = status;
     }
 
-    public static FileSummaryJSON resolve(LibraryElementSummary les) {
-        return new FileSummaryJSON(les.name, ((OverlayIdentifier)les.overlayId.get()).getInt(), les.status.name());
+    public static LibraryElementSummaryJSON resolve(LibraryElementSummary les) {
+        return new LibraryElementSummaryJSON(les.name, ((OverlayIdentifier)les.torrentId).getInt(), les.status.name());
     }
 }

@@ -100,8 +100,7 @@ public class VoDMngrMockComp extends ComponentDefinition {
             LOG.info("{}received:{}", logPrefix, req);
             List<LibraryElementSummary> lesList = new ArrayList<>();
             for(Map.Entry<Identifier, Pair<FileInfo, TorrentInfo>> e : libraryContents.entrySet()) {
-                LibraryElementSummary les = new LibraryElementSummary(e.getValue().getValue0().uri, 
-                        e.getValue().getValue0().name, e.getValue().getValue1().status, Optional.of(e.getKey()));
+                LibraryElementSummary les = new LibraryElementSummary(e.getValue().getValue0().name, e.getValue().getValue1().status, e.getKey());
                 lesList.add(les);
             }
             LibraryContentsEvent.Response resp = req.success(lesList);
@@ -114,8 +113,8 @@ public class VoDMngrMockComp extends ComponentDefinition {
         @Override
         public void handle(LibraryElementGetEvent.Request req) {
             LOG.info("{}received:{}", logPrefix, req);
-            if (libraryContents.containsKey(req.les.overlayId.get())) {
-                Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.les.overlayId.get());
+            if (libraryContents.containsKey(req.les.torrentId)) {
+                Pair<FileInfo, TorrentInfo> elementInfo = libraryContents.get(req.les.torrentId);
                 LibraryElementGetEvent.Response resp = req.success(elementInfo.getValue0(), elementInfo.getValue1());
                 LOG.info("{}answering:{}", logPrefix, resp);
                 answer(req, resp);

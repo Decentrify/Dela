@@ -91,9 +91,9 @@ public class HopsTorrentDownloadJSON {
     public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
         Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
         List<KAddress> partners = new ArrayList<>();
-//        for(AddressJSON partner : req.partners) {
-//            partners.add(AddressJSON.resolveFromJSON(partner));
-//        }
+        for(AddressJSON partner : req.partners) {
+            partners.add(AddressJSON.resolveFromJSON(partner));
+        }
         return new HopsTorrentDownloadEvent.Request(req.hopsIp, req.hopsPort, req.dirPath, req.fileName, torrentId, partners);
     }
 }

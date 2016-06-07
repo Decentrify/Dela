@@ -20,27 +20,20 @@ package se.sics.dozy.vod.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import org.javatuples.Pair;
-import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.util.FileInfo;
+import se.sics.gvod.mngr.event.HopsContentsEvent;
 import se.sics.gvod.mngr.util.LibraryElementSummary;
-import se.sics.gvod.mngr.util.TorrentInfo;
-import se.sics.ktoolbox.util.identifiable.Identifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class LibraryContentsJSON {
-
-    //<file, torrentStatus>
+public class HopsContentsJSON {
     private List<LibraryElementSummaryJSON> contents = new ArrayList<>();
 
-    public LibraryContentsJSON(List<LibraryElementSummaryJSON> contents) {
+    public HopsContentsJSON(List<LibraryElementSummaryJSON> contents) {
         this.contents = contents;
     }
 
-    public LibraryContentsJSON() {
+    public HopsContentsJSON() {
     }
 
     public List<LibraryElementSummaryJSON> getContents() {
@@ -51,11 +44,11 @@ public class LibraryContentsJSON {
         this.contents = contents;
     }
 
-    public static LibraryContentsJSON resolve(LibraryContentsEvent.Response vodResp) {
+    public static HopsContentsJSON resolve(HopsContentsEvent.Response vodResp) {
         List<LibraryElementSummaryJSON> contents = new ArrayList<>();
         for (LibraryElementSummary les : vodResp.content) {
             contents.add(LibraryElementSummaryJSON.resolve(les));
         }
-        return new LibraryContentsJSON(contents);
+        return new HopsContentsJSON(contents);
     }
 }
