@@ -1,6 +1,6 @@
 http:
-  port: 28180
-  adminPort: 28181
+  port: 18180
+  adminPort: 18181
   gzip:
     enabled: false
 
@@ -20,6 +20,10 @@ logging:
     "Kompics": WARN
     "se.sics.kompics": WARN
     "se.sics.dozy": INFO 
+    "se.sics.gvod.stream.torrent.TorrentComp": INFO
+    "se.sics.gvod.stream.congestion.PullLedbat": WARN
+    "NettyNetwork@30000": WARN
+    "se.sics.gvod.stream.report.ReportComp": WARN
     
   console:
       enabled: true

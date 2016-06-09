@@ -31,27 +31,17 @@ import se.sics.dozy.DozySyncComp;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
-import se.sics.dozy.vod.HopsContentsREST;
+import se.sics.dozy.vod.ContentsSummaryREST;
 import se.sics.dozy.vod.HopsTorrentDownloadREST;
 import se.sics.dozy.vod.HopsTorrentUploadREST;
-import se.sics.dozy.vod.LibraryAddREST;
-import se.sics.dozy.vod.LibraryContentsREST;
-import se.sics.dozy.vod.LibraryElementREST;
-import se.sics.dozy.vod.TorrentDownloadREST;
-import se.sics.dozy.vod.TorrentStopREST;
-import se.sics.dozy.vod.TorrentUploadREST;
+import se.sics.dozy.vod.TorrentExtendedStatusREST;
 import se.sics.gvod.mngr.LibraryPort;
 import se.sics.gvod.mngr.TorrentPort;
 import se.sics.gvod.mngr.VoDMngrComp;
-import se.sics.gvod.mngr.event.HopsContentsEvent;
+import se.sics.gvod.mngr.event.ContentsSummaryEvent;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
-import se.sics.gvod.mngr.event.LibraryAddEvent;
-import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementGetEvent;
-import se.sics.gvod.mngr.event.TorrentDownloadEvent;
-import se.sics.gvod.mngr.event.TorrentStopEvent;
-import se.sics.gvod.mngr.event.TorrentUploadEvent;
+import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.gvod.network.GVoDSerializerSetup;
 import se.sics.kompics.Channel;
 import se.sics.kompics.ClassMatchedHandler;
@@ -165,7 +155,8 @@ public class VoDLauncher extends ComponentDefinition {
 
     private void setLibrarySyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
-        resp.add(HopsContentsEvent.Response.class);
+        resp.add(ContentsSummaryEvent.Response.class);
+        resp.add(TorrentExtendedStatusEvent.Response.class);
         librarySyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(LibraryPort.class, resp));
 
         connect(librarySyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
@@ -187,7 +178,8 @@ public class VoDLauncher extends ComponentDefinition {
         synchronousInterfaces.put(DozyVoD.torrentDozyName, (DozySyncI) torrentSyncIComp.getComponent());
 
         List<DozyResource> resources = new ArrayList<>();
-        resources.add(new HopsContentsREST());
+        resources.add(new ContentsSummaryREST());
+        resources.add(new TorrentExtendedStatusREST());
         resources.add(new HopsTorrentDownloadREST());
         resources.add(new HopsTorrentUploadREST());
 

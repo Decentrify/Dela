@@ -33,7 +33,7 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.FileDescJSON;
+import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.TorrentStopEvent;
@@ -63,13 +63,13 @@ public class TorrentStopREST implements DozyResource {
     }
 
     /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.FileDescJSON type}
+     * @param fileDesc {@link se.sics.dozy.vod.model.ElementDescJSON type}
      * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
      * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
      * case of error
      */
     @PUT
-    public Response stop(FileDescJSON fileDesc) {
+    public Response stop(ElementDescJSON fileDesc) {
         LOG.info("received stop torrent request:{}", fileDesc.getName());
 
         if (!vodTorrentI.isReady()) {

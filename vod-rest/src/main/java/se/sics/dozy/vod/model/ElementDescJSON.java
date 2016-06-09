@@ -20,44 +20,43 @@ package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.util.FileInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class FileDescJSON {
-    private String name;
-    private int identifier;
+public class ElementDescJSON {
+    private String fileName;
+    private int torrentIdentifier;
     
-    public FileDescJSON(int identifier, String name) {
-        this.identifier = identifier;
-        this.name = name;
+    public ElementDescJSON(int identifier, String name) {
+        this.torrentIdentifier = identifier;
+        this.fileName = name;
     }
     
-    public FileDescJSON() {
+    public ElementDescJSON() {
     }
 
     public String getName() {
-        return name;
+        return fileName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.fileName = name;
     }
 
     public int getIdentifier() {
-        return identifier;
+        return torrentIdentifier;
     }
 
     public void setIdentifier(int identifier) {
-        this.identifier = identifier;
+        this.torrentIdentifier = identifier;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + this.identifier;
+        hash = 97 * hash + this.torrentIdentifier;
         return hash;
     }
 
@@ -69,14 +68,14 @@ public class FileDescJSON {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final FileDescJSON other = (FileDescJSON) obj;
-        if (this.identifier != other.identifier) {
+        final ElementDescJSON other = (ElementDescJSON) obj;
+        if (this.torrentIdentifier != other.torrentIdentifier) {
             return false;
         }
         return true;
     }
     
-    public static FileDescJSON resolve(Identifier overlayId, FileInfo fileInfo) {
-        return new FileDescJSON(((OverlayIdentifier)overlayId).getInt(), fileInfo.name);
+    public static ElementDescJSON resolve(Identifier overlayId, FileInfo fileInfo) {
+        return new ElementDescJSON(((OverlayIdentifier)overlayId).getInt(), fileInfo.name);
     }
 }

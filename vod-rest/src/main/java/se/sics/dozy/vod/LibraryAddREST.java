@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.AddFileJSON;
+import se.sics.dozy.vod.model.old.AddFileJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.FileInfoJSON;
+import se.sics.dozy.vod.model.old.FileInfoJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
@@ -64,7 +64,7 @@ public class LibraryAddREST implements DozyResource {
     }
 
     /**
-     * @param addFile {@link se.sics.dozy.vod.model.AddFileJSON type}
+     * @param addFile {@link se.sics.dozy.vod.model.old.AddFileJSON type}
      * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}]
      * with OK status or
      * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of

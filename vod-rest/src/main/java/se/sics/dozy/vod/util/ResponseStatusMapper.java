@@ -20,7 +20,8 @@ package se.sics.dozy.vod.util;
 
 import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
-import se.sics.gvod.mngr.event.HopsContentsEvent;
+import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
+import se.sics.gvod.mngr.event.ContentsSummaryEvent;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
@@ -39,7 +40,7 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveLibraryElement(DozyResult<LibraryElementGetEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveElementStatus(DozyResult<TorrentExtendedStatusEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
@@ -67,14 +68,14 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsContents(DozyResult<HopsContentsEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsSummary(DozyResult<ContentsSummaryEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
     public static Pair<javax.ws.rs.core.Response.Status, String> resolve(se.sics.dozy.DozyResult dozyResult, se.sics.gvod.mngr.util.Result vodResult) {
         switch (dozyResult.status) {
             case OK:
-                break; // continue and check vod response status
+                break; // continue and check vod response value
             case INTERNAL_ERROR:
                 return Pair.with(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR, dozyResult.getDetails() == null ? "dozy problem" : dozyResult.getDetails());
             case OTHER:

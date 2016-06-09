@@ -18,11 +18,8 @@
  */
 package se.sics.dozy.vod;
 
-import com.google.common.base.Optional;
-import com.google.common.primitives.Ints;
 import java.util.Map;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -34,23 +31,16 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.FileDescJSON;
-import se.sics.dozy.vod.model.LibraryElementJSON;
+import se.sics.dozy.vod.model.ContentsSummaryJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.LibraryElementGetEvent;
-import se.sics.gvod.mngr.util.LibraryElementSummary;
-import se.sics.gvod.mngr.util.TorrentStatus;
-import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
+import se.sics.gvod.mngr.event.ContentsSummaryEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/library/element")
-@Consumes(MediaType.APPLICATION_JSON)
+@Path("/library/contents")
 @Produces(MediaType.APPLICATION_JSON)
-public class LibraryElementREST implements DozyResource {
+public class ContentsSummaryREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -68,28 +58,25 @@ public class LibraryElementREST implements DozyResource {
     }
 
     /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.FileDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.LibraryElementJSON type}]
+     * @return Response[{@link se.sics.dozy.vod.model.LibraryContentsJSON type}]
      * with OK status or
      * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
      * error
      */
-    @PUT
-    public Response getLibraryElement(FileDescJSON fileDesc) {
-        LOG.info("received library element request");
+    @GET
+    public Response getContentsSummary() {
+        LOG.info("received hops library contents request");
         if (!vodLibraryI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Identifier overlayId = new OverlayIdentifier(Ints.toByteArray(fileDesc.getIdentifier()));
-        LibraryElementSummary les = new LibraryElementSummary(fileDesc.getName(), TorrentStatus.NONE, overlayId);
-        LibraryElementGetEvent.Request request = new LibraryElementGetEvent.Request(les);
-        LOG.debug("waiting for library element:{} response", request.eventId);
-        DozyResult<LibraryElementGetEvent.Response> result = vodLibraryI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveLibraryElement(result);
-        LOG.info("library element:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
+        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request();
+        LOG.debug("waiting for hops contents:{} response", request.eventId);
+        DozyResult<ContentsSummaryEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
+        LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(LibraryElementJSON.resolve(result.getValue())).build();
+            return Response.status(Response.Status.OK).entity(ContentsSummaryJSON.resolve(result.getValue().value)).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }
