@@ -32,12 +32,15 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.ContentsSummaryREST;
+import se.sics.dozy.vod.HopsConnectionREST;
 import se.sics.dozy.vod.HopsFileDeleteREST;
 import se.sics.dozy.vod.HopsTorrentDownloadREST;
 import se.sics.dozy.vod.HopsTorrentStopREST;
 import se.sics.dozy.vod.HopsTorrentUploadREST;
 import se.sics.dozy.vod.TorrentExtendedStatusREST;
+import se.sics.dozy.vod.VoDEndpointREST;
 import se.sics.gvod.mngr.LibraryPort;
+import se.sics.gvod.mngr.SystemPort;
 import se.sics.gvod.mngr.TorrentPort;
 import se.sics.gvod.mngr.VoDMngrComp;
 import se.sics.gvod.mngr.event.ContentsSummaryEvent;
@@ -46,6 +49,8 @@ import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
+import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.mngr.event.system.SystemAddressEvent;
 import se.sics.gvod.network.GVoDSerializerSetup;
 import se.sics.kompics.Channel;
 import se.sics.kompics.ClassMatchedHandler;
@@ -61,13 +66,17 @@ import se.sics.kompics.config.ConfigException;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
 import se.sics.kompics.timer.java.JavaTimer;
+import se.sics.ktoolbox.croupier.CroupierSerializerSetup;
+import se.sics.ktoolbox.gradient.GradientSerializerSetup;
 import se.sics.ktoolbox.netmngr.NetworkMngrComp;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
 import se.sics.ktoolbox.netmngr.event.NetMngrReady;
+import se.sics.ktoolbox.overlaymngr.OMngrSerializerSetup;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.setup.BasicSerializerSetup;
 import se.sics.ktoolbox.util.status.Status;
 import se.sics.ktoolbox.util.status.StatusPort;
+import se.sics.nat.stun.StunSerializerSetup;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -86,6 +95,7 @@ public class VoDLauncher extends ComponentDefinition {
     private Component timerComp;
     private Component networkMngrComp;
     private Component vodMngrComp;
+    private Component systemSyncIComp;
     private Component librarySyncIComp;
     private Component torrentSyncIComp;
     private DropwizardDozy webserver;
@@ -102,10 +112,14 @@ public class VoDLauncher extends ComponentDefinition {
 
     private void registerSerializers() {
         MessageRegistrator.register();
-        int currentId = 128;
-        currentId = BasicSerializerSetup.registerBasicSerializers(currentId);
-        currentId = NetworkMngrSerializerSetup.registerSerializers(currentId);
-        currentId = GVoDSerializerSetup.registerSerializers(currentId);
+        int serializerId = 128;
+        serializerId = BasicSerializerSetup.registerBasicSerializers(serializerId);
+        serializerId = CroupierSerializerSetup.registerSerializers(serializerId);
+        serializerId = GradientSerializerSetup.registerSerializers(serializerId);
+        serializerId = OMngrSerializerSetup.registerSerializers(serializerId);
+        serializerId = NetworkMngrSerializerSetup.registerSerializers(serializerId);
+        serializerId = StunSerializerSetup.registerSerializers(serializerId);
+        serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
     }
 
     private void registerPortTracking() {
@@ -139,6 +153,7 @@ public class VoDLauncher extends ComponentDefinition {
                     selfAdr = content.systemAdr;
 
                     setVoDMngr();
+                    setSystemSyncI();
                     setLibrarySyncI();
                     setTorrentSyncI();
                     setWebserver();
@@ -157,6 +172,16 @@ public class VoDLauncher extends ComponentDefinition {
         vodMngrComp = create(VoDMngrComp.class, new VoDMngrComp.Init(extPorts, selfAdr));
     }
 
+    private void setSystemSyncI() {
+        List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
+        resp.add(SystemAddressEvent.Response.class);
+        resp.add(HopsConnectionEvent.Response.class);
+        systemSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(SystemPort.class, resp));
+
+        connect(systemSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
+        connect(systemSyncIComp.getNegative(SystemPort.class), vodMngrComp.getPositive(SystemPort.class), Channel.TWO_WAY);
+    }
+    
     private void setLibrarySyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(ContentsSummaryEvent.Response.class);
@@ -180,10 +205,13 @@ public class VoDLauncher extends ComponentDefinition {
 
     private void setWebserver() {
         Map<String, DozySyncI> synchronousInterfaces = new HashMap<>();
+        synchronousInterfaces.put(DozyVoD.systemDozyName, (DozySyncI) systemSyncIComp.getComponent());
         synchronousInterfaces.put(DozyVoD.libraryDozyName, (DozySyncI) librarySyncIComp.getComponent());
         synchronousInterfaces.put(DozyVoD.torrentDozyName, (DozySyncI) torrentSyncIComp.getComponent());
 
         List<DozyResource> resources = new ArrayList<>();
+        resources.add(new VoDEndpointREST());
+        resources.add(new HopsConnectionREST());
         resources.add(new ContentsSummaryREST());
         resources.add(new TorrentExtendedStatusREST());
         resources.add(new HopsTorrentDownloadREST());

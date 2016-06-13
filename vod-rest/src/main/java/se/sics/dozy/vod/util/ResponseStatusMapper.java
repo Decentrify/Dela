@@ -32,6 +32,8 @@ import se.sics.gvod.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.mngr.event.TorrentStopEvent;
 import se.sics.gvod.mngr.event.TorrentUploadEvent;
+import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.mngr.event.system.SystemAddressEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -79,6 +81,14 @@ public class ResponseStatusMapper {
     }
     
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsFileDelete(DozyResult<HopsFileDeleteEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveVoDEndpoint(DozyResult<SystemAddressEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsConnection(DozyResult<HopsConnectionEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 

@@ -69,7 +69,7 @@ public class AddressJSON {
     }
     
     public static AddressJSON resolveToJSON(KAddress adr) {
-        return new AddressJSON(adr.getIp().getHostName(), adr.getPort(), ((IntIdentifier)adr.getId()).id);
+        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntIdentifier)adr.getId()).id);
     }
     
     public static KAddress resolveFromJSON(AddressJSON adr) {
