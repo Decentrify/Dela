@@ -77,7 +77,7 @@ public class TorrentExtendedStatusREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Identifier overlayId = new OverlayIdentifier(Ints.toByteArray(fileDesc.getIdentifier()));
+        Identifier overlayId = new OverlayIdentifier(Ints.toByteArray(fileDesc.getTorrentId()));
         TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(overlayId);
         LOG.debug("waiting for torrents extended status:{} response", request.eventId);
         DozyResult<TorrentExtendedStatusEvent.Response> result = vodLibraryI.sendReq(request, timeout);

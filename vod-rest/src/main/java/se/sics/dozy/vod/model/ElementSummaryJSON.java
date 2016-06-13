@@ -19,7 +19,6 @@
 package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.util.ElementSummary;
-import se.sics.gvod.mngr.util.TorrentExtendedStatus;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
@@ -40,30 +39,31 @@ public class ElementSummaryJSON {
     public ElementSummaryJSON() {
     }
 
-    public String getName() {
+    public String getFileName() {
         return fileName;
     }
 
-    public void setName(String name) {
-        this.fileName = name;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public int getIdentifier() {
+    public int getTorrentId() {
         return torrentId;
     }
 
-    public void setIdentifier(int identifier) {
-        this.torrentId = identifier;
+    public void setTorrentId(int torrentId) {
+        this.torrentId = torrentId;
     }
 
-    public String getStatus() {
+    public String getTorrentStatus() {
         return torrentStatus;
     }
 
-    public void setStatus(String status) {
-        this.torrentStatus = status;
+    public void setTorrentStatus(String torrentStatus) {
+        this.torrentStatus = torrentStatus;
     }
 
+    
     public static ElementSummaryJSON resolve(ElementSummary les) {
         return new ElementSummaryJSON(les.name, ((OverlayIdentifier)les.torrentId).getInt(), les.status.name());
     }

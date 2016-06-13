@@ -27,36 +27,36 @@ import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
  */
 public class ElementDescJSON {
     private String fileName;
-    private int torrentIdentifier;
+    private int torrentId;
     
     public ElementDescJSON(int identifier, String name) {
-        this.torrentIdentifier = identifier;
+        this.torrentId = identifier;
         this.fileName = name;
     }
     
     public ElementDescJSON() {
     }
 
-    public String getName() {
+    public String getFileName() {
         return fileName;
     }
 
-    public void setName(String name) {
-        this.fileName = name;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public int getIdentifier() {
-        return torrentIdentifier;
+    public int getTorrentId() {
+        return torrentId;
     }
 
-    public void setIdentifier(int identifier) {
-        this.torrentIdentifier = identifier;
+    public void setTorrentId(int torrentId) {
+        this.torrentId = torrentId;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + this.torrentIdentifier;
+        hash = 97 * hash + this.torrentId;
         return hash;
     }
 
@@ -69,7 +69,7 @@ public class ElementDescJSON {
             return false;
         }
         final ElementDescJSON other = (ElementDescJSON) obj;
-        if (this.torrentIdentifier != other.torrentIdentifier) {
+        if (this.torrentId != other.torrentId) {
             return false;
         }
         return true;

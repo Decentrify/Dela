@@ -1,6 +1,6 @@
 http:
-  port: 18180
-  adminPort: 18181
+  port: 28180
+  adminPort: 28181
   gzip:
     enabled: false
 
@@ -24,9 +24,9 @@ logging:
     "se.sics.gvod.stream.congestion.PullLedbat": WARN
     "se.sics.gvod.stream.report.ReportComp": WARN
     "se.sics.nat.stun.client.StunClientComp": WARN
-    "NettyNetwork@41002": WARN
-    "NettyNetwork@42002": WARN
-    "NettyNetwork@30000": WARN
+    "NettyNetwork@41003": WARN
+    "NettyNetwork@42003": WARN
+    "NettyNetwork@40000": WARN
     
   console:
       enabled: true

@@ -196,7 +196,9 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
 
     private void startWebserver() {
-        String[] args = new String[]{"server", config().getValue("webservice.server", String.class)};
+        String webserviceConfig = config().getValue("webservice.server", String.class);
+        LOG.info("{}webservices config:{}", logPrefix, webserviceConfig);
+        String[] args = new String[]{"server", webserviceConfig};
         try {
             webserver.run(args);
         } catch (ConfigException ex) {
