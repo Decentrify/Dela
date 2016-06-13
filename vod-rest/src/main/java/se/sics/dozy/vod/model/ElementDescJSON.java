@@ -18,6 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
+import com.google.common.primitives.Ints;
 import se.sics.gvod.mngr.util.FileInfo;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
@@ -77,5 +78,9 @@ public class ElementDescJSON {
     
     public static ElementDescJSON resolve(Identifier overlayId, FileInfo fileInfo) {
         return new ElementDescJSON(((OverlayIdentifier)overlayId).getInt(), fileInfo.name);
+    }
+    
+    public Identifier resolveTorrentId() {
+        return new OverlayIdentifier(Ints.toByteArray(torrentId));
     }
 }

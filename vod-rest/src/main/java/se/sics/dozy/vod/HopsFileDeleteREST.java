@@ -32,18 +32,18 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.HDFSResourceJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.mngr.event.HopsFileDeleteEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/torrent/hops/download")
+@Path("/file/hops/delete")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HopsTorrentDownloadREST implements DozyResource {
+public class HopsFileDeleteREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -54,7 +54,7 @@ public class HopsTorrentDownloadREST implements DozyResource {
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
+        vodTorrentI = interfaces.get(DozyVoD.libraryDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
@@ -67,18 +67,18 @@ public class HopsTorrentDownloadREST implements DozyResource {
      * case of error
      */
     @PUT
-    public Response download(HopsTorrentDownloadJSON req) {
-        LOG.trace("received download torrent request:{}", req.getFileName());
+    public Response delete(HDFSResourceJSON req) {
+        LOG.trace("received delete file request:{}", req.getFileName());
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HopsTorrentDownloadEvent.Request request = HopsTorrentDownloadJSON.resolveFromJSON(req);
-        LOG.debug("waiting for download:{}<{}> response", request.fileName, request.eventId);
-        DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
-        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        HopsFileDeleteEvent.Request request = new HopsFileDeleteEvent.Request(HDFSResourceJSON.resolveFromJSON(req));
+        LOG.debug("waiting for delete:{}<{}> response", req.getFileName(), request.eventId);
+        DozyResult<HopsFileDeleteEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileDelete(result);
+        LOG.info("delete:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {

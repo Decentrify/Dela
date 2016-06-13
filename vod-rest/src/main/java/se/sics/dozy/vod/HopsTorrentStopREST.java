@@ -31,19 +31,23 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.HopsTorrentUploadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
+import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/torrent/hops/download")
+@Path("/torrent/hops/stop")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HopsTorrentDownloadREST implements DozyResource {
+public class HopsTorrentStopREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -67,18 +71,18 @@ public class HopsTorrentDownloadREST implements DozyResource {
      * case of error
      */
     @PUT
-    public Response download(HopsTorrentDownloadJSON req) {
-        LOG.trace("received download torrent request:{}", req.getFileName());
+    public Response stop(ElementDescJSON req) {
+        LOG.trace("received stop torrent request:{}", req.getFileName());
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HopsTorrentDownloadEvent.Request request = HopsTorrentDownloadJSON.resolveFromJSON(req);
-        LOG.debug("waiting for download:{}<{}> response", request.fileName, request.eventId);
-        DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
-        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        HopsTorrentStopEvent.Request request = new HopsTorrentStopEvent.Request(req.resolveTorrentId());
+        LOG.debug("waiting for stop:{}<{}> response", req.getFileName(), request.eventId);
+        DozyResult<HopsTorrentStopEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentStop(result);
+        LOG.info("stop:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {

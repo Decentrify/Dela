@@ -22,7 +22,9 @@ import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
 import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.gvod.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.mngr.event.HopsFileDeleteEvent;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 import se.sics.gvod.mngr.event.LibraryAddEvent;
 import se.sics.gvod.mngr.event.LibraryContentsEvent;
@@ -68,7 +70,15 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentStop(DozyResult<HopsTorrentStopEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsSummary(DozyResult<ContentsSummaryEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsFileDelete(DozyResult<HopsFileDeleteEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
