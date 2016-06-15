@@ -32,9 +32,9 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.ContentsSummaryREST;
-import se.sics.dozy.vod.HopsConnectionREST;
-import se.sics.dozy.vod.HopsFileCreateREST;
-import se.sics.dozy.vod.HopsFileDeleteREST;
+import se.sics.dozy.vod.hdfs.HDFSConnectionREST;
+import se.sics.dozy.vod.hdfs.HDFSFileCreateREST;
+import se.sics.dozy.vod.hdfs.HopsFileDeleteREST;
 import se.sics.dozy.vod.HopsTorrentDownloadREST;
 import se.sics.dozy.vod.HopsTorrentStopREST;
 import se.sics.dozy.vod.HopsTorrentUploadREST;
@@ -45,12 +45,12 @@ import se.sics.gvod.mngr.SystemPort;
 import se.sics.gvod.mngr.TorrentPort;
 import se.sics.gvod.mngr.VoDMngrComp;
 import se.sics.gvod.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.mngr.event.library.HopsFileDeleteEvent;
+import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
 import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.gvod.mngr.event.library.HopsFileCreateEvent;
+import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
 import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
 import se.sics.gvod.mngr.event.system.SystemAddressEvent;
 import se.sics.gvod.network.GVoDSerializerSetup;
@@ -190,8 +190,8 @@ public class VoDNatLauncher extends ComponentDefinition {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(ContentsSummaryEvent.Response.class);
         resp.add(TorrentExtendedStatusEvent.Response.class);
-        resp.add(HopsFileDeleteEvent.Response.class);
-        resp.add(HopsFileCreateEvent.Response.class);
+        resp.add(HDFSFileDeleteEvent.Response.class);
+        resp.add(HDFSFileCreateEvent.Response.class);
         librarySyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(LibraryPort.class, resp));
 
         connect(librarySyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
@@ -216,14 +216,14 @@ public class VoDNatLauncher extends ComponentDefinition {
 
         List<DozyResource> resources = new ArrayList<>();
         resources.add(new VoDEndpointREST());
-        resources.add(new HopsConnectionREST());
+        resources.add(new HDFSConnectionREST());
         resources.add(new ContentsSummaryREST());
         resources.add(new TorrentExtendedStatusREST());
         resources.add(new HopsTorrentDownloadREST());
         resources.add(new HopsTorrentUploadREST());
         resources.add(new HopsTorrentStopREST());
         resources.add(new HopsFileDeleteREST());
-        resources.add(new HopsFileCreateREST());
+        resources.add(new HDFSFileCreateREST());
 
         webserver = new DropwizardDozy(synchronousInterfaces, resources);
     }

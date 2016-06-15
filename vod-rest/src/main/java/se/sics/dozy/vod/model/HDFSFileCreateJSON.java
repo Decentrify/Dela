@@ -18,23 +18,24 @@
  */
 package se.sics.dozy.vod.model;
 
-import com.google.common.primitives.Ints;
-import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
-import se.sics.gvod.mngr.util.HDFSResource;
-import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
+import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HopsTorrentUploadJSON {
-
+public class HDFSFileCreateJSON {
     private HDFSResourceJSON resource;
     private String user;
-    private int torrentId;
+    private long fileSize;
     
-    public HopsTorrentUploadJSON() {}
+    public HDFSFileCreateJSON(HDFSResourceJSON resource, String user, long fileSize) {
+        this.resource = resource;
+        this.user = user;
+        this.fileSize = fileSize;
+    }
 
+    public HDFSFileCreateJSON() {}
+    
     public HDFSResourceJSON getResource() {
         return resource;
     }
@@ -51,19 +52,15 @@ public class HopsTorrentUploadJSON {
         this.user = user;
     }
 
-    public int getTorrentId() {
-        return torrentId;
+    public long getFileSize() {
+        return fileSize;
     }
 
-    public void setTorrentId(int torrentId) {
-        this.torrentId = torrentId;
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
-
     
-    
-    public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
-        Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
-        HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
-        return new HopsTorrentUploadEvent.Request(resource.hopsIp, resource.hopsPort, resource.dirPath, resource.fileName, req.user, torrentId);
+    public static HDFSFileCreateEvent.Request fromJSON(HDFSFileCreateJSON json) {
+        return new HDFSFileCreateEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user, json.fileSize);
     }
 }
