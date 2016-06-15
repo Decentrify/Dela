@@ -27,6 +27,7 @@ logging:
     "NettyNetwork@41003": WARN
     "NettyNetwork@42003": WARN
     "NettyNetwork@40000": WARN
+    "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": DEBUG
     
   console:
       enabled: true

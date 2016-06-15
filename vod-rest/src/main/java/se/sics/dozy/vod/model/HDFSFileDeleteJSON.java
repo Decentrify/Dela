@@ -18,44 +18,40 @@
  */
 package se.sics.dozy.vod.model;
 
+import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
 import se.sics.gvod.mngr.util.HDFSResource;
-import se.sics.gvod.mngr.util.HDFSResourceExtended;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSResourceExtendedJSON {
-    private HDFSResourceJSON base;
-    private long size;
+public class HDFSFileDeleteJSON {
+    private HDFSResourceJSON resource;
+    private String user;
     
-    public HDFSResourceExtendedJSON(HDFSResourceJSON base, long size) {
-        this.base = base;
-        this.size = size;
-    }
-    
-    public HDFSResourceExtendedJSON() {}
-
-    public HDFSResourceJSON getBase() {
-        return base;
+    public HDFSFileDeleteJSON(HDFSResourceJSON resource, String user) {
+        this.resource = resource;
+        this.user = user;
     }
 
-    public void setBase(HDFSResourceJSON base) {
-        this.base = base;
+    public HDFSFileDeleteJSON() {}
+
+    public HDFSResourceJSON getResource() {
+        return resource;
     }
 
-    public long getSize() {
-        return size;
+    public void setResource(HDFSResourceJSON hdfs) {
+        this.resource = hdfs;
     }
 
-    public void setSize(long size) {
-        this.size = size;
+    public String getUser() {
+        return user;
     }
 
-    public static HDFSResourceExtendedJSON resolveToJSON(HDFSResourceExtended resource) {
-        return new HDFSResourceExtendedJSON(HDFSResourceJSON.resolveToJSON(resource.base), resource.size);
+    public void setUser(String user) {
+        this.user = user;
     }
     
-    public static HDFSResourceExtended resolveFromJSON(HDFSResourceExtendedJSON resource) {
-        return new HDFSResourceExtended(HDFSResourceJSON.resolveFromJSON(resource.base), resource.size);
+    public static HDFSFileDeleteEvent.Request fromJSON(HDFSFileDeleteJSON json) {
+        return new HDFSFileDeleteEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user);
     }
 }
