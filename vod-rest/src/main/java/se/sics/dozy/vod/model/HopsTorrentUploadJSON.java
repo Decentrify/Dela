@@ -20,6 +20,7 @@ package se.sics.dozy.vod.model;
 
 import com.google.common.primitives.Ints;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
+import se.sics.gvod.mngr.util.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
@@ -28,52 +29,26 @@ import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
  */
 public class HopsTorrentUploadJSON {
 
-    private String hopsIp;
-    private int hopsPort;
-    private String dirPath;
-    private String fileName;
+    private HDFSResourceJSON resource;
+    private String user;
     private int torrentId;
-    
-    public HopsTorrentUploadJSON(String hopsIp, int hopsPort, String dirPath, String fileName, int torrentId) {
-        this.hopsIp = hopsIp;
-        this.hopsPort = hopsPort;
-        this.dirPath = dirPath;
-        this.fileName = fileName;
-        this.torrentId = torrentId;
-    }
     
     public HopsTorrentUploadJSON() {}
 
-    public String getHopsIp() {
-        return hopsIp;
+    public HDFSResourceJSON getResource() {
+        return resource;
     }
 
-    public void setHopsIp(String hopsIp) {
-        this.hopsIp = hopsIp;
+    public void setResource(HDFSResourceJSON resource) {
+        this.resource = resource;
     }
 
-    public int getHopsPort() {
-        return hopsPort;
+    public String getUser() {
+        return user;
     }
 
-    public void setHopsPort(int hopsPort) {
-        this.hopsPort = hopsPort;
-    }
-
-    public String getDirPath() {
-        return dirPath;
-    }
-
-    public void setDirPath(String dirPath) {
-        this.dirPath = dirPath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public int getTorrentId() {
@@ -84,8 +59,11 @@ public class HopsTorrentUploadJSON {
         this.torrentId = torrentId;
     }
 
+    
+    
     public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
         Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
-        return new HopsTorrentUploadEvent.Request(req.hopsIp, req.hopsPort, req.dirPath, req.fileName, torrentId);
+        HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
+        return new HopsTorrentUploadEvent.Request(resource.hopsIp, resource.hopsPort, resource.dirPath, resource.fileName, req.user, torrentId);
     }
 }

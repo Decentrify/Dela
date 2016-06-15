@@ -68,7 +68,7 @@ public class HopsTorrentUploadREST implements DozyResource {
      */
     @PUT
     public Response upload(HopsTorrentUploadJSON req) {
-        LOG.trace("received upload torrent request:{}", req.getFileName());
+        LOG.trace("received upload torrent request:{}", req.getResource().getFileName());
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();

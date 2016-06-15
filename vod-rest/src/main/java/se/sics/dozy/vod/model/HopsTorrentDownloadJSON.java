@@ -22,6 +22,7 @@ import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.List;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.mngr.util.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 import se.sics.ktoolbox.util.network.KAddress;
@@ -31,45 +32,27 @@ import se.sics.ktoolbox.util.network.KAddress;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsTorrentDownloadJSON {
-    private String hopsIp;
-    private int hopsPort;
-    private String dirPath;
-    private String fileName;
+    private HDFSResourceJSON resource;
+    private String user;
     private int torrentId;
     private List<AddressJSON> partners;
     
     public HopsTorrentDownloadJSON() {}
 
-    public String getHopsIp() {
-        return hopsIp;
+    public HDFSResourceJSON getResource() {
+        return resource;
     }
 
-    public void setHopsIp(String hopsIp) {
-        this.hopsIp = hopsIp;
+    public void setResource(HDFSResourceJSON resource) {
+        this.resource = resource;
     }
 
-    public int getHopsPort() {
-        return hopsPort;
+    public String getUser() {
+        return user;
     }
 
-    public void setHopsPort(int hopsPort) {
-        this.hopsPort = hopsPort;
-    }
-
-    public String getDirPath() {
-        return dirPath;
-    }
-
-    public void setDirPath(String dirPath) {
-        this.dirPath = dirPath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public int getTorrentId() {
@@ -87,13 +70,14 @@ public class HopsTorrentDownloadJSON {
     public void setPartners(List<AddressJSON> partners) {
         this.partners = partners;
     }
-    
+
     public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
         Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
         List<KAddress> partners = new ArrayList<>();
         for(AddressJSON partner : req.partners) {
             partners.add(AddressJSON.resolveFromJSON(partner));
         }
-        return new HopsTorrentDownloadEvent.Request(req.hopsIp, req.hopsPort, req.dirPath, req.fileName, torrentId, partners);
+        HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
+        return new HopsTorrentDownloadEvent.Request(resource.hopsIp, resource.hopsPort, resource.dirPath, resource.fileName, req.user, torrentId, partners);
     }
 }
