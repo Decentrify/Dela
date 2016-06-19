@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.util.HDFSResource;
+import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -19,7 +19,6 @@
 package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
-import se.sics.gvod.mngr.util.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

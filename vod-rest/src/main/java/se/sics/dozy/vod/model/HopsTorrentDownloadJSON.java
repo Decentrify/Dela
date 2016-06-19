@@ -22,7 +22,7 @@ import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.List;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
-import se.sics.gvod.mngr.util.HDFSResource;
+import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 import se.sics.ktoolbox.util.network.KAddress;
@@ -78,6 +78,6 @@ public class HopsTorrentDownloadJSON {
             partners.add(AddressJSON.resolveFromJSON(partner));
         }
         HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
-        return new HopsTorrentDownloadEvent.Request(resource.hopsIp, resource.hopsPort, resource.dirPath, resource.fileName, req.user, torrentId, partners);
+        return new HopsTorrentDownloadEvent.Request(resource, req.user, torrentId, partners);
     }
 }
