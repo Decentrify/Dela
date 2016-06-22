@@ -22,7 +22,7 @@ logging:
     "se.sics.dozy": INFO 
     "se.sics.gvod.stream.torrent.TorrentComp": INFO
     "se.sics.gvod.stream.congestion.PullLedbat": WARN
-    "se.sics.gvod.stream.report.ReportComp": DEBUG
+    "se.sics.gvod.stream.report.ReportComp": INFO
     "se.sics.nat.stun.client.StunClientComp": WARN
     "NettyNetwork@41003": WARN
     "NettyNetwork@42003": WARN
