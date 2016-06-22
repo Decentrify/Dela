@@ -20,7 +20,7 @@ package se.sics.dozy.vod.model;
 
 import com.google.common.primitives.Ints;
 import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
-import se.sics.gvod.mngr.util.HDFSResource;
+import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
@@ -64,6 +64,6 @@ public class HopsTorrentUploadJSON {
     public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
         Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
         HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
-        return new HopsTorrentUploadEvent.Request(resource.hopsIp, resource.hopsPort, resource.dirPath, resource.fileName, req.user, torrentId);
+        return new HopsTorrentUploadEvent.Request(resource, req.user, torrentId);
     }
 }

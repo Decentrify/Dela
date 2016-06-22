@@ -16,41 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.system.config.printer;
 
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
+import com.typesafe.config.ConfigFactory;
+import se.sics.kompics.config.Config;
+import se.sics.kompics.config.TypesafeConfig;
+import se.sics.ktoolbox.util.profiling.KProfilerKConfig;
+import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
 
 /**
+ *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSFileDeleteJSON {
-    private HDFSResourceJSON resource;
-    private String user;
-    
-    public HDFSFileDeleteJSON(HDFSResourceJSON resource, String user) {
-        this.resource = resource;
-        this.user = user;
-    }
-
-    public HDFSFileDeleteJSON() {}
-
-    public HDFSResourceJSON getResource() {
-        return resource;
-    }
-
-    public void setResource(HDFSResourceJSON hdfs) {
-        this.resource = hdfs;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-    
-    public static HDFSFileDeleteEvent.Request fromJSON(HDFSFileDeleteJSON json) {
-        return new HDFSFileDeleteEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user);
+public class KProfilerChecker {
+    public static void main(String[] args) {
+        Config config = TypesafeConfig.load(ConfigFactory.load("alex/nat1/application.conf"));
+        KProfilerKConfig kProfilerConfig = new KProfilerKConfig(config);
+        System.out.println(KProfilerRegistryConverter.jsonPrettyPrint(kProfilerConfig.kprofileRegistry));
     }
 }

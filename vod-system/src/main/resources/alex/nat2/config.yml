@@ -16,18 +16,19 @@ logging:
     "com.sun.jersey": WARN
     "org.hibernate": WARN
     "com.yammer.dropwizard.config": INFO
-    
+    "com.barchart.udt": WARN  
     "Kompics": WARN
     "se.sics.kompics": WARN
     "se.sics.dozy": INFO 
     "se.sics.gvod.stream.torrent.TorrentComp": INFO
     "se.sics.gvod.stream.congestion.PullLedbat": WARN
-    "se.sics.gvod.stream.report.ReportComp": WARN
+    "se.sics.gvod.stream.report.ReportComp": INFO
     "se.sics.nat.stun.client.StunClientComp": WARN
     "NettyNetwork@41003": WARN
     "NettyNetwork@42003": WARN
     "NettyNetwork@40000": WARN
     "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": DEBUG
+    "org.apache.hadoop.hdfs.DFSClient": TRACE
     
   console:
       enabled: true

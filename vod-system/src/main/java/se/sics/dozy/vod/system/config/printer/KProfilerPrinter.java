@@ -16,41 +16,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.system.config.printer;
 
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
+import java.util.HashMap;
+import java.util.Map;
+import se.sics.gvod.stream.torrent.TorrentComp;
+import se.sics.ktoolbox.croupier.CroupierComp;
+import se.sics.ktoolbox.util.profiling.KProfiler;
+import se.sics.ktoolbox.util.profiling.KProfilerRegistry;
+import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSFileDeleteJSON {
-    private HDFSResourceJSON resource;
-    private String user;
-    
-    public HDFSFileDeleteJSON(HDFSResourceJSON resource, String user) {
-        this.resource = resource;
-        this.user = user;
-    }
-
-    public HDFSFileDeleteJSON() {}
-
-    public HDFSResourceJSON getResource() {
-        return resource;
-    }
-
-    public void setResource(HDFSResourceJSON hdfs) {
-        this.resource = hdfs;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-    
-    public static HDFSFileDeleteEvent.Request fromJSON(HDFSFileDeleteJSON json) {
-        return new HDFSFileDeleteEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user);
-    }
+public class KProfilerPrinter {
+     public static void main(String[] args) {
+         Map<String, KProfiler.Type> kProfilerRegistryMap = new HashMap<>();
+         kProfilerRegistryMap.put(TorrentComp.class.getCanonicalName(), KProfiler.Type.LOG);
+         KProfilerRegistry kProfilerRegistry = new KProfilerRegistry(kProfilerRegistryMap);
+         System.out.println(KProfilerRegistryConverter.jsonPrettyPrint(kProfilerRegistry));
+     }
+             
 }
