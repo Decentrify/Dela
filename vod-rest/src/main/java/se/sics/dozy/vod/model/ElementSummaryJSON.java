@@ -27,10 +27,10 @@ import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 public class ElementSummaryJSON {
 
     private String fileName;
-    private int torrentId;
+    private TorrentIdJSON torrentId;
     private String torrentStatus;
     
-    public ElementSummaryJSON(String name, int torrentId, String status) {
+    public ElementSummaryJSON(String name, TorrentIdJSON torrentId, String status) {
         this.fileName = name;
         this.torrentId = torrentId;
         this.torrentStatus = status;
@@ -47,11 +47,11 @@ public class ElementSummaryJSON {
         this.fileName = fileName;
     }
 
-    public int getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
 
-    public void setTorrentId(int torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
         this.torrentId = torrentId;
     }
 
@@ -65,6 +65,6 @@ public class ElementSummaryJSON {
 
     
     public static ElementSummaryJSON resolve(ElementSummary les) {
-        return new ElementSummaryJSON(les.name, ((OverlayIdentifier)les.torrentId).getInt(), les.status.name());
+        return new ElementSummaryJSON(les.name, TorrentIdJSON.toJSON(les.torrentId), les.status.name());
     }
 }

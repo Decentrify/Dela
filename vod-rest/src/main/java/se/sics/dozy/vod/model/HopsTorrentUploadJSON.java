@@ -31,7 +31,7 @@ public class HopsTorrentUploadJSON {
 
     private HDFSResourceJSON resource;
     private String user;
-    private int torrentId;
+    private TorrentIdJSON torrentId;
     
     public HopsTorrentUploadJSON() {}
 
@@ -51,18 +51,18 @@ public class HopsTorrentUploadJSON {
         this.user = user;
     }
 
-    public int getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
 
-    public void setTorrentId(int torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
         this.torrentId = torrentId;
     }
 
     
     
     public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
-        Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
+        Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
         HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
         return new HopsTorrentUploadEvent.Request(resource, req.user, torrentId);
     }

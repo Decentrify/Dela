@@ -35,6 +35,7 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
+import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.ktoolbox.util.identifiable.Identifier;
@@ -77,8 +78,8 @@ public class TorrentExtendedStatusREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Identifier overlayId = new OverlayIdentifier(Ints.toByteArray(fileDesc.getTorrentId()));
-        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(overlayId);
+        Identifier torrentId = TorrentIdJSON.fromJSON(fileDesc.getTorrentId());
+        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(torrentId);
         LOG.debug("waiting for torrents extended status:{} response", request.eventId);
         DozyResult<TorrentExtendedStatusEvent.Response> result = vodLibraryI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveElementStatus(result);

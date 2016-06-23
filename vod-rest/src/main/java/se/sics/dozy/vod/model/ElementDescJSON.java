@@ -28,10 +28,10 @@ import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
  */
 public class ElementDescJSON {
     private String fileName;
-    private int torrentId;
+    private TorrentIdJSON torrentId;
     
-    public ElementDescJSON(int identifier, String name) {
-        this.torrentId = identifier;
+    public ElementDescJSON(TorrentIdJSON torrentId, String name) {
+        this.torrentId = torrentId;
         this.fileName = name;
     }
     
@@ -46,41 +46,15 @@ public class ElementDescJSON {
         this.fileName = fileName;
     }
 
-    public int getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
 
-    public void setTorrentId(int torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
         this.torrentId = torrentId;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + this.torrentId;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ElementDescJSON other = (ElementDescJSON) obj;
-        if (this.torrentId != other.torrentId) {
-            return false;
-        }
-        return true;
-    }
-    
-    public static ElementDescJSON resolve(Identifier overlayId, FileInfo fileInfo) {
-        return new ElementDescJSON(((OverlayIdentifier)overlayId).getInt(), fileInfo.name);
-    }
-    
-    public Identifier resolveTorrentId() {
-        return new OverlayIdentifier(Ints.toByteArray(torrentId));
+    public static ElementDescJSON resolve(Identifier torrentId, FileInfo fileInfo) {
+        return new ElementDescJSON(TorrentIdJSON.toJSON(torrentId), fileInfo.name);
     }
 }

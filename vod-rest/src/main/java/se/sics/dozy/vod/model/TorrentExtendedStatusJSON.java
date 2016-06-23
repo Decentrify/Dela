@@ -18,27 +18,30 @@
  */
 package se.sics.dozy.vod.model;
 
+import java.io.UnsupportedEncodingException;
 import se.sics.gvod.mngr.util.TorrentExtendedStatus;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
+import se.sics.ktoolbox.util.identifiable.basic.ByteIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class TorrentExtendedStatusJSON {
-    private int torrentId;
+
+    private TorrentIdJSON torrentId;
     private String torrentStatus;
     private int downloadSpeed;
     private int percentageCompleted;
-    
-    public TorrentExtendedStatusJSON(int torrentId, String torrentStatus, int downloadSpeed, 
+
+    public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, int downloadSpeed,
             int percentageCompleted) {
         this.torrentId = torrentId;
         this.torrentStatus = torrentStatus;
         this.downloadSpeed = downloadSpeed;
         this.percentageCompleted = percentageCompleted;
     }
-    
-    public TorrentExtendedStatusJSON() {}
+
+    public TorrentExtendedStatusJSON() {
+    }
 
     public String getTorrentStatus() {
         return torrentStatus;
@@ -56,11 +59,11 @@ public class TorrentExtendedStatusJSON {
         this.downloadSpeed = downloadSpeed;
     }
 
-    public int getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
 
-    public void setTorrentId(int torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
         this.torrentId = torrentId;
     }
 
@@ -71,9 +74,9 @@ public class TorrentExtendedStatusJSON {
     public void setPercentageCompleted(int percentageCompleted) {
         this.percentageCompleted = percentageCompleted;
     }
-    
+
     public static TorrentExtendedStatusJSON resolveToJson(TorrentExtendedStatus tes) {
-        return new TorrentExtendedStatusJSON(((OverlayIdentifier)tes.torrentId).getInt(), tes.torrentStatus.name(), 
+        return new TorrentExtendedStatusJSON(TorrentIdJSON.toJSON(tes.torrentId), tes.torrentStatus.name(),
                 tes.downloadSpeed, tes.percentageComplete);
     }
 }

@@ -34,7 +34,7 @@ import se.sics.ktoolbox.util.network.KAddress;
 public class HopsTorrentDownloadJSON {
     private HDFSResourceJSON resource;
     private String user;
-    private int torrentId;
+    private TorrentIdJSON torrentId;
     private List<AddressJSON> partners;
     
     public HopsTorrentDownloadJSON() {}
@@ -55,11 +55,11 @@ public class HopsTorrentDownloadJSON {
         this.user = user;
     }
 
-    public int getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
 
-    public void setTorrentId(int torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
         this.torrentId = torrentId;
     }
 
@@ -72,7 +72,7 @@ public class HopsTorrentDownloadJSON {
     }
 
     public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
-        Identifier torrentId = new OverlayIdentifier(Ints.toByteArray(req.torrentId));
+        Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
         List<KAddress> partners = new ArrayList<>();
         for(AddressJSON partner : req.partners) {
             partners.add(AddressJSON.resolveFromJSON(partner));

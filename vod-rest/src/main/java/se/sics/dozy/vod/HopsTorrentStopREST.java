@@ -36,6 +36,7 @@ import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
 import se.sics.dozy.vod.model.HopsTorrentUploadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
@@ -78,7 +79,7 @@ public class HopsTorrentStopREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HopsTorrentStopEvent.Request request = new HopsTorrentStopEvent.Request(req.resolveTorrentId());
+        HopsTorrentStopEvent.Request request = new HopsTorrentStopEvent.Request(TorrentIdJSON.fromJSON(req.getTorrentId()));
         LOG.debug("waiting for stop:{}<{}> response", req.getFileName(), request.eventId);
         DozyResult<HopsTorrentStopEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentStop(result);

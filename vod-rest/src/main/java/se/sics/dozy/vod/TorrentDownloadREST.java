@@ -35,9 +35,9 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.mngr.event.TorrentDownloadEvent;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -76,7 +76,7 @@ public class TorrentDownloadREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentDownloadEvent.Request request = new TorrentDownloadEvent.Request(fileDesc.getFileName(), new OverlayIdentifier(Ints.toByteArray(fileDesc.getTorrentId())));
+        TorrentDownloadEvent.Request request = new TorrentDownloadEvent.Request(fileDesc.getFileName(), TorrentIdJSON.fromJSON(fileDesc.getTorrentId()));
         LOG.debug("waiting for upload:{}<{}> response", request.fileName, request.eventId);
         DozyResult<TorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveTorrentDownload(result);
