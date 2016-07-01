@@ -37,7 +37,7 @@ import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
+import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 

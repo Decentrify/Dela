@@ -33,14 +33,14 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
-import se.sics.dozy.vod.model.HopsTorrentUploadJSON;
+import se.sics.dozy.vod.model.hops.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.hops.HopsTorrentUploadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
-import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
-import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentStopEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

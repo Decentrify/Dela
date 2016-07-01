@@ -33,11 +33,11 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HDFSFileDeleteJSON;
-import se.sics.dozy.vod.model.HDFSResourceJSON;
+import se.sics.dozy.vod.model.hops.HDFSFileDeleteJSON;
+import se.sics.dozy.vod.model.hops.HDFSResourceJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -20,21 +20,21 @@ package se.sics.dozy.vod.util;
 
 import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
-import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.gvod.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
-import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
-import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
-import se.sics.gvod.mngr.event.LibraryAddEvent;
-import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementGetEvent;
-import se.sics.gvod.mngr.event.TorrentDownloadEvent;
-import se.sics.gvod.mngr.event.TorrentStopEvent;
-import se.sics.gvod.mngr.event.TorrentUploadEvent;
-import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
-import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
-import se.sics.gvod.mngr.event.system.SystemAddressEvent;
+import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
+import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentStopEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
+import se.sics.gvod.stream.mngr.event.LibraryAddEvent;
+import se.sics.gvod.stream.mngr.event.LibraryContentsEvent;
+import se.sics.gvod.stream.mngr.event.LibraryElementGetEvent;
+import se.sics.gvod.stream.mngr.event.TorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.event.TorrentStopEvent;
+import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
+import se.sics.gvod.stream.mngr.event.library.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

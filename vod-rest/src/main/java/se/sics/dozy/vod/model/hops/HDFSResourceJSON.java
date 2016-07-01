@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops;
 
-import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
+import se.sics.ktoolbox.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -26,12 +26,14 @@ import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
 public class HDFSResourceJSON {
     private String hopsIp;
     private int hopsPort;
+    private String user;
     private String dirPath;
     private String fileName;
     
-    public HDFSResourceJSON(String hopsIp, int hopsPort, String dirPath, String fileName) {
+    public HDFSResourceJSON(String hopsIp, int hopsPort, String user, String dirPath, String fileName) {
         this.hopsIp = hopsIp;
         this.hopsPort = hopsPort;
+        this.user = user;
         this.dirPath = dirPath;
         this.fileName = fileName;
     }
@@ -70,12 +72,19 @@ public class HDFSResourceJSON {
         this.fileName = fileName;
     }
 
-    
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     public static HDFSResourceJSON resolveToJSON(HDFSResource file) {
-        return new HDFSResourceJSON(file.hopsIp, file.hopsPort, file.dirPath, file.fileName);
+        return new HDFSResourceJSON(file.hopsIp, file.hopsPort, file.user, file.dirPath, file.fileName);
     }
     
-    public static HDFSResource resolveFromJSON(HDFSResourceJSON file) {
-        return new HDFSResource(file.hopsIp, file.hopsPort, file.dirPath, file.fileName);
+    public static HDFSResource fromJSON(HDFSResourceJSON file) {
+        return new HDFSResource(file.hopsIp, file.hopsPort, file.user, file.dirPath, file.fileName);
     }
 }

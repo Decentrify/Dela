@@ -33,10 +33,10 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HDFSConnectionJSON;
+import se.sics.dozy.vod.model.hops.HDFSConnectionJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.stream.mngr.event.system.HopsConnectionEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

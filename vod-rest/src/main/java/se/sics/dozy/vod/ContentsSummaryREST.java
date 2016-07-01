@@ -33,7 +33,7 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.ContentsSummaryJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

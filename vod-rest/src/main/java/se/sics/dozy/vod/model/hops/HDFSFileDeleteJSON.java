@@ -16,45 +16,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops;
 
-import se.sics.gvod.mngr.util.HDFSConnection;
+import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSConnectionJSON {
-    private String hopsIp;
-    private int hopsPort;
+public class HDFSFileDeleteJSON {
+    private HDFSResourceJSON resource;
     
-    public HDFSConnectionJSON(String hopsIp, int hopsPort) {
-        this.hopsIp = hopsIp;
-        this.hopsPort = hopsPort;
-    }
-    
-    public HDFSConnectionJSON() {}
-
-    public String getHopsIp() {
-        return hopsIp;
+    public HDFSFileDeleteJSON(HDFSResourceJSON resource, String user) {
+        this.resource = resource;
     }
 
-    public void setHopsIp(String hopsIp) {
-        this.hopsIp = hopsIp;
+    public HDFSFileDeleteJSON() {}
+
+    public HDFSResourceJSON getResource() {
+        return resource;
     }
 
-    public int getHopsPort() {
-        return hopsPort;
+    public void setResource(HDFSResourceJSON hdfs) {
+        this.resource = hdfs;
     }
 
-    public void setHopsPort(int hopsPort) {
-        this.hopsPort = hopsPort;
-    }
-
-    public static HDFSConnectionJSON resolveToJSON(HDFSConnection file) {
-        return new HDFSConnectionJSON(file.hopsIp, file.hopsPort);
-    }
-    
-    public static HDFSConnection resolveFromJSON(HDFSConnectionJSON file) {
-        return new HDFSConnection(file.hopsIp, file.hopsPort);
+    public static HDFSFileDeleteEvent.Request fromJSON(HDFSFileDeleteJSON json) {
+        return new HDFSFileDeleteEvent.Request(HDFSResourceJSON.fromJSON(json.resource));
     }
 }

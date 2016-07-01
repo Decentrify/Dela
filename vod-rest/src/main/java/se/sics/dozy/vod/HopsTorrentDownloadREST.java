@@ -32,10 +32,10 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.hops.HopsTorrentDownloadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -68,17 +68,17 @@ public class HopsTorrentDownloadREST implements DozyResource {
      */
     @PUT
     public Response download(HopsTorrentDownloadJSON req) {
-        LOG.trace("received download torrent request:{}", req.getResource().getFileName());
+        LOG.trace("received download torrent request:{}", req.getHdfsResource().getFileName());
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
         HopsTorrentDownloadEvent.Request request = HopsTorrentDownloadJSON.resolveFromJSON(req);
-        LOG.debug("waiting for download:{}<{}> response", request.resource.fileName, request.eventId);
+        LOG.debug("waiting for download:{}<{}> response", request.hdfsResource.fileName, request.eventId);
         DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
-        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.resource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.hdfsResource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {

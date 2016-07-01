@@ -16,26 +16,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops;
 
-import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
+import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
+import se.sics.ktoolbox.hdfs.HDFSResource;
+import se.sics.ktoolbox.util.identifiable.Identifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSFileCreateJSON {
-    private HDFSResourceJSON resource;
-    private String user;
-    private long fileSize;
-    
-    public HDFSFileCreateJSON(HDFSResourceJSON resource, String user, long fileSize) {
-        this.resource = resource;
-        this.user = user;
-        this.fileSize = fileSize;
-    }
+public class HopsTorrentUploadJSON {
 
-    public HDFSFileCreateJSON() {}
+    private HDFSResourceJSON resource;
+    private TorrentIdJSON torrentId;
     
+    public HopsTorrentUploadJSON() {}
+
     public HDFSResourceJSON getResource() {
         return resource;
     }
@@ -44,23 +41,17 @@ public class HDFSFileCreateJSON {
         this.resource = resource;
     }
 
-    public String getUser() {
-        return user;
+    public TorrentIdJSON getTorrentId() {
+        return torrentId;
     }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
+    public void setTorrentId(TorrentIdJSON torrentId) {
+        this.torrentId = torrentId;
     }
     
-    public static HDFSFileCreateEvent.Request fromJSON(HDFSFileCreateJSON json) {
-        return new HDFSFileCreateEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user, json.fileSize);
+    public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
+        Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
+        HDFSResource resource = HDFSResourceJSON.fromJSON(req.resource);
+        return new HopsTorrentUploadEvent.Request(resource, torrentId);
     }
 }
