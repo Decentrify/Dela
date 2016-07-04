@@ -18,7 +18,9 @@
  */
 package se.sics.dozy.vod.model.hops;
 
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
@@ -26,18 +28,18 @@ import se.sics.ktoolbox.util.identifiable.Identifier;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HopsTorrentUploadJSON {
+public class HDFSXMLTorrentUploadJSON {
 
-    private HDFSResourceJSON resource;
+    private HDFSXMLResourceJSON resource;
     private TorrentIdJSON torrentId;
     
-    public HopsTorrentUploadJSON() {}
+    public HDFSXMLTorrentUploadJSON() {}
 
-    public HDFSResourceJSON getResource() {
+    public HDFSXMLResourceJSON getResource() {
         return resource;
     }
 
-    public void setResource(HDFSResourceJSON resource) {
+    public void setResource(HDFSXMLResourceJSON resource) {
         this.resource = resource;
     }
 
@@ -49,9 +51,9 @@ public class HopsTorrentUploadJSON {
         this.torrentId = torrentId;
     }
     
-    public static HopsTorrentUploadEvent.Request resolveFromJSON(HopsTorrentUploadJSON req) {
+    public static HopsTorrentUploadEvent.Request resolveFromJSON(HDFSXMLTorrentUploadJSON req) {
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
-        HDFSResource resource = HDFSResourceJSON.fromJSON(req.resource);
+        HDFSResource resource = HDFSXMLResourceJSON.fromJSON(req.resource);
         return new HopsTorrentUploadEvent.Request(resource, torrentId);
     }
 }

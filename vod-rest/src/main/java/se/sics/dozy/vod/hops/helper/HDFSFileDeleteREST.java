@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.hdfs;
+package se.sics.dozy.vod.hops.helper;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -33,32 +33,31 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.HDFSFileCreateJSON;
-import se.sics.dozy.vod.model.hops.HDFSFileDeleteJSON;
+import se.sics.dozy.vod.model.hops.helper.HDFSFileDeleteJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileDeleteEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/hdfs/file/create")
+@Path("/hdfs/file/delete")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HDFSFileCreateREST implements DozyResource {
+public class HDFSFileDeleteREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodTorrentI = null;
+    private DozySyncI hopsHelperI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.libraryDozyName);
-        if (vodTorrentI == null) {
-            throw new RuntimeException("no sync interface found for vod REST API");
+        hopsHelperI = interfaces.get(DozyVoD.hopsHelperDozyName);
+        if (hopsHelperI == null) {
+            throw new RuntimeException("no sync interface found for hopsHelper REST API");
         }
     }
 
@@ -69,18 +68,18 @@ public class HDFSFileCreateREST implements DozyResource {
      * case of error
      */
     @PUT
-    public Response delete(HDFSFileCreateJSON req) {
-        LOG.trace("received create file request:{}", req.getResource().getFileName());
+    public Response fileDelete(HDFSFileDeleteJSON req) {
+        LOG.trace("received delete file request:{}", req.getResource().getFileName());
 
-        if (!vodTorrentI.isReady()) {
+        if (!hopsHelperI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HDFSFileCreateEvent.Request request = HDFSFileCreateJSON.fromJSON(req);
-        LOG.debug("waiting for create:{}<{}> response", req.getResource().getFileName(), request.eventId);
-        DozyResult<HDFSFileCreateEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileCreate(result);
-        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+        HDFSFileDeleteEvent.Request request = HDFSFileDeleteJSON.fromJSON(req);
+        LOG.debug("waiting for delete:{}<{}> response", req.getResource().getFileName(), request.eventId);
+        DozyResult<HDFSFileDeleteEvent.Response> result = hopsHelperI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileDelete(result);
+        LOG.info("delete:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {

@@ -18,10 +18,12 @@
  */
 package se.sics.dozy.vod.model.hops;
 
+import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
 import java.util.ArrayList;
 import java.util.List;
 import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
 import se.sics.ktoolbox.kafka.KafkaResource;
@@ -31,19 +33,19 @@ import se.sics.ktoolbox.util.network.KAddress;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HopsTorrentDownloadJSON {
-    private HDFSResourceJSON hdfsResource;
+public class HDFSXMLTorrentDownloadJSON {
+    private HDFSXMLResourceJSON hdfsResource;
     private KafkaResourceJSON kafkaResource;
     private TorrentIdJSON torrentId;
     private List<AddressJSON> partners;
     
-    public HopsTorrentDownloadJSON() {}
+    public HDFSXMLTorrentDownloadJSON() {}
 
-    public HDFSResourceJSON getHdfsResource() {
+    public HDFSXMLResourceJSON getHdfsResource() {
         return hdfsResource;
     }
 
-    public void setHdfsResource(HDFSResourceJSON hdfsResource) {
+    public void setHdfsResource(HDFSXMLResourceJSON hdfsResource) {
         this.hdfsResource = hdfsResource;
     }
 
@@ -71,8 +73,8 @@ public class HopsTorrentDownloadJSON {
         this.partners = partners;
     }
 
-    public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
-        HDFSResource hdfsResource = HDFSResourceJSON.fromJSON(req.hdfsResource);
+    public static HopsTorrentDownloadEvent.Request resolveFromJSON(HDFSXMLTorrentDownloadJSON req) {
+        HDFSResource hdfsResource = HDFSXMLResourceJSON.fromJSON(req.hdfsResource);
         KafkaResource kafkaResource = KafkaResourceJSON.fromJSON(req.kafkaResource);
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
         List<KAddress> partners = new ArrayList<>();

@@ -32,28 +32,31 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.ContentsSummaryREST;
-import se.sics.dozy.vod.hdfs.HDFSConnectionREST;
-import se.sics.dozy.vod.hdfs.HDFSFileCreateREST;
-import se.sics.dozy.vod.hdfs.HopsFileDeleteREST;
-import se.sics.dozy.vod.HopsTorrentDownloadREST;
-import se.sics.dozy.vod.HopsTorrentStopREST;
-import se.sics.dozy.vod.HopsTorrentUploadREST;
+import se.sics.dozy.vod.hops.helper.HDFSConnectionREST;
+import se.sics.dozy.vod.hops.helper.HDFSFileCreateREST;
+import se.sics.dozy.vod.hops.helper.HDFSFileDeleteREST;
+import se.sics.dozy.vod.hops.HopsTorrentDownloadREST;
+import se.sics.dozy.vod.hops.HopsTorrentStopREST;
+import se.sics.dozy.vod.hops.HopsTorrentUploadREST;
 import se.sics.dozy.vod.TorrentExtendedStatusREST;
 import se.sics.dozy.vod.VoDEndpointREST;
+import se.sics.dozy.vod.hops.helper.HDFSAvroFileCreateREST;
 import se.sics.gvod.stream.mngr.LibraryPort;
 import se.sics.gvod.stream.mngr.SystemPort;
 import se.sics.gvod.stream.mngr.TorrentPort;
 import se.sics.gvod.stream.mngr.VoDMngrComp;
 import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentStopEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileCreateEvent;
-import se.sics.gvod.stream.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSConnectionEvent;
 import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
 import se.sics.gvod.network.GVoDSerializerSetup;
+import se.sics.gvod.stream.mngr.hops.HopsPort;
+import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileDeleteEvent;
 import se.sics.kompics.Channel;
 import se.sics.kompics.ClassMatchedHandler;
 import se.sics.kompics.Component;
@@ -70,7 +73,6 @@ import se.sics.kompics.timer.Timer;
 import se.sics.kompics.timer.java.JavaTimer;
 import se.sics.ktoolbox.croupier.CroupierSerializerSetup;
 import se.sics.ktoolbox.gradient.GradientSerializerSetup;
-import se.sics.ktoolbox.netmngr.NetworkMngrComp;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
 import se.sics.ktoolbox.netmngr.event.NetMngrReady;
 import se.sics.ktoolbox.overlaymngr.OMngrSerializerSetup;
@@ -99,6 +101,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     private Component networkMngrComp;
     private Component vodMngrComp;
     private Component systemSyncIComp;
+    private Component hopsHelperSyncIComp;
     private Component librarySyncIComp;
     private Component torrentSyncIComp;
     private DropwizardDozy webserver;
@@ -157,12 +160,14 @@ public class VoDNatLauncher extends ComponentDefinition {
 
                     setVoDMngr();
                     setSystemSyncI();
+                    setHopsHelperSyncI();
                     setLibrarySyncI();
                     setTorrentSyncI();
                     setWebserver();
 
                     trigger(Start.event, vodMngrComp.control());
                     trigger(Start.event, systemSyncIComp.control());
+                    trigger(Start.event, hopsHelperSyncIComp.control());
                     trigger(Start.event, librarySyncIComp.control());
                     trigger(Start.event, torrentSyncIComp.control());
 
@@ -179,19 +184,29 @@ public class VoDNatLauncher extends ComponentDefinition {
     private void setSystemSyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(SystemAddressEvent.Response.class);
-        resp.add(HopsConnectionEvent.Response.class);
         systemSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(SystemPort.class, resp));
 
         connect(systemSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
         connect(systemSyncIComp.getNegative(SystemPort.class), vodMngrComp.getPositive(SystemPort.class), Channel.TWO_WAY);
     }
     
+    private void setHopsHelperSyncI() {
+        List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
+        resp.add(HDFSConnectionEvent.Response.class);
+        resp.add(HDFSFileDeleteEvent.Response.class);
+        resp.add(HDFSFileCreateEvent.Response.class);
+        resp.add(HDFSAvroFileCreateEvent.Response.class);
+        hopsHelperSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsPort.class, resp));
+        
+        connect(hopsHelperSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
+        connect(hopsHelperSyncIComp.getNegative(HopsPort.class), vodMngrComp.getPositive(HopsPort.class), Channel.TWO_WAY);
+    }
+    
     private void setLibrarySyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(ContentsSummaryEvent.Response.class);
         resp.add(TorrentExtendedStatusEvent.Response.class);
-        resp.add(HDFSFileDeleteEvent.Response.class);
-        resp.add(HDFSFileCreateEvent.Response.class);
+        
         librarySyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(LibraryPort.class, resp));
 
         connect(librarySyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
@@ -211,19 +226,26 @@ public class VoDNatLauncher extends ComponentDefinition {
     private void setWebserver() {
         Map<String, DozySyncI> synchronousInterfaces = new HashMap<>();
         synchronousInterfaces.put(DozyVoD.systemDozyName, (DozySyncI) systemSyncIComp.getComponent());
+        synchronousInterfaces.put(DozyVoD.hopsHelperDozyName, (DozySyncI) hopsHelperSyncIComp.getComponent());
         synchronousInterfaces.put(DozyVoD.libraryDozyName, (DozySyncI) librarySyncIComp.getComponent());
         synchronousInterfaces.put(DozyVoD.torrentDozyName, (DozySyncI) torrentSyncIComp.getComponent());
 
         List<DozyResource> resources = new ArrayList<>();
         resources.add(new VoDEndpointREST());
-        resources.add(new HDFSConnectionREST());
         resources.add(new ContentsSummaryREST());
         resources.add(new TorrentExtendedStatusREST());
-        resources.add(new HopsTorrentDownloadREST());
-        resources.add(new HopsTorrentUploadREST());
+        
+        resources.add(new HopsTorrentDownloadREST.Basic());
+        resources.add(new HopsTorrentDownloadREST.XML());
+        resources.add(new HopsTorrentUploadREST.Basic());
+        resources.add(new HopsTorrentUploadREST.XML());
         resources.add(new HopsTorrentStopREST());
-        resources.add(new HopsFileDeleteREST());
+        
+        resources.add(new HDFSConnectionREST.Basic());
+        resources.add(new HDFSConnectionREST.XML());
+        resources.add(new HDFSFileDeleteREST());
         resources.add(new HDFSFileCreateREST());
+        resources.add(new HDFSAvroFileCreateREST());
 
         webserver = new DropwizardDozy(synchronousInterfaces, resources);
     }

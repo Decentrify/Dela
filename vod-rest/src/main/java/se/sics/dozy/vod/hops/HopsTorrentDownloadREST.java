@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.hdfs;
+package se.sics.dozy.vod.hops;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -33,19 +33,17 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.HDFSFileDeleteJSON;
-import se.sics.dozy.vod.model.hops.HDFSResourceJSON;
+import se.sics.dozy.vod.model.hops.HDFSTorrentDownloadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.hops.HDFSXMLTorrentDownloadJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
+import se.sics.ktoolbox.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/hdfs/file/delete")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public class HopsFileDeleteREST implements DozyResource {
+public class HopsTorrentDownloadREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -56,35 +54,49 @@ public class HopsFileDeleteREST implements DozyResource {
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.libraryDozyName);
+        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
-    /**
-     * @param req {@link se.sics.dozy.vod.model.FileDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
-     * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
-     * case of error
-     */
-    @PUT
-    public Response delete(HDFSFileDeleteJSON req) {
-        LOG.trace("received delete file request:{}", req.getResource().getFileName());
+    protected Response download(HopsTorrentDownloadEvent.Request request) {
+        LOG.trace("received download torrent request:{}", request.hdfsResource.fileName);
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HDFSFileDeleteEvent.Request request = HDFSFileDeleteJSON.fromJSON(req);
-        LOG.debug("waiting for delete:{}<{}> response", req.getResource().getFileName(), request.eventId);
-        DozyResult<HDFSFileDeleteEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileDelete(result);
-        LOG.info("delete:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.debug("waiting for download:{}<{}> response", request.hdfsResource.fileName, request.eventId);
+        DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
+        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.hdfsResource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+        }
+    }
+
+    @Path("/torrent/hops/download/basic")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class Basic extends HopsTorrentDownloadREST {
+
+        @PUT
+        public Response downloadBasic(HDFSTorrentDownloadJSON req) {
+            return download(HDFSTorrentDownloadJSON.resolveFromJSON(req));
+        }
+    }
+
+    @Path("/torrent/hops/download/xml")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class XML extends HopsTorrentDownloadREST {
+
+        @PUT
+        public Response downloadBasic(HDFSXMLTorrentDownloadJSON req) {
+            return download(HDFSXMLTorrentDownloadJSON.resolveFromJSON(req));
         }
     }
 }

@@ -22,7 +22,7 @@ import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileDeleteEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentStopEvent;
 import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
@@ -32,9 +32,10 @@ import se.sics.gvod.stream.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.stream.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.event.TorrentStopEvent;
 import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
-import se.sics.gvod.stream.mngr.event.library.HDFSFileCreateEvent;
-import se.sics.gvod.stream.mngr.event.system.HopsConnectionEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSConnectionEvent;
 import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
+import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -89,11 +90,15 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsAvroFileCreate(DozyResult<HDFSAvroFileCreateEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveVoDEndpoint(DozyResult<SystemAddressEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsConnection(DozyResult<HopsConnectionEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsConnection(DozyResult<HDFSConnectionEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 

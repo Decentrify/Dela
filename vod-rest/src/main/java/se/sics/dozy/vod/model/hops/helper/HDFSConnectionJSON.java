@@ -16,14 +16,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.model.hops.helper;
+
+import se.sics.gvod.mngr.util.HDFSConnection;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DozyVoD {
-    public static final String systemDozyName = "vod-system";
-    public static final String hopsHelperDozyName = "vod-hopsHelper";
-    public static final String libraryDozyName = "vod-library";
-    public static final String torrentDozyName = "vod-torrent";
+public class HDFSConnectionJSON {
+    private String hopsIp;
+    private int hopsPort;
+    
+    public HDFSConnectionJSON(String hopsIp, int hopsPort) {
+        this.hopsIp = hopsIp;
+        this.hopsPort = hopsPort;
+    }
+    
+    public HDFSConnectionJSON() {}
+
+    public String getHopsIp() {
+        return hopsIp;
+    }
+
+    public void setHopsIp(String hopsIp) {
+        this.hopsIp = hopsIp;
+    }
+
+    public int getHopsPort() {
+        return hopsPort;
+    }
+
+    public void setHopsPort(int hopsPort) {
+        this.hopsPort = hopsPort;
+    }
+
+    public static HDFSConnection resolveFromJSON(HDFSConnectionJSON file) {
+        return new HDFSConnection(file.hopsIp, file.hopsPort);
+    }
 }

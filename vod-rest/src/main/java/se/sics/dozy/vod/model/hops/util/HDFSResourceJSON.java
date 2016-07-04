@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model.hops;
+package se.sics.dozy.vod.model.hops.util;
 
 import se.sics.ktoolbox.hdfs.HDFSResource;
 
@@ -80,10 +80,6 @@ public class HDFSResourceJSON {
         this.user = user;
     }
 
-    public static HDFSResourceJSON resolveToJSON(HDFSResource file) {
-        return new HDFSResourceJSON(file.hopsIp, file.hopsPort, file.user, file.dirPath, file.fileName);
-    }
-    
     public static HDFSResource fromJSON(HDFSResourceJSON file) {
         return new HDFSResource(file.hopsIp, file.hopsPort, file.user, file.dirPath, file.fileName);
     }

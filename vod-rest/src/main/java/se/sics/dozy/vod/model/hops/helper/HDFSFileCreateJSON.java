@@ -16,45 +16,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model.hops;
+package se.sics.dozy.vod.model.hops.helper;
 
-import se.sics.gvod.mngr.util.HDFSConnection;
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
+import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSConnectionJSON {
-    private String hopsIp;
-    private int hopsPort;
+public class HDFSFileCreateJSON {
+    private HDFSResourceJSON resource;
+    private long fileSize;
     
-    public HDFSConnectionJSON(String hopsIp, int hopsPort) {
-        this.hopsIp = hopsIp;
-        this.hopsPort = hopsPort;
+    public HDFSFileCreateJSON(HDFSResourceJSON resource, long fileSize) {
+        this.resource = resource;
+        this.fileSize = fileSize;
     }
+
+    public HDFSFileCreateJSON() {}
     
-    public HDFSConnectionJSON() {}
-
-    public String getHopsIp() {
-        return hopsIp;
+    public HDFSResourceJSON getResource() {
+        return resource;
     }
 
-    public void setHopsIp(String hopsIp) {
-        this.hopsIp = hopsIp;
+    public void setResource(HDFSResourceJSON resource) {
+        this.resource = resource;
     }
 
-    public int getHopsPort() {
-        return hopsPort;
+    public long getFileSize() {
+        return fileSize;
     }
 
-    public void setHopsPort(int hopsPort) {
-        this.hopsPort = hopsPort;
-    }
-
-    public static HDFSConnectionJSON resolveToJSON(HDFSConnection file) {
-        return new HDFSConnectionJSON(file.hopsIp, file.hopsPort);
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
     
-    public static HDFSConnection resolveFromJSON(HDFSConnectionJSON file) {
-        return new HDFSConnection(file.hopsIp, file.hopsPort);
+    public static HDFSFileCreateEvent.Request fromJSON(HDFSFileCreateJSON json) {
+        return new HDFSFileCreateEvent.Request(HDFSResourceJSON.fromJSON(json.resource), json.fileSize);
     }
 }
