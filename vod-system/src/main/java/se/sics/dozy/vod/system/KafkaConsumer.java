@@ -29,7 +29,7 @@ import se.sics.ktoolbox.kafka.KafkaResource;
 public class KafkaConsumer {
     public static void main(String[] args) {
         if(args.length != 1) {
-            throw new RuntimeException("expected 3 arg");
+            throw new RuntimeException("expected 1 arg");
         }
         String sessionId = args[0];
         String projectId = "10";
@@ -42,8 +42,10 @@ public class KafkaConsumer {
         String keystore = "/var/lib/kagent/keystores/node_server_keystore.jks";
         String truststore = "/var/lib/kagent/keystores/node_server_truststore.jks";
         
+        System.err.println("connecting");
         KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, schemaName, keystore, truststore);
         HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(kr);
         kc.consume();
+        System.err.println("running");
     }
 }
