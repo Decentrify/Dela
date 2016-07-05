@@ -37,6 +37,7 @@ import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSFileDeleteJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSAvroFileCreateJSON;
+import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateSuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
 import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
@@ -50,7 +51,7 @@ import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
 public class HDFSAvroFileCreateREST implements DozyResource {
 
     //TODO Alex - make into config?
-    public static long timeout = 5000;
+    public static long timeout = 60000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
@@ -84,7 +85,7 @@ public class HDFSAvroFileCreateREST implements DozyResource {
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsAvroFileCreate(result);
         LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
+            return Response.status(Response.Status.OK).entity(new HDFSFileCreateSuccessJSON(result.getValue().filesize)).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }

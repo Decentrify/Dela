@@ -47,7 +47,7 @@ import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
 public class HDFSFileCreateREST implements DozyResource {
 
     //TODO Alex - make into config?
-    public static long timeout = 5000;
+    public static long timeout = 60000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
