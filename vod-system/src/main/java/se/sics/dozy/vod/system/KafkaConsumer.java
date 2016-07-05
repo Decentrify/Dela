@@ -32,7 +32,7 @@ public class KafkaConsumer {
             throw new RuntimeException("expected 3 arg");
         }
         String sessionId = args[0];
-        String projectId = "1";
+        String projectId = "10";
         String topicName = "testTopic";
         String schemaName = "testSchema";
         String brokerEndpoint = "10.0.2.15:9091";
