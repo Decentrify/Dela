@@ -37,7 +37,7 @@ public class KafkaConsumer {
         String schemaName = "testSchema";
         String brokerEndpoint = "10.0.2.15:9091";
         String restEndpoint = "https://10.0.2.15:8080/hopsworks/api/project";
-        String domain = "10.0.2.15";
+        String domain = "bbc1.sics.se";
         
         String keystore = "/var/lib/kagent/keystores/node_server_keystore.jks";
         String truststore = "/var/lib/kagent/keystores/node_server_truststore.jks";
