@@ -39,8 +39,8 @@ public class KafkaConsumer {
         String restEndpoint = "http://bbc1.sics.se:14003/hopsworks/api/project";
         String domain = "bbc1.sics.se";
         
-        String keystore = "/var/lib/kagent/keystores/node_server_keystore.jks";
-        String truststore = "/var/lib/kagent/keystores/node_server_truststore.jks";
+        String keystore = "/tmp/tester123__meb10000__kstore.jks";
+        String truststore = "/tmp/tester123__meb10000__kstore.jks";
         
         System.err.println("connecting");
         KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, schemaName, keystore, truststore);
