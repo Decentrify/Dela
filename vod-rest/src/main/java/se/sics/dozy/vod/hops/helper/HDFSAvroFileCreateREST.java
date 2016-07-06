@@ -33,14 +33,10 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateJSON;
-import se.sics.dozy.vod.model.hops.helper.HDFSFileDeleteJSON;
-import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSAvroFileCreateJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateSuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
-import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -73,17 +69,17 @@ public class HDFSAvroFileCreateREST implements DozyResource {
      */
     @PUT
     public Response avroFileCreate(HDFSAvroFileCreateJSON req) {
-        LOG.trace("received create file request:{}", req.getResource().getFileName());
+        LOG.trace("received create file request:{}", req.getHdfsResource().getFileName());
 
         if (!hopsHelperI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
         HDFSAvroFileCreateEvent.Request request = HDFSAvroFileCreateJSON.fromJSON(req);
-        LOG.debug("waiting for create:{}<{}> response", req.getResource().getFileName(), request.eventId);
+        LOG.debug("waiting for create:{}<{}> response", req.getHdfsResource().getFileName(), request.eventId);
         DozyResult<HDFSAvroFileCreateEvent.Response> result = hopsHelperI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsAvroFileCreate(result);
-        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getHdfsResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new HDFSFileCreateSuccessJSON(result.getValue().filesize)).build();
         } else {

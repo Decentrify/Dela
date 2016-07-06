@@ -37,15 +37,23 @@ public class HDFSAvroFileCreateJSON {
     }
 
     public HDFSAvroFileCreateJSON() {}
-    
-    public HDFSResourceJSON getResource() {
+
+    public HDFSResourceJSON getHdfsResource() {
         return hdfsResource;
     }
 
-    public void setResource(HDFSResourceJSON resource) {
-        this.hdfsResource = resource;
+    public void setHdfsResource(HDFSResourceJSON hdfsResource) {
+        this.hdfsResource = hdfsResource;
     }
 
+    public KafkaResourceJSON getKafkaResource() {
+        return kafkaResource;
+    }
+
+    public void setKafkaResource(KafkaResourceJSON kafkaResource) {
+        this.kafkaResource = kafkaResource;
+    }
+    
     public long getNrMsgs() {
         return nrMsgs;
     }
