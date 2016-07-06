@@ -47,6 +47,8 @@ public class KafkaResourceJSON {
         this.keyStore = keyStore;
         this.trustStore = trustStore;
     }
+    
+    public KafkaResourceJSON() {}
 
     public String getBrokerEndpoint() {
         return brokerEndpoint;
