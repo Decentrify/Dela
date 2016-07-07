@@ -37,7 +37,7 @@ import se.sics.dozy.vod.model.hops.helper.HDFSConnectionJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSXMLConnectionJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.hops.event.HDFSConnectionEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSConnectionEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

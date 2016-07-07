@@ -36,7 +36,7 @@ import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

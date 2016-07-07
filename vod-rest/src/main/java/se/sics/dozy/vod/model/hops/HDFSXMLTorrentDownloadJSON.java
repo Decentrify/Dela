@@ -24,7 +24,7 @@ import java.util.List;
 import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
 import se.sics.ktoolbox.kafka.KafkaResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;

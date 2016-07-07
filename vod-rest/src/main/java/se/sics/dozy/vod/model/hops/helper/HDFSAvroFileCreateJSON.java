@@ -20,7 +20,7 @@ package se.sics.dozy.vod.model.hops.helper;
 
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
-import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSAvroFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

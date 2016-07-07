@@ -18,7 +18,6 @@
  */
 package se.sics.dozy.vod;
 
-import com.google.common.primitives.Ints;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -32,14 +31,13 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.ElementDescJSON;
+import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -54,12 +52,12 @@ public class TorrentExtendedStatusREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodLibraryI = null;
+    private DozySyncI hopsTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
-        if (vodLibraryI == null) {
+        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+        if (hopsTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
@@ -74,14 +72,14 @@ public class TorrentExtendedStatusREST implements DozyResource {
     @PUT
     public Response getTorrentExtendedStatus(ElementDescJSON fileDesc) {
         LOG.info("received torrents extended status request");
-        if (!vodLibraryI.isReady()) {
+        if (!hopsTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
         Identifier torrentId = TorrentIdJSON.fromJSON(fileDesc.getTorrentId());
         TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(torrentId);
         LOG.debug("waiting for torrents extended status:{} response", request.eventId);
-        DozyResult<TorrentExtendedStatusEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        DozyResult<TorrentExtendedStatusEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveElementStatus(result);
         LOG.info("torrents extended status:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

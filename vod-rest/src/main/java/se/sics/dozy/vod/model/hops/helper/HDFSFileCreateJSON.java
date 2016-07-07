@@ -19,7 +19,7 @@
 package se.sics.dozy.vod.model.hops.helper;
 
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
-import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

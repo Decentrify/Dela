@@ -37,7 +37,7 @@ import se.sics.dozy.vod.model.hops.HDFSTorrentDownloadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.hops.HDFSXMLTorrentDownloadJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
 
 /**
@@ -54,7 +54,7 @@ public class HopsTorrentDownloadREST implements DozyResource {
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
+        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }

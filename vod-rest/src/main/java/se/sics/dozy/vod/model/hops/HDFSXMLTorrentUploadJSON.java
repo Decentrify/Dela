@@ -21,7 +21,7 @@ package se.sics.dozy.vod.model.hops;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 

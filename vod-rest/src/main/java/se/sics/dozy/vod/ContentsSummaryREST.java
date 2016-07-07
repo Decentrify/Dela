@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.ContentsSummaryJSON;
+import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
 
@@ -47,12 +47,12 @@ public class ContentsSummaryREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodLibraryI = null;
+    private DozySyncI hopsTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
-        if (vodLibraryI == null) {
+        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+        if (hopsTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
@@ -66,13 +66,13 @@ public class ContentsSummaryREST implements DozyResource {
     @GET
     public Response getContentsSummary() {
         LOG.info("received hops library contents request");
-        if (!vodLibraryI.isReady()) {
+        if (!hopsTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
         ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request();
         LOG.debug("waiting for hops contents:{} response", request.eventId);
-        DozyResult<ContentsSummaryEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        DozyResult<ContentsSummaryEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
         LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

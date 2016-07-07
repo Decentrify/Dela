@@ -22,20 +22,20 @@ import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.stream.mngr.hops.event.HDFSFileDeleteEvent;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentDownloadEvent;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentStopEvent;
-import se.sics.gvod.stream.mngr.event.hops.HopsTorrentUploadEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentStopEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
 import se.sics.gvod.stream.mngr.event.LibraryAddEvent;
 import se.sics.gvod.stream.mngr.event.LibraryContentsEvent;
 import se.sics.gvod.stream.mngr.event.LibraryElementGetEvent;
 import se.sics.gvod.stream.mngr.event.TorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.event.TorrentStopEvent;
 import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
-import se.sics.gvod.stream.mngr.hops.event.HDFSFileCreateEvent;
-import se.sics.gvod.stream.mngr.hops.event.HDFSConnectionEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSConnectionEvent;
 import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
-import se.sics.gvod.stream.mngr.hops.event.HDFSAvroFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSAvroFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -56,7 +56,7 @@ public class TorrentDownloadREST implements DozyResource {
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
+        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod torrent REST API");
         }
