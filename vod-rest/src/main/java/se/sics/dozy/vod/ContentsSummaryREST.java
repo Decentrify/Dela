@@ -18,6 +18,7 @@
  */
 package se.sics.dozy.vod;
 
+import com.google.common.base.Optional;
 import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,7 +34,7 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ContentsSummaryJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -70,7 +71,8 @@ public class ContentsSummaryREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request();
+        Optional<Integer> projectId = Optional.absent();
+        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request(projectId);
         LOG.debug("waiting for hops contents:{} response", request.eventId);
         DozyResult<ContentsSummaryEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);

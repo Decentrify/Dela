@@ -21,7 +21,7 @@ package se.sics.dozy.vod.util;
 import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
 import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileDeleteEvent;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentStopEvent;

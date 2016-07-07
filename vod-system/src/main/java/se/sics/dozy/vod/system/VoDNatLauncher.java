@@ -42,10 +42,8 @@ import se.sics.dozy.vod.hops.helper.HDFSConnectionREST;
 import se.sics.dozy.vod.hops.helper.HDFSFileCreateREST;
 import se.sics.dozy.vod.hops.helper.HDFSFileDeleteREST;
 import se.sics.gvod.network.GVoDSerializerSetup;
-import se.sics.gvod.stream.mngr.LibraryPort;
 import se.sics.gvod.stream.mngr.SystemPort;
 import se.sics.gvod.stream.mngr.VoDMngrComp;
-import se.sics.gvod.stream.mngr.event.ContentsSummaryEvent;
 import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
 import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
 import se.sics.gvod.stream.mngr.hops.HopsPort;
@@ -54,6 +52,7 @@ import se.sics.gvod.stream.mngr.hops.helper.event.HDFSAvroFileCreateEvent;
 import se.sics.gvod.stream.mngr.hops.helper.event.HDFSConnectionEvent;
 import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
 import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentStopEvent;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
@@ -210,7 +209,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         hopsTorrentSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsTorrentPort.class, resp));
 
         connect(hopsTorrentSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-        connect(hopsTorrentSyncIComp.getNegative(LibraryPort.class), vodMngrComp.getPositive(LibraryPort.class), Channel.TWO_WAY);
+        connect(hopsTorrentSyncIComp.getNegative(HopsTorrentPort.class), vodMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
     }
 
     private void setWebserver() {
