@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
-import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.hops.util.HopsResourceJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
@@ -35,20 +35,20 @@ import se.sics.ktoolbox.util.network.KAddress;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSXMLTorrentDownloadJSON {
-    private HDFSXMLResourceJSON hdfsResource;
+public class HopsTorrentDownloadJSON {
+    private HDFSResourceJSON hdfsResource;
     private KafkaResourceJSON kafkaResource;
     private HopsResourceJSON hopsResource;
     private TorrentIdJSON torrentId;
     private List<AddressJSON> partners;
     
-    public HDFSXMLTorrentDownloadJSON() {}
+    public HopsTorrentDownloadJSON() {}
 
-    public HDFSXMLResourceJSON getHdfsResource() {
+    public HDFSResourceJSON getHdfsResource() {
         return hdfsResource;
     }
 
-    public void setHdfsResource(HDFSXMLResourceJSON hdfsResource) {
+    public void setHdfsResource(HDFSResourceJSON hdfsResource) {
         this.hdfsResource = hdfsResource;
     }
 
@@ -67,7 +67,7 @@ public class HDFSXMLTorrentDownloadJSON {
     public void setHopsResource(HopsResourceJSON hopsResource) {
         this.hopsResource = hopsResource;
     }
-
+    
     public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
@@ -84,8 +84,8 @@ public class HDFSXMLTorrentDownloadJSON {
         this.partners = partners;
     }
 
-    public static HopsTorrentDownloadEvent.Request resolveFromJSON(HDFSXMLTorrentDownloadJSON req) {
-        HDFSResource hdfsResource = HDFSXMLResourceJSON.fromJSON(req.hdfsResource);
+    public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
+        HDFSResource hdfsResource = HDFSResourceJSON.fromJSON(req.hdfsResource);
         KafkaResource kafkaResource = KafkaResourceJSON.fromJSON(req.kafkaResource);
         HopsResource hopsResource = HopsResourceJSON.fromJSON(req.hopsResource);
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);

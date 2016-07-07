@@ -33,9 +33,9 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.HDFSTorrentDownloadJSON;
+import se.sics.dozy.vod.model.hops.HopsTorrentDownloadJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
-import se.sics.dozy.vod.model.hops.HDFSXMLTorrentDownloadJSON;
+import se.sics.dozy.vod.model.hops.HopsXMLTorrentDownloadJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
@@ -84,8 +84,8 @@ public class HopsTorrentDownloadREST implements DozyResource {
     public static class Basic extends HopsTorrentDownloadREST {
 
         @PUT
-        public Response downloadBasic(HDFSTorrentDownloadJSON req) {
-            return download(HDFSTorrentDownloadJSON.resolveFromJSON(req));
+        public Response downloadBasic(HopsTorrentDownloadJSON req) {
+            return download(HopsTorrentDownloadJSON.resolveFromJSON(req));
         }
     }
 
@@ -95,8 +95,8 @@ public class HopsTorrentDownloadREST implements DozyResource {
     public static class XML extends HopsTorrentDownloadREST {
 
         @PUT
-        public Response downloadBasic(HDFSXMLTorrentDownloadJSON req) {
-            return download(HDFSXMLTorrentDownloadJSON.resolveFromJSON(req));
+        public Response downloadBasic(HopsXMLTorrentDownloadJSON req) {
+            return download(HopsXMLTorrentDownloadJSON.resolveFromJSON(req));
         }
     }
 }

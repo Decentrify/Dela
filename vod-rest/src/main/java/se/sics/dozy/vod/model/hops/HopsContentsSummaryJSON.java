@@ -16,23 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops;
 
 import java.util.ArrayList;
 import java.util.List;
+import se.sics.dozy.vod.model.ElementSummaryJSON;
 import se.sics.gvod.mngr.util.ElementSummary;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class ContentsSummaryJSON {
+public class HopsContentsSummaryJSON {
     private List<ElementSummaryJSON> contents = new ArrayList<>();
 
-    public ContentsSummaryJSON(List<ElementSummaryJSON> contents) {
+    public HopsContentsSummaryJSON(List<ElementSummaryJSON> contents) {
         this.contents = contents;
     }
 
-    public ContentsSummaryJSON() {
+    public HopsContentsSummaryJSON() {
     }
 
     public List<ElementSummaryJSON> getContents() {
@@ -43,11 +44,11 @@ public class ContentsSummaryJSON {
         this.contents = contents;
     }
 
-    public static ContentsSummaryJSON resolve(List<ElementSummary> contents) {
+    public static HopsContentsSummaryJSON resolve(List<ElementSummary> contents) {
         List<ElementSummaryJSON> jsonContents = new ArrayList<>();
         for (ElementSummary es : contents) {
             jsonContents.add(ElementSummaryJSON.resolve(es));
         }
-        return new ContentsSummaryJSON(jsonContents);
+        return new HopsContentsSummaryJSON(jsonContents);
     }
 }
