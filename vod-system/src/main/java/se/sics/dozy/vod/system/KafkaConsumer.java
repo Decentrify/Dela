@@ -34,7 +34,6 @@ public class KafkaConsumer {
         String sessionId = args[0];
         String projectId = "10";
         String topicName = "testTopic";
-        String schemaName = "testSchema";
         String brokerEndpoint = "10.0.2.15:9091";
         String restEndpoint = "http://bbc1.sics.se:14003/hopsworks/api/project";
         String domain = "bbc1.sics.se";
@@ -43,7 +42,7 @@ public class KafkaConsumer {
         String truststore = "/tmp/vod/tester123__meb10000__tstore.jks";
         
         System.err.println("connecting");
-        KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, schemaName, keystore, truststore);
+        KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, keystore, truststore);
         HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(kr);
         kc.consume();
         System.err.println("running");

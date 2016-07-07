@@ -31,19 +31,17 @@ public class KafkaResourceJSON {
     private String sessionId;
     private String projectId;
     private String topicName;
-    private String schemaName;
     private String keyStore;
     private String trustStore;
 
     public KafkaResourceJSON(String brokerEndpoint, String restEndpoint, String domain, String sessionId,
-            String projectId, String topicName, String schemaName, String keyStore, String trustStore) {
+            String projectId, String topicName, String keyStore, String trustStore) {
         this.brokerEndpoint = brokerEndpoint;
         this.restEndpoint = restEndpoint;
         this.domain = domain;
         this.sessionId = sessionId;
         this.projectId = projectId;
         this.topicName = topicName;
-        this.schemaName = schemaName;
         this.keyStore = keyStore;
         this.trustStore = trustStore;
     }
@@ -98,14 +96,6 @@ public class KafkaResourceJSON {
         this.topicName = topicName;
     }
 
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
     public String getKeyStore() {
         return keyStore;
     }
@@ -123,6 +113,6 @@ public class KafkaResourceJSON {
     }
     
     public static KafkaResource fromJSON(KafkaResourceJSON json) {
-        return new KafkaResource(json.brokerEndpoint, json.restEndpoint, json.domain, json.sessionId, json.projectId, json.topicName, json.schemaName, json.keyStore, json.trustStore);
+        return new KafkaResource(json.brokerEndpoint, json.restEndpoint, json.domain, json.sessionId, json.projectId, json.topicName, json.keyStore, json.trustStore);
     }
 }
