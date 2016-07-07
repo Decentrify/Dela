@@ -28,23 +28,22 @@ import se.sics.ktoolbox.kafka.KafkaResource;
  */
 public class KafkaConsumer {
     public static void main(String[] args) {
-        if(args.length != 1) {
-            throw new RuntimeException("expected 1 arg");
+        if(args.length != 2) {
+            throw new RuntimeException("expected 2 arg - projectId sessionId");
         }
-        String sessionId = args[0];
-        String projectId = "10";
+        String projectId = args[0];
+        String sessionId = args[1];
         String topicName = "testTopic";
         String brokerEndpoint = "10.0.2.15:9091";
-        String restEndpoint = "http://bbc1.sics.se:14003/hopsworks/api/project";
+        String restEndpoint = "http://bbc1.sics.se:14008";
         String domain = "bbc1.sics.se";
         
-        String keystore = "/tmp/vod/tester123__meb10000__kstore.jks";
-        String truststore = "/tmp/vod/tester123__meb10000__tstore.jks";
+        String keystore = "/tmp/vod/testProject__meb10000__kstore.jks";
+        String truststore = "/tmp/vod/testProject__meb10000__tstore.jks";
         
         System.err.println("connecting");
         KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, keystore, truststore);
         HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(kr);
         kc.consume();
-        System.err.println("running");
     }
 }
