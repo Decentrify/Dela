@@ -18,11 +18,12 @@
  */
 package se.sics.dozy.vod.model.hops;
 
-import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSXMLResourceJSON;
+import se.sics.dozy.vod.model.hops.util.HopsResourceJSON;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
+import se.sics.ktoolbox.hdfs.HopsResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 
 /**
@@ -30,17 +31,26 @@ import se.sics.ktoolbox.util.identifiable.Identifier;
  */
 public class HDFSXMLTorrentUploadJSON {
 
-    private HDFSXMLResourceJSON resource;
+    private HDFSXMLResourceJSON hdfsResource;
+    private HopsResourceJSON hopsResource;
     private TorrentIdJSON torrentId;
     
     public HDFSXMLTorrentUploadJSON() {}
 
-    public HDFSXMLResourceJSON getResource() {
-        return resource;
+    public HDFSXMLResourceJSON getHdfsResource() {
+        return hdfsResource;
     }
 
-    public void setResource(HDFSXMLResourceJSON resource) {
-        this.resource = resource;
+    public void setHdfsResource(HDFSXMLResourceJSON hdfsResource) {
+        this.hdfsResource = hdfsResource;
+    }
+
+    public HopsResourceJSON getHopsResource() {
+        return hopsResource;
+    }
+
+    public void setHopsResource(HopsResourceJSON hopsResource) {
+        this.hopsResource = hopsResource;
     }
 
     public TorrentIdJSON getTorrentId() {
@@ -52,8 +62,9 @@ public class HDFSXMLTorrentUploadJSON {
     }
     
     public static HopsTorrentUploadEvent.Request resolveFromJSON(HDFSXMLTorrentUploadJSON req) {
+        HDFSResource hdfsResource = HDFSXMLResourceJSON.fromJSON(req.hdfsResource);
+        HopsResource hopsResource = HopsResourceJSON.fromJSON(req.hopsResource);
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
-        HDFSResource resource = HDFSXMLResourceJSON.fromJSON(req.resource);
-        return new HopsTorrentUploadEvent.Request(resource, torrentId);
+        return new HopsTorrentUploadEvent.Request(hdfsResource, hopsResource, torrentId);
     }
 }

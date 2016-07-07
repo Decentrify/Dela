@@ -18,10 +18,12 @@
  */
 package se.sics.dozy.vod.model.hops;
 
-import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
+import se.sics.dozy.vod.model.hops.util.HopsResourceJSON;
 import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
 import se.sics.ktoolbox.hdfs.HDFSResource;
+import se.sics.ktoolbox.hdfs.HopsResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 
 /**
@@ -29,17 +31,26 @@ import se.sics.ktoolbox.util.identifiable.Identifier;
  */
 public class HDFSTorrentUploadJSON {
 
-    private HDFSResourceJSON resource;
+    private HDFSResourceJSON hdfsResource;
+    private HopsResourceJSON hopsResource;
     private TorrentIdJSON torrentId;
     
     public HDFSTorrentUploadJSON() {}
 
-    public HDFSResourceJSON getResource() {
-        return resource;
+    public HDFSResourceJSON getHdfsResource() {
+        return hdfsResource;
     }
 
-    public void setResource(HDFSResourceJSON resource) {
-        this.resource = resource;
+    public void setHdfsResource(HDFSResourceJSON hdfsResource) {
+        this.hdfsResource = hdfsResource;
+    }
+
+    public HopsResourceJSON getHopsResource() {
+        return hopsResource;
+    }
+
+    public void setHopsResource(HopsResourceJSON hopsResource) {
+        this.hopsResource = hopsResource;
     }
 
     public TorrentIdJSON getTorrentId() {
@@ -52,7 +63,8 @@ public class HDFSTorrentUploadJSON {
     
     public static HopsTorrentUploadEvent.Request resolveFromJSON(HDFSTorrentUploadJSON req) {
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
-        HDFSResource resource = HDFSResourceJSON.fromJSON(req.resource);
-        return new HopsTorrentUploadEvent.Request(resource, torrentId);
+        HDFSResource hdfsResource = HDFSResourceJSON.fromJSON(req.hdfsResource);
+        HopsResource hopsResource = HopsResourceJSON.fromJSON(req.hopsResource);
+        return new HopsTorrentUploadEvent.Request(hdfsResource, hopsResource, torrentId);
     }
 }

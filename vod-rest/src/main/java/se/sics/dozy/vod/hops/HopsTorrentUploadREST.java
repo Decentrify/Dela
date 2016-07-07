@@ -60,16 +60,16 @@ public class HopsTorrentUploadREST implements DozyResource {
     }
 
     protected Response upload(HopsTorrentUploadEvent.Request request) {
-        LOG.trace("received upload torrent request:{}", request.resource.fileName);
+        LOG.trace("received upload torrent request:{}", request.hdfsResource.fileName);
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        LOG.debug("waiting for upload:{}<{}> response", request.resource.fileName, request.eventId);
+        LOG.debug("waiting for upload:{}<{}> response", request.hdfsResource.fileName, request.eventId);
         DozyResult<HopsTorrentUploadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentUpload(result);
-        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.resource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.hdfsResource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
