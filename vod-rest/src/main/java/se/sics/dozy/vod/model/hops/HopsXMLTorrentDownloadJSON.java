@@ -86,7 +86,10 @@ public class HopsXMLTorrentDownloadJSON {
 
     public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsXMLTorrentDownloadJSON req) {
         HDFSResource hdfsResource = HDFSXMLResourceJSON.fromJSON(req.hdfsResource);
-        KafkaResource kafkaResource = KafkaResourceJSON.fromJSON(req.kafkaResource);
+        KafkaResource kafkaResource = null;
+        if(req.kafkaResource != null) {
+            kafkaResource = KafkaResourceJSON.fromJSON(req.kafkaResource);
+        }
         HopsResource hopsResource = HopsResourceJSON.fromJSON(req.hopsResource);
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
         List<KAddress> partners = new ArrayList<>();
