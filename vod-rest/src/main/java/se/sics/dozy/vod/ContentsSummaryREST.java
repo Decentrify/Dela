@@ -18,8 +18,10 @@
  */
 package se.sics.dozy.vod;
 
+import com.google.common.base.Optional;
 import java.util.Map;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -31,14 +33,16 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.ContentsSummaryJSON;
+import se.sics.dozy.vod.model.hops.HopsContentsReqJSON;
+import se.sics.dozy.vod.model.hops.HopsContentsSummaryJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 @Path("/library/contents")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ContentsSummaryREST implements DozyResource {
 
@@ -47,12 +51,12 @@ public class ContentsSummaryREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodLibraryI = null;
+    private DozySyncI hopsTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodLibraryI = interfaces.get(DozyVoD.libraryDozyName);
-        if (vodLibraryI == null) {
+        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+        if (hopsTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
@@ -63,20 +67,24 @@ public class ContentsSummaryREST implements DozyResource {
      * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
      * error
      */
-    @GET
-    public Response getContentsSummary() {
+    @PUT
+    public Response getContentsSummary(HopsContentsReqJSON req) {
         LOG.info("received hops library contents request");
-        if (!vodLibraryI.isReady()) {
+        if (!hopsTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request();
+        Optional<Integer> projectId = Optional.absent();
+        if (req.getProjectId() != null) {
+            projectId = Optional.of(req.getProjectId());
+        }
+        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request(projectId);
         LOG.debug("waiting for hops contents:{} response", request.eventId);
-        DozyResult<ContentsSummaryEvent.Response> result = vodLibraryI.sendReq(request, timeout);
+        DozyResult<ContentsSummaryEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
         LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(ContentsSummaryJSON.resolve(result.getValue().value)).build();
+            return Response.status(Response.Status.OK).entity(HopsContentsSummaryJSON.resolve(result.getValue().value)).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }

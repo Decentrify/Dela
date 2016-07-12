@@ -16,38 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import se.sics.gvod.mngr.util.ElementSummary;
+import se.sics.ktoolbox.hdfs.HopsResource;
 
 /**
+ *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class ContentsSummaryJSON {
-    private List<ElementSummaryJSON> contents = new ArrayList<>();
+public class HopsResourceJSON {
+    private int projectId;
+    
+    public HopsResourceJSON(int projectId) {
+        this.projectId = projectId;
+    }
+    
+    public HopsResourceJSON() {}
 
-    public ContentsSummaryJSON(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
+    public int getProjectId() {
+        return projectId;
     }
 
-    public ContentsSummaryJSON() {
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
-
-    public List<ElementSummaryJSON> getContents() {
-        return contents;
-    }
-
-    public void setContents(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
-    }
-
-    public static ContentsSummaryJSON resolve(List<ElementSummary> contents) {
-        List<ElementSummaryJSON> jsonContents = new ArrayList<>();
-        for (ElementSummary es : contents) {
-            jsonContents.add(ElementSummaryJSON.resolve(es));
-        }
-        return new ContentsSummaryJSON(jsonContents);
+    
+    public static HopsResource fromJSON(HopsResourceJSON json) {
+        return new HopsResource(json.projectId);
     }
 }

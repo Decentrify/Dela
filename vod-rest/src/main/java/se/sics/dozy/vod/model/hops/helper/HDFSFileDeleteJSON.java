@@ -16,51 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops.helper;
 
-import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileDeleteEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSFileCreateJSON {
+public class HDFSFileDeleteJSON {
     private HDFSResourceJSON resource;
-    private String user;
-    private long fileSize;
     
-    public HDFSFileCreateJSON(HDFSResourceJSON resource, String user, long fileSize) {
+    public HDFSFileDeleteJSON(HDFSResourceJSON resource, String user) {
         this.resource = resource;
-        this.user = user;
-        this.fileSize = fileSize;
     }
 
-    public HDFSFileCreateJSON() {}
-    
+    public HDFSFileDeleteJSON() {}
+
     public HDFSResourceJSON getResource() {
         return resource;
     }
 
-    public void setResource(HDFSResourceJSON resource) {
-        this.resource = resource;
+    public void setResource(HDFSResourceJSON hdfs) {
+        this.resource = hdfs;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
-    
-    public static HDFSFileCreateEvent.Request fromJSON(HDFSFileCreateJSON json) {
-        return new HDFSFileCreateEvent.Request(HDFSResourceJSON.resolveFromJSON(json.resource), json.user, json.fileSize);
+    public static HDFSFileDeleteEvent.Request fromJSON(HDFSFileDeleteJSON json) {
+        return new HDFSFileDeleteEvent.Request(HDFSResourceJSON.fromJSON(json.resource));
     }
 }

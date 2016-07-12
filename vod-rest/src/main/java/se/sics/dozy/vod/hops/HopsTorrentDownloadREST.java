@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.hops;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -31,61 +31,72 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.ElementDescJSON;
+import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
-import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.dozy.vod.model.hops.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.hops.HopsXMLTorrentDownloadJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.ktoolbox.util.identifiable.Identifier;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
+import se.sics.ktoolbox.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/library/torrentStatus")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class TorrentExtendedStatusREST implements DozyResource {
+public class HopsTorrentDownloadREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI hopsTorrentI = null;
+    private DozySyncI vodTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
-        if (hopsTorrentI == null) {
+        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+        if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
-    /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.ElementDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.TorrentExtendedStatusJSON type}]
- with OK value or
- Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
-     * error
-     */
-    @PUT
-    public Response getTorrentExtendedStatus(ElementDescJSON fileDesc) {
-        LOG.info("received torrents extended status request");
-        if (!hopsTorrentI.isReady()) {
+    protected Response download(HopsTorrentDownloadEvent.Request request) {
+        LOG.trace("received download torrent request:{}", request.hdfsResource.fileName);
+
+        if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Identifier torrentId = TorrentIdJSON.fromJSON(fileDesc.getTorrentId());
-        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(torrentId);
-        LOG.debug("waiting for torrents extended status:{} response", request.eventId);
-        DozyResult<TorrentExtendedStatusEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveElementStatus(result);
-        LOG.info("torrents extended status:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.debug("waiting for download:{}<{}> response", request.hdfsResource.fileName, request.eventId);
+        DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
+        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.hdfsResource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(TorrentExtendedStatusJSON.resolveToJson(result.getValue().value)).build();
+            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+        }
+    }
+
+    @Path("/torrent/hops/download/basic")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class Basic extends HopsTorrentDownloadREST {
+
+        @PUT
+        public Response downloadBasic(HopsTorrentDownloadJSON req) {
+            return download(HopsTorrentDownloadJSON.resolveFromJSON(req));
+        }
+    }
+
+    @Path("/torrent/hops/download/xml")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class XML extends HopsTorrentDownloadREST {
+
+        @PUT
+        public Response downloadBasic(HopsXMLTorrentDownloadJSON req) {
+            return download(HopsXMLTorrentDownloadJSON.resolveFromJSON(req));
         }
     }
 }

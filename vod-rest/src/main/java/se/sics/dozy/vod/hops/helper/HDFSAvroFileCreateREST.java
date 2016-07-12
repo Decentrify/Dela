@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.hdfs;
+package se.sics.dozy.vod.hops.helper;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -33,32 +33,31 @@ import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HDFSFileDeleteJSON;
-import se.sics.dozy.vod.model.HDFSResourceJSON;
-import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.hops.helper.HDFSAvroFileCreateJSON;
+import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateSuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSAvroFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/hdfs/file/delete")
+@Path("/hdfs/avrofile/create")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HopsFileDeleteREST implements DozyResource {
+public class HDFSAvroFileCreateREST implements DozyResource {
 
     //TODO Alex - make into config?
-    public static long timeout = 5000;
+    public static long timeout = 60000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodTorrentI = null;
+    private DozySyncI hopsHelperI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.libraryDozyName);
-        if (vodTorrentI == null) {
-            throw new RuntimeException("no sync interface found for vod REST API");
+        hopsHelperI = interfaces.get(DozyVoD.hopsHelperDozyName);
+        if (hopsHelperI == null) {
+            throw new RuntimeException("no sync interface found for hopsHelper REST API");
         }
     }
 
@@ -69,20 +68,20 @@ public class HopsFileDeleteREST implements DozyResource {
      * case of error
      */
     @PUT
-    public Response delete(HDFSFileDeleteJSON req) {
-        LOG.trace("received delete file request:{}", req.getResource().getFileName());
+    public Response avroFileCreate(HDFSAvroFileCreateJSON req) {
+        LOG.trace("received create file request:{}", req.getHdfsResource().getFileName());
 
-        if (!vodTorrentI.isReady()) {
+        if (!hopsHelperI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HDFSFileDeleteEvent.Request request = HDFSFileDeleteJSON.fromJSON(req);
-        LOG.debug("waiting for delete:{}<{}> response", req.getResource().getFileName(), request.eventId);
-        DozyResult<HDFSFileDeleteEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileDelete(result);
-        LOG.info("delete:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+        HDFSAvroFileCreateEvent.Request request = HDFSAvroFileCreateJSON.fromJSON(req);
+        LOG.debug("waiting for create:{}<{}> response", req.getHdfsResource().getFileName(), request.eventId);
+        DozyResult<HDFSAvroFileCreateEvent.Response> result = hopsHelperI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsAvroFileCreate(result);
+        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getHdfsResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
+            return Response.status(Response.Status.OK).entity(new HDFSFileCreateSuccessJSON(result.getValue().filesize)).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }

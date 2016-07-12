@@ -20,21 +20,22 @@ package se.sics.dozy.vod.util;
 
 import org.javatuples.Pair;
 import se.sics.dozy.DozyResult;
-import se.sics.gvod.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.gvod.mngr.event.ContentsSummaryEvent;
-import se.sics.gvod.mngr.event.library.HDFSFileDeleteEvent;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
-import se.sics.gvod.mngr.event.HopsTorrentStopEvent;
-import se.sics.gvod.mngr.event.HopsTorrentUploadEvent;
-import se.sics.gvod.mngr.event.LibraryAddEvent;
-import se.sics.gvod.mngr.event.LibraryContentsEvent;
-import se.sics.gvod.mngr.event.LibraryElementGetEvent;
-import se.sics.gvod.mngr.event.TorrentDownloadEvent;
-import se.sics.gvod.mngr.event.TorrentStopEvent;
-import se.sics.gvod.mngr.event.TorrentUploadEvent;
-import se.sics.gvod.mngr.event.library.HDFSFileCreateEvent;
-import se.sics.gvod.mngr.event.system.HopsConnectionEvent;
-import se.sics.gvod.mngr.event.system.SystemAddressEvent;
+import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileDeleteEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentStopEvent;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentUploadEvent;
+import se.sics.gvod.stream.mngr.event.LibraryAddEvent;
+import se.sics.gvod.stream.mngr.event.LibraryContentsEvent;
+import se.sics.gvod.stream.mngr.event.LibraryElementGetEvent;
+import se.sics.gvod.stream.mngr.event.TorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.event.TorrentStopEvent;
+import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSConnectionEvent;
+import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSAvroFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -89,11 +90,15 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsAvroFileCreate(DozyResult<HDFSAvroFileCreateEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
+    
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveVoDEndpoint(DozyResult<SystemAddressEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
     
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsConnection(DozyResult<HopsConnectionEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsConnection(DozyResult<HDFSConnectionEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 

@@ -33,7 +33,7 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.system.SystemAddressEvent;
+import se.sics.gvod.stream.mngr.event.system.SystemAddressEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

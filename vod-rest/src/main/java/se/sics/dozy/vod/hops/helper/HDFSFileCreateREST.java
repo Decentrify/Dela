@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.hops.helper;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -31,32 +31,33 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.HopsTorrentDownloadJSON;
+import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
+import se.sics.gvod.stream.mngr.hops.helper.event.HDFSFileCreateEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/torrent/hops/download")
+@Path("/hdfs/file/create")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HopsTorrentDownloadREST implements DozyResource {
+public class HDFSFileCreateREST implements DozyResource {
 
     //TODO Alex - make into config?
-    public static long timeout = 5000;
+    public static long timeout = 60000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI vodTorrentI = null;
+    private DozySyncI hopsHelperI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
-        if (vodTorrentI == null) {
-            throw new RuntimeException("no sync interface found for vod REST API");
+        hopsHelperI = interfaces.get(DozyVoD.hopsHelperDozyName);
+        if (hopsHelperI == null) {
+            throw new RuntimeException("no sync interface found for hopsHelper REST API");
         }
     }
 
@@ -67,18 +68,18 @@ public class HopsTorrentDownloadREST implements DozyResource {
      * case of error
      */
     @PUT
-    public Response download(HopsTorrentDownloadJSON req) {
-        LOG.trace("received download torrent request:{}", req.getResource().getFileName());
+    public Response fileCreate(HDFSFileCreateJSON req) {
+        LOG.trace("received create file request:{}", req.getResource().getFileName());
 
-        if (!vodTorrentI.isReady()) {
+        if (!hopsHelperI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HopsTorrentDownloadEvent.Request request = HopsTorrentDownloadJSON.resolveFromJSON(req);
-        LOG.debug("waiting for download:{}<{}> response", request.resource.fileName, request.eventId);
-        DozyResult<HopsTorrentDownloadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload(result);
-        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.resource.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        HDFSFileCreateEvent.Request request = HDFSFileCreateJSON.fromJSON(req);
+        LOG.debug("waiting for create:{}<{}> response", req.getResource().getFileName(), request.eventId);
+        DozyResult<HDFSFileCreateEvent.Response> result = hopsHelperI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileCreate(result);
+        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {

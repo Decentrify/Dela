@@ -16,13 +16,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.model.hops;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DozyVoD {
-    public static final String systemDozyName = "vod-system";
-    public static final String hopsHelperDozyName = "vod-hopsHelper";
-    public static final String hopsTorrentDozyName = "vod-hopsTorrent";
+public class HopsContentsReqJSON {
+    private Integer projectId;
+    
+    public HopsContentsReqJSON() {}
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
 }

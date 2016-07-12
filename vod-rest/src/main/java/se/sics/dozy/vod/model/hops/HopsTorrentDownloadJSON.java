@@ -16,45 +16,58 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model;
+package se.sics.dozy.vod.model.hops;
 
-import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.List;
-import se.sics.gvod.mngr.event.HopsTorrentDownloadEvent;
-import se.sics.ktoolbox.hops.managedStore.storage.util.HDFSResource;
+import se.sics.dozy.vod.model.AddressJSON;
+import se.sics.dozy.vod.model.TorrentIdJSON;
+import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
+import se.sics.dozy.vod.model.hops.util.HopsResourceJSON;
+import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
+import se.sics.gvod.stream.mngr.hops.torrent.event.HopsTorrentDownloadEvent;
+import se.sics.ktoolbox.hdfs.HDFSResource;
+import se.sics.ktoolbox.hdfs.HopsResource;
+import se.sics.ktoolbox.kafka.KafkaResource;
 import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 import se.sics.ktoolbox.util.network.KAddress;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsTorrentDownloadJSON {
-    private HDFSResourceJSON resource;
-    private String user;
+    private HDFSResourceJSON hdfsResource;
+    private KafkaResourceJSON kafkaResource;
+    private HopsResourceJSON hopsResource;
     private TorrentIdJSON torrentId;
     private List<AddressJSON> partners;
     
     public HopsTorrentDownloadJSON() {}
 
-    public HDFSResourceJSON getResource() {
-        return resource;
+    public HDFSResourceJSON getHdfsResource() {
+        return hdfsResource;
     }
 
-    public void setResource(HDFSResourceJSON resource) {
-        this.resource = resource;
+    public void setHdfsResource(HDFSResourceJSON hdfsResource) {
+        this.hdfsResource = hdfsResource;
     }
 
-    public String getUser() {
-        return user;
+    public KafkaResourceJSON getKafkaResource() {
+        return kafkaResource;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setKafkaResource(KafkaResourceJSON kafkaResource) {
+        this.kafkaResource = kafkaResource;
     }
 
+    public HopsResourceJSON getHopsResource() {
+        return hopsResource;
+    }
+
+    public void setHopsResource(HopsResourceJSON hopsResource) {
+        this.hopsResource = hopsResource;
+    }
+    
     public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
@@ -72,12 +85,17 @@ public class HopsTorrentDownloadJSON {
     }
 
     public static HopsTorrentDownloadEvent.Request resolveFromJSON(HopsTorrentDownloadJSON req) {
+        HDFSResource hdfsResource = HDFSResourceJSON.fromJSON(req.hdfsResource);
+        KafkaResource kafkaResource = null;
+        if(req.kafkaResource != null) {
+            kafkaResource = KafkaResourceJSON.fromJSON(req.kafkaResource);
+        }
+        HopsResource hopsResource = HopsResourceJSON.fromJSON(req.hopsResource);
         Identifier torrentId = TorrentIdJSON.fromJSON(req.torrentId);
         List<KAddress> partners = new ArrayList<>();
         for(AddressJSON partner : req.partners) {
             partners.add(AddressJSON.resolveFromJSON(partner));
         }
-        HDFSResource resource = HDFSResourceJSON.resolveFromJSON(req.resource);
-        return new HopsTorrentDownloadEvent.Request(resource, req.user, torrentId, partners);
+        return new HopsTorrentDownloadEvent.Request(hdfsResource, kafkaResource, hopsResource, torrentId, partners);
     }
 }

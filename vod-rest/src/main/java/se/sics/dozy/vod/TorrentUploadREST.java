@@ -37,7 +37,7 @@ import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.mngr.event.TorrentUploadEvent;
+import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
 import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
@@ -57,7 +57,7 @@ public class TorrentUploadREST implements DozyResource {
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        vodTorrentI = interfaces.get(DozyVoD.torrentDozyName);
+        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }

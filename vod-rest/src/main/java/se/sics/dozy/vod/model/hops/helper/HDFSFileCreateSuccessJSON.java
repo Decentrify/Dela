@@ -16,13 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.model.hops.helper;
 
 /**
+ *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DozyVoD {
-    public static final String systemDozyName = "vod-system";
-    public static final String hopsHelperDozyName = "vod-hopsHelper";
-    public static final String hopsTorrentDozyName = "vod-hopsTorrent";
+public class HDFSFileCreateSuccessJSON {
+    private long filesize;
+    
+    public HDFSFileCreateSuccessJSON(long filesize) {
+        this.filesize = filesize;
+    }
+    
+    public HDFSFileCreateSuccessJSON() {}
+
+    public long getFilesize() {
+        return filesize;
+    }
+
+    public void setFilesize(long filesize) {
+        this.filesize = filesize;
+    }    
 }
