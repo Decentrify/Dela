@@ -35,8 +35,8 @@ public class KafkaConsumer {
         String sessionId = args[1];
         String topicName = "testTopic";
         String brokerEndpoint = "10.0.2.15:9091";
-        String restEndpoint = "http://bbc1.sics.se:14008";
-        String domain = "bbc1.sics.se";
+        String restEndpoint = "http://193.10.67.182:14008";
+        String domain = "193.10.67.182";
         
         String keystore = "/tmp/vod/testProject__meb10000__kstore.jks";
         String truststore = "/tmp/vod/testProject__meb10000__tstore.jks";
