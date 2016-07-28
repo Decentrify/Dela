@@ -20,7 +20,7 @@ package se.sics.dozy.vod.hops.torrent;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -91,9 +91,13 @@ public class HTStartDownloadREST implements DozyResource {
     @Path("/torrent/hops/download/basic")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes - HTStartDownloadJSON.Basic
+     * produces - SuccessJSON
+     */
     public static class Basic extends HTStartDownloadREST {
 
-        @PUT
+        @POST
         public Response downloadBasic(HTStartDownloadJSON.Basic req) {
             return download(req.resolve());
         }
@@ -102,9 +106,13 @@ public class HTStartDownloadREST implements DozyResource {
     @Path("/torrent/hops/download/xml")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes - HTStartDownloadJSON.XML
+     * produces - SuccessJSON
+     */
     public static class XML extends HTStartDownloadREST {
 
-        @PUT
+        @POST
         public Response downloadBasic(HTStartDownloadJSON.XML req) {
             return download(req.resolve());
         }

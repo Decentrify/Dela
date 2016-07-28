@@ -20,7 +20,7 @@ package se.sics.dozy.vod.hops.torrent;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -79,9 +79,13 @@ public class HTUploadREST implements DozyResource {
     @Path("/torrent/hops/upload/basic")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes HTUploadJSON.Basic
+     * produces SuccessJSON
+     */
     public static class Basic extends HTUploadREST {
 
-        @PUT
+        @POST
         public Response uploadBasic(HTUploadJSON.Basic req) {
             return upload(req.resolve());
         }
@@ -90,9 +94,13 @@ public class HTUploadREST implements DozyResource {
     @Path("/torrent/hops/upload/xml")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes HTUploadJSON.XML
+     * produces SuccessJSON
+     */
     public static class XML extends HTUploadREST {
 
-        @PUT
+        @POST
         public Response uploadXML(HTUploadJSON.XML req) {
             return upload(req.resolve());
         }

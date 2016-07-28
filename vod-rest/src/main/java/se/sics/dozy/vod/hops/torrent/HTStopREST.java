@@ -20,7 +20,7 @@ package se.sics.dozy.vod.hops.torrent;
 
 import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -44,6 +44,10 @@ import se.sics.nstream.hops.library.event.core.HopsTorrentStopEvent;
 @Path("/torrent/hops/stop")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+/**
+ * consumes - ElementDescJSON
+ * produces - SuccessJSON
+ */
 public class HTStopREST implements DozyResource {
 
     //TODO Alex - make into config?
@@ -61,13 +65,7 @@ public class HTStopREST implements DozyResource {
         }
     }
 
-    /**
-     * @param req {@link se.sics.dozy.vod.model.FileDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
-     * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
-     * case of error
-     */
-    @PUT
+    @POST
     public Response stop(ElementDescJSON req) {
         LOG.trace("received stop torrent request:{}", req.getFileName());
 
