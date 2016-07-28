@@ -20,11 +20,10 @@ package se.sics.dozy.vod.system.config.printer;
 
 import java.util.HashMap;
 import java.util.Map;
-import se.sics.gvod.stream.torrent.TorrentComp;
-import se.sics.ktoolbox.croupier.CroupierComp;
 import se.sics.ktoolbox.util.profiling.KProfiler;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistry;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
+import se.sics.nstream.torrent.TorrentComp;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

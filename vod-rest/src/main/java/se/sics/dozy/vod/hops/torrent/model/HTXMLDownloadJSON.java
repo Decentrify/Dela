@@ -16,41 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod.model.hops.util;
-
-import se.sics.nstream.hops.hdfs.HDFSResource;
+package se.sics.dozy.vod.hops.torrent.model;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HDFSResourceJSON {
-    private String dirPath;
-    private String fileName;
+public class HTXMLDownloadJSON {
     
-    public HDFSResourceJSON(String dirPath, String fileName) {
-        this.dirPath = dirPath;
-        this.fileName = fileName;
-    }
-    
-    public HDFSResourceJSON() {}
-
-    public String getDirPath() {
-        return dirPath;
-    }
-
-    public void setDirPath(String dirPath) {
-        this.dirPath = dirPath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public HDFSResource resolve() {
-        return new HDFSResource(dirPath, fileName);
-    }
 }

@@ -16,7 +16,7 @@
 // * along with this program; if not, write to the Free Software
 // * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // */
-//package se.sics.dozy.vod.hops.helper;
+//package se.sics.dozy.vod.hops.torrent;
 //
 //import java.util.Map;
 //import javax.ws.rs.Consumes;
@@ -32,71 +32,81 @@
 //import se.sics.dozy.DozyResult;
 //import se.sics.dozy.DozySyncI;
 //import se.sics.dozy.vod.DozyVoD;
+//import se.sics.dozy.vod.hops.torrent.model.HTStartDownloadJSON;
 //import se.sics.dozy.vod.model.ErrorDescJSON;
-//import se.sics.dozy.vod.model.hops.helper.HDFSConnectionJSON;
 //import se.sics.dozy.vod.model.SuccessJSON;
-//import se.sics.dozy.vod.model.hops.helper.HDFSXMLConnectionJSON;
 //import se.sics.dozy.vod.util.ResponseStatusMapper;
-//import se.sics.nstream.hops.library.event.helper.HDFSConnectionEvent;
+//import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 //
 ///**
 // * @author Alex Ormenisan <aaor@kth.se>
 // */
-//public class HDFSConnectionREST implements DozyResource {
+//public class HTAdvanceDownloadREST implements DozyResource {
 //
 //    //TODO Alex - make into config?
 //    public static long timeout = 5000;
 //
 //    private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 //
-//    private DozySyncI hopsHelperI = null;
+//    private DozySyncI vodTorrentI = null;
 //
 //    @Override
 //    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-//        hopsHelperI = interfaces.get(DozyVoD.hopsHelperDozyName);
-//        if (hopsHelperI == null) {
-//            throw new RuntimeException("no sync interface found for hopsHelper REST API");
+//        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+//        if (vodTorrentI == null) {
+//            throw new RuntimeException("no sync interface found for vod REST API");
 //        }
 //    }
 //
-//    protected Response connection(HDFSConnectionEvent.Request request) {
-//        LOG.trace("received hdfs connection check request");
+//    protected Response download(HopsTorrentDownloadEvent.StartRequest request) {
+//        LOG.trace("received download torrent request:{}", request.torrentId);
 //
-//        if (!hopsHelperI.isReady()) {
+//        if (!vodTorrentI.isReady()) {
 //            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
 //        }
 //
-//        LOG.debug("waiting for hdfs connection check response:{}", request.eventId);
-//        DozyResult<HDFSConnectionEvent.Response> result = hopsHelperI.sendReq(request, timeout);
-//        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsConnection(result);
-//        LOG.info("hdfs connection check:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
+//        LOG.debug("waiting for download:{}<{}> response", request.torrentId, request.eventId);
+//        DozyResult result = vodTorrentI.sendReq(request, timeout);
+//        Pair<Response.Status, String> wsStatus;
+//        Object entityResult;
+//        if (result.getValue() instanceof HopsTorrentDownloadEvent.Starting) {
+//            DozyResult<HopsTorrentDownloadEvent.Starting> r = (DozyResult<HopsTorrentDownloadEvent.Starting>) result;
+//            wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload1(r);
+//            entityResult = new SuccessJSON();
+//        } else if (result.getValue() instanceof HopsTorrentDownloadEvent.AlreadyExists) {
+//            DozyResult<HopsTorrentDownloadEvent.AlreadyExists> r = (DozyResult<HopsTorrentDownloadEvent.AlreadyExists>) result;
+//            wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload2(r);
+//            throw new RuntimeException("slow down!?");
+//        } else {
+//            throw new RuntimeException("what!?");
+//        }
+//        LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
 //        if (wsStatus.getValue0().equals(Response.Status.OK)) {
-//            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
+//            return Response.status(Response.Status.OK).entity(entityResult).build();
 //        } else {
 //            return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
 //        }
 //    }
 //
-//    @Path("/hdfs/connection/xml")
+//    @Path("/torrent/hops/download/basic")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
-//    public static class Basic extends HDFSConnectionREST {
+//    public static class Basic extends HTAdvanceDownloadREST {
 //
 //        @PUT
-//        public Response connectionBasic(HDFSXMLConnectionJSON req) {
-//            return connection(new HDFSConnectionEvent.Request(HDFSXMLConnectionJSON.resolveFromJSON(req)));
+//        public Response downloadBasic(HTStartDownloadJSON.Basic req) {
+//            return download(req.resolve());
 //        }
 //    }
 //
-//    @Path("/hdfs/connection/basic")
+//    @Path("/torrent/hops/download/xml")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
-//    public static class XML extends HDFSConnectionREST {
+//    public static class XML extends HTAdvanceDownloadREST {
 //
 //        @PUT
-//        public Response connectionBasic(HDFSConnectionJSON req) {
-//            return connection(new HDFSConnectionEvent.Request(HDFSConnectionJSON.resolveFromJSON(req)));
+//        public Response downloadBasic(HTStartDownloadJSON.XML req) {
+//            return download(req.resolve());
 //        }
-//
 //    }
 //}

@@ -33,10 +33,10 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.HopsContentsReqJSON;
-import se.sics.dozy.vod.model.hops.HopsContentsSummaryJSON;
+import se.sics.dozy.vod.hops.torrent.model.HopsContentsReqJSON;
+import se.sics.dozy.vod.hops.torrent.model.HopsContentsSummaryJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
+import se.sics.nstream.library.event.torrent.ContentsSummaryEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -84,7 +84,7 @@ public class ContentsSummaryREST implements DozyResource {
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
         LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(HopsContentsSummaryJSON.resolve(result.getValue().value)).build();
+            return Response.status(Response.Status.OK).entity(HopsContentsSummaryJSON.resolve(result.getValue().result.getValue())).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }

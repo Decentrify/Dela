@@ -16,11 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.system;
 
 import java.util.Map;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -31,59 +30,48 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.ElementDescJSON;
+import se.sics.dozy.vod.DozyVoD;
+import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
-import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.TorrentExtendedStatusEvent;
-import se.sics.ktoolbox.util.identifiable.Identifier;
+import se.sics.nstream.library.event.system.SystemAddressEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/library/torrentStatus")
-@Consumes(MediaType.APPLICATION_JSON)
+@Path("/vod/endpoint")
 @Produces(MediaType.APPLICATION_JSON)
-public class TorrentExtendedStatusREST implements DozyResource {
+public class VoDEndpointREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI hopsTorrentI = null;
+    private DozySyncI vodSystemI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
-        if (hopsTorrentI == null) {
+        vodSystemI = interfaces.get(DozyVoD.systemDozyName);
+        if (vodSystemI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
-    /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.ElementDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.TorrentExtendedStatusJSON type}]
- with OK value or
- Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
-     * error
-     */
-    @PUT
-    public Response getTorrentExtendedStatus(ElementDescJSON fileDesc) {
-        LOG.info("received torrents extended status request");
-        if (!hopsTorrentI.isReady()) {
+    @GET
+    public Response vodEndpoint() {
+        LOG.info("received vod endpoint request");
+        if (!vodSystemI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Identifier torrentId = TorrentIdJSON.fromJSON(fileDesc.getTorrentId());
-        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(torrentId);
-        LOG.debug("waiting for torrents extended status:{} response", request.eventId);
-        DozyResult<TorrentExtendedStatusEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveElementStatus(result);
-        LOG.info("torrents extended status:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
+        SystemAddressEvent.Request request = new SystemAddressEvent.Request();
+        LOG.debug("waiting for vod endpoint response:{}", request.eventId);
+        DozyResult<SystemAddressEvent.Response> result = vodSystemI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveVoDEndpoint(result);
+        LOG.info("vod endpoint:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(TorrentExtendedStatusJSON.resolveToJson(result.getValue().value)).build();
+            return Response.status(Response.Status.OK).entity(AddressJSON.resolveToJSON(result.getValue().systemAdr.getValue())).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
         }

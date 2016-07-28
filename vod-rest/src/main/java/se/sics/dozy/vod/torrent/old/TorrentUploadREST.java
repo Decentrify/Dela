@@ -16,8 +16,9 @@
 // * along with this program; if not, write to the Free Software
 // * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // */
-//package se.sics.dozy.vod.hops.helper;
+//package se.sics.dozy.vod.torrent.old;
 //
+//import com.google.common.primitives.Ints;
 //import java.util.Map;
 //import javax.ws.rs.Consumes;
 //import javax.ws.rs.PUT;
@@ -33,53 +34,55 @@
 //import se.sics.dozy.DozySyncI;
 //import se.sics.dozy.vod.DozyVoD;
 //import se.sics.dozy.vod.model.ErrorDescJSON;
-//import se.sics.dozy.vod.model.hops.helper.HDFSFileCreateJSON;
+//import se.sics.dozy.vod.model.ElementDescJSON;
 //import se.sics.dozy.vod.model.SuccessJSON;
+//import se.sics.dozy.vod.model.TorrentIdJSON;
 //import se.sics.dozy.vod.util.ResponseStatusMapper;
-//import se.sics.nstream.hops.library.event.helper.HDFSFileCreateEvent;
+//import se.sics.gvod.stream.mngr.event.TorrentUploadEvent;
+//import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 //
 ///**
 // * @author Alex Ormenisan <aaor@kth.se>
 // */
-//@Path("/hdfs/file/create")
+//@Path("/torrent/upload")
 //@Produces(MediaType.APPLICATION_JSON)
 //@Consumes(MediaType.APPLICATION_JSON)
-//public class HDFSFileCreateREST implements DozyResource {
+//public class TorrentUploadREST implements DozyResource {
 //
 //    //TODO Alex - make into config?
-//    public static long timeout = 60000;
+//    public static long timeout = 5000;
 //
 //    private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 //
-//    private DozySyncI hopsHelperI = null;
+//    private DozySyncI vodTorrentI = null;
 //
 //    @Override
 //    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-//        hopsHelperI = interfaces.get(DozyVoD.hopsHelperDozyName);
-//        if (hopsHelperI == null) {
-//            throw new RuntimeException("no sync interface found for hopsHelper REST API");
+//        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+//        if (vodTorrentI == null) {
+//            throw new RuntimeException("no sync interface found for vod REST API");
 //        }
 //    }
 //
 //    /**
-//     * @param req {@link se.sics.dozy.vod.model.FileDescJSON type}
+//     * @param fileDesc {@link se.sics.dozy.vod.model.ElementDescJSON type}
 //     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
 //     * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
 //     * case of error
 //     */
 //    @PUT
-//    public Response fileCreate(HDFSFileCreateJSON req) {
-//        LOG.trace("received create file request:{}", req.getResource().getFileName());
+//    public Response upload(ElementDescJSON fileDesc) {
+//        LOG.info("received upload torrent request:{}", fileDesc.getFileName());
 //
-//        if (!hopsHelperI.isReady()) {
+//        if (!vodTorrentI.isReady()) {
 //            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
 //        }
 //
-//        HDFSFileCreateEvent.Request request = HDFSFileCreateJSON.fromJSON(req);
-//        LOG.debug("waiting for create:{}<{}> response", req.getResource().getFileName(), request.eventId);
-//        DozyResult<HDFSFileCreateEvent.Response> result = hopsHelperI.sendReq(request, timeout);
-//        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsFileCreate(result);
-//        LOG.info("create:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getResource().getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+//        TorrentUploadEvent.Request request = new TorrentUploadEvent.Request(fileDesc.getFileName(), TorrentIdJSON.fromJSON(fileDesc.getTorrentId()));
+//        LOG.debug("waiting for upload:{}<{}> response", request.fileName, request.eventId);
+//        DozyResult<TorrentUploadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+//        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveTorrentUpload(result);
+//        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
 //        if (wsStatus.getValue0().equals(Response.Status.OK)) {
 //            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
 //        } else {

@@ -16,9 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.hops.torrent;
 
-import com.google.common.primitives.Ints;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -32,21 +31,17 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.vod.DozyVoD;
+import se.sics.dozy.vod.hops.torrent.model.HTUploadJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
-import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.event.TorrentStopEvent;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
+import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/torrent/stop")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public class TorrentStopREST implements DozyResource {
+public class HTUploadREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -63,29 +58,43 @@ public class TorrentStopREST implements DozyResource {
         }
     }
 
-    /**
-     * @param fileDesc {@link se.sics.dozy.vod.model.ElementDescJSON type}
-     * @return Response[{@link se.sics.dozy.vod.model.SuccessJSON type}] with OK
-     * status or Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in
-     * case of error
-     */
-    @PUT
-    public Response stop(ElementDescJSON fileDesc) {
-        LOG.info("received stop torrent request:{}", fileDesc.getFileName());
+    protected Response upload(HopsTorrentUploadEvent.Request request) {
+        LOG.trace("received upload torrent request:{}", request.torrentId);
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentStopEvent.Request request = new TorrentStopEvent.Request(fileDesc.getFileName(), TorrentIdJSON.fromJSON(fileDesc.getTorrentId()));
-        LOG.debug("waiting for stop:{}<{}> response", request.fileName, request.eventId);
-        DozyResult<TorrentStopEvent.Response> result = vodTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveTorrentStop(result);
-        LOG.info("stop:{}<{}> status:{} details:{}", new Object[]{request.eventId, request.fileName, wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.debug("waiting for upload:{}<{}> response", request.torrentId, request.eventId);
+        DozyResult<HopsTorrentUploadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentUpload(result);
+        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+        }
+    }
+
+    @Path("/torrent/hops/upload/basic")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class Basic extends HTUploadREST {
+
+        @PUT
+        public Response uploadBasic(HTUploadJSON.Basic req) {
+            return upload(req.resolve());
+        }
+    }
+
+    @Path("/torrent/hops/upload/xml")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class XML extends HTUploadREST {
+
+        @PUT
+        public Response uploadXML(HTUploadJSON.XML req) {
+            return upload(req.resolve());
         }
     }
 }

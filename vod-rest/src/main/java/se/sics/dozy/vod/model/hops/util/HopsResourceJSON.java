@@ -18,10 +18,9 @@
  */
 package se.sics.dozy.vod.model.hops.util;
 
-import se.sics.ktoolbox.hdfs.HopsResource;
+import se.sics.nstream.hops.hdfs.HopsResource;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsResourceJSON {
@@ -41,7 +40,7 @@ public class HopsResourceJSON {
         this.projectId = projectId;
     }
     
-    public static HopsResource fromJSON(HopsResourceJSON json) {
-        return new HopsResource(json.projectId);
+    public HopsResource resolve() {
+        return new HopsResource(projectId);
     }
 }
