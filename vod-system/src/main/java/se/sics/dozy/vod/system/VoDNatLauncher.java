@@ -89,7 +89,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     //****************************INTERNAL_STATE********************************
     private Component timerComp;
     private Component networkMngrComp;
-    private Component vodMngrComp;
+    private Component libraryMngrComp;
     private Component systemSyncIComp;
     private Component hopsHelperSyncIComp;
     private Component hopsTorrentSyncIComp;
@@ -147,13 +147,13 @@ public class VoDNatLauncher extends ComponentDefinition {
                     LOG.info("{}network mngr ready", logPrefix);
                     selfAdr = content.systemAdr;
 
-                    setVoDMngr();
+                    setLibraryMngr();
                     setSystemSyncI();
                     setHopsHelperSyncI();
                     setTorrentSyncI();
                     setWebserver();
 
-                    trigger(Start.event, vodMngrComp.control());
+                    trigger(Start.event, libraryMngrComp.control());
                     trigger(Start.event, systemSyncIComp.control());
                     trigger(Start.event, hopsHelperSyncIComp.control());
                     trigger(Start.event, hopsTorrentSyncIComp.control());
@@ -163,10 +163,10 @@ public class VoDNatLauncher extends ComponentDefinition {
                 }
             };
 
-    private void setVoDMngr() {
+    private void setLibraryMngr() {
         CoreExtPorts extPorts = new CoreExtPorts(timerComp.getPositive(Timer.class), networkMngrComp.getPositive(Network.class));
         TorrentProvider torrentProvider = new HopsTorrentProvider();
-        vodMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(extPorts, selfAdr, torrentProvider));
+        libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(extPorts, selfAdr, torrentProvider));
     }
     
     private void setSystemSyncI() {
@@ -175,7 +175,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         systemSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(SystemPort.class, resp));
 
         connect(systemSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-        connect(systemSyncIComp.getNegative(SystemPort.class), vodMngrComp.getPositive(SystemPort.class), Channel.TWO_WAY);
+        connect(systemSyncIComp.getNegative(SystemPort.class), libraryMngrComp.getPositive(SystemPort.class), Channel.TWO_WAY);
     }
     
     private void setHopsHelperSyncI() {
@@ -187,7 +187,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         hopsHelperSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsHelperPort.class, resp));
         
         connect(hopsHelperSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-        connect(hopsHelperSyncIComp.getNegative(HopsHelperPort.class), vodMngrComp.getPositive(HopsHelperPort.class), Channel.TWO_WAY);
+        connect(hopsHelperSyncIComp.getNegative(HopsHelperPort.class), libraryMngrComp.getPositive(HopsHelperPort.class), Channel.TWO_WAY);
     }
     
     private void setTorrentSyncI() {
@@ -202,7 +202,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         hopsTorrentSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsTorrentPort.class, resp));
 
         connect(hopsTorrentSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-        connect(hopsTorrentSyncIComp.getNegative(HopsTorrentPort.class), vodMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
+        connect(hopsTorrentSyncIComp.getNegative(HopsTorrentPort.class), libraryMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
     }
 
     private void setWebserver() {

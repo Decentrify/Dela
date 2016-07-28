@@ -29,33 +29,33 @@ public interface HDFSEndpointJSON {
     
     public static class Basic implements HDFSEndpointJSON {
 
-        private String hopsIp;
-        private int hopsPort;
+        private String ip;
+        private int port;
         private String user;
 
         public Basic() {
         }
 
         public Basic(String hopsIp, int hopsPort, String user) {
-            this.hopsIp = hopsIp;
-            this.hopsPort = hopsPort;
+            this.ip = hopsIp;
+            this.port = hopsPort;
             this.user = user;
         }
 
-        public String getHopsIp() {
-            return hopsIp;
+        public String getIp() {
+            return ip;
         }
 
-        public void setHopsIp(String hopsIp) {
-            this.hopsIp = hopsIp;
+        public void setIp(String ip) {
+            this.ip = ip;
         }
 
-        public int getHopsPort() {
-            return hopsPort;
+        public int getPort() {
+            return port;
         }
 
-        public void setHopsPort(int hopsPort) {
-            this.hopsPort = hopsPort;
+        public void setPort(int port) {
+            this.port = port;
         }
 
         public String getUser() {
@@ -66,29 +66,31 @@ public interface HDFSEndpointJSON {
             this.user = user;
         }
 
+        
+        
         @Override
         public HDFSEndpoint resolve() {
-            return new HDFSEndpoint(hopsIp, hopsPort, user);
+            return new HDFSEndpoint(ip, port, user);
         }
     }
 
     public static class XML implements HDFSEndpointJSON {
-        private String hdfsXMLPath;
+        private String xmlPath;
         private String user;
 
         public XML() {}
         
-        public XML(String hdfsXMLPath, String user) {
-            this.hdfsXMLPath = hdfsXMLPath;
+        public XML(String xmlPath, String user) {
+            this.xmlPath = xmlPath;
             this.user = user;
         }
 
-        public String getHdfsXMLPath() {
-            return hdfsXMLPath;
+        public String getXmlPath() {
+            return xmlPath;
         }
 
-        public void setHdfsXMLPath(String hdfsXMLPath) {
-            this.hdfsXMLPath = hdfsXMLPath;
+        public void setXmlPath(String xmlPath) {
+            this.xmlPath = xmlPath;
         }
 
         public String getUser() {
@@ -101,7 +103,7 @@ public interface HDFSEndpointJSON {
 
         @Override
         public HDFSEndpoint resolve() {
-            return new HDFSEndpoint(hdfsXMLPath, user);
+            return new HDFSEndpoint(xmlPath, user);
         }
     }
 }

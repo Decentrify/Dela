@@ -18,17 +18,13 @@
  */
 package se.sics.dozy.vod.hops.torrent.model;
 
-import java.util.Map;
-import org.javatuples.Pair;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.nstream.hops.hdfs.HDFSEndpoint;
 import se.sics.nstream.hops.hdfs.HDFSResource;
-import se.sics.nstream.hops.kafka.KafkaEndpoint;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
-import se.sics.nstream.util.FileExtendedDetails;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -39,8 +35,6 @@ public class HTUploadJSON {
 
         private TorrentIdJSON torrentId;
         private HDFSResourceJSON manifestHDFSResource;
-        private KafkaEndpoint kafkaEndpoint;
-        private ExtendedDetailsJSON extendedDetails;
 
         public TorrentIdJSON getTorrentId() {
             return torrentId;
@@ -58,27 +52,10 @@ public class HTUploadJSON {
             this.manifestHDFSResource = manifestHDFSResource;
         }
 
-        public KafkaEndpoint getKafkaEndpoint() {
-            return kafkaEndpoint;
-        }
-
-        public void setKafkaEndpoint(KafkaEndpoint kafkaEndpoint) {
-            this.kafkaEndpoint = kafkaEndpoint;
-        }
-
-        public ExtendedDetailsJSON getExtendedDetails() {
-            return extendedDetails;
-        }
-
-        public void setExtendedDetails(ExtendedDetailsJSON extendedDetails) {
-            this.extendedDetails = extendedDetails;
-        }
-        
         protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint) {
             Identifier tId = torrentId.resolve();
-            Pair<HDFSEndpoint, HDFSResource> m = Pair.with(hdfsEndpoint, manifestHDFSResource.resolve());
-            Map<String, FileExtendedDetails> ed = extendedDetails.resolve(hdfsEndpoint, kafkaEndpoint);
-            return new HopsTorrentUploadEvent.Request(tId, m, ed);
+            HDFSResource mr = manifestHDFSResource.resolve();
+            return new HopsTorrentUploadEvent.Request(tId, hdfsEndpoint, mr);
         }
     }
 
