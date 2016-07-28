@@ -19,70 +19,57 @@
 package se.sics.dozy.vod.hops.torrent.model;
 
 import java.util.Map;
-import org.javatuples.Pair;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
-import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
+import se.sics.dozy.vod.model.hops.util.KafkaEndpointJSON;
 import se.sics.ktoolbox.util.identifiable.Identifier;
+import se.sics.ktoolbox.util.result.Result;
 import se.sics.nstream.hops.hdfs.HDFSEndpoint;
-import se.sics.nstream.hops.hdfs.HDFSResource;
 import se.sics.nstream.hops.kafka.KafkaEndpoint;
-import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
+import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 import se.sics.nstream.util.FileExtendedDetails;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class HTUploadJSON {
+public abstract class HTAdvanceDownloadJSON {
 
-    public static class Base {
+    private TorrentIdJSON torrentId;
+    private KafkaEndpointJSON kafkaEndpoint;
+    private ExtendedDetailsJSON extendedDetails;
 
-        private TorrentIdJSON torrentId;
-        private HDFSResourceJSON manifestHDFSResource;
-        private KafkaEndpoint kafkaEndpoint;
-        private ExtendedDetailsJSON extendedDetails;
-
-        public TorrentIdJSON getTorrentId() {
-            return torrentId;
-        }
-
-        public void setTorrentId(TorrentIdJSON torrentId) {
-            this.torrentId = torrentId;
-        }
-
-        public HDFSResourceJSON getManifestHDFSResource() {
-            return manifestHDFSResource;
-        }
-
-        public void setManifestHDFSResource(HDFSResourceJSON manifestHDFSResource) {
-            this.manifestHDFSResource = manifestHDFSResource;
-        }
-
-        public KafkaEndpoint getKafkaEndpoint() {
-            return kafkaEndpoint;
-        }
-
-        public void setKafkaEndpoint(KafkaEndpoint kafkaEndpoint) {
-            this.kafkaEndpoint = kafkaEndpoint;
-        }
-
-        public ExtendedDetailsJSON getExtendedDetails() {
-            return extendedDetails;
-        }
-
-        public void setExtendedDetails(ExtendedDetailsJSON extendedDetails) {
-            this.extendedDetails = extendedDetails;
-        }
-        
-        protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint) {
-            Identifier tId = torrentId.resolve();
-            Pair<HDFSEndpoint, HDFSResource> m = Pair.with(hdfsEndpoint, manifestHDFSResource.resolve());
-            Map<String, FileExtendedDetails> ed = extendedDetails.resolve(hdfsEndpoint, kafkaEndpoint);
-            return new HopsTorrentUploadEvent.Request(tId, m, ed);
-        }
+    public TorrentIdJSON getTorrentId() {
+        return torrentId;
     }
 
-    public static class Basic extends Base {
+    public void setTorrentId(TorrentIdJSON torrentId) {
+        this.torrentId = torrentId;
+    }
+
+    public KafkaEndpointJSON getKafkaEndpoint() {
+        return kafkaEndpoint;
+    }
+
+    public void setKafkaEndpoint(KafkaEndpointJSON kafkaEndpoint) {
+        this.kafkaEndpoint = kafkaEndpoint;
+    }
+
+    public ExtendedDetailsJSON getExtendedDetails() {
+        return extendedDetails;
+    }
+
+    public void setExtendedDetails(ExtendedDetailsJSON extendedDetails) {
+        this.extendedDetails = extendedDetails;
+    }
+
+    protected HopsTorrentDownloadEvent.AdvanceRequest partialResolve(HDFSEndpoint he) {
+        Identifier tId = torrentId.resolve();
+        KafkaEndpoint ke = kafkaEndpoint.resolve();
+        Map<String, FileExtendedDetails> ed = extendedDetails.resolve(he, ke);
+        return new HopsTorrentDownloadEvent.AdvanceRequest(tId, Result.success(ed));
+    }
+
+    public static class Basic extends HTAdvanceDownloadJSON {
 
         private HDFSEndpointJSON.Basic hdfsEndpoint;
 
@@ -93,14 +80,15 @@ public class HTUploadJSON {
         public void setHdfsEndpoint(HDFSEndpointJSON.Basic hdfsEndpoint) {
             this.hdfsEndpoint = hdfsEndpoint;
         }
-
-        public HopsTorrentUploadEvent.Request resolve() {
+        
+        public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
             HDFSEndpoint he = hdfsEndpoint.resolve();
             return partialResolve(he);
         }
     }
     
-    public static class XML extends Base {
+    public static class XML extends HTAdvanceDownloadJSON {
+
         private HDFSEndpointJSON.XML hdfsEndpoint;
 
         public HDFSEndpointJSON.XML getHdfsEndpoint() {
@@ -111,10 +99,9 @@ public class HTUploadJSON {
             this.hdfsEndpoint = hdfsEndpoint;
         }
         
-        public HopsTorrentUploadEvent.Request resolve() {
+        public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
             HDFSEndpoint he = hdfsEndpoint.resolve();
             return partialResolve(he);
         }
     }
-
 }

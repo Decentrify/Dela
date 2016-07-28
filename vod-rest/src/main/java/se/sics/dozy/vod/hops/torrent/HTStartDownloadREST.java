@@ -88,7 +88,7 @@ public class HTStartDownloadREST implements DozyResource {
         }
     }
 
-    @Path("/torrent/hops/download/basic")
+    @Path("/torrent/hops/download/start/basic")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**
@@ -103,7 +103,7 @@ public class HTStartDownloadREST implements DozyResource {
         }
     }
 
-    @Path("/torrent/hops/download/xml")
+    @Path("/torrent/hops/download/start/xml")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**

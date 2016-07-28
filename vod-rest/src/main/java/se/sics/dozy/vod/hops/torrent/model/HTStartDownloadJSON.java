@@ -76,36 +76,36 @@ public class HTStartDownloadJSON {
     }
     
     public static class Basic extends Base {
-        private HDFSEndpointJSON.Basic manifestHDFSEndpoint;
+        private HDFSEndpointJSON.Basic hdfsEndpoint;
 
-        public HDFSEndpointJSON.Basic getManifestHDFSEndpoint() {
-            return manifestHDFSEndpoint;
+        public HDFSEndpointJSON.Basic getHdfsEndpoint() {
+            return hdfsEndpoint;
         }
 
-        public void setManifestHDFSEndpoint(HDFSEndpointJSON.Basic manifestHDFSEndpoint) {
-            this.manifestHDFSEndpoint = manifestHDFSEndpoint;
+        public void setHdfsEndpoint(HDFSEndpointJSON.Basic hdfsEndpoint) {
+            this.hdfsEndpoint = hdfsEndpoint;
         }
 
         public HopsTorrentDownloadEvent.StartRequest resolve() {
-            HDFSEndpoint mhe = manifestHDFSEndpoint.resolve();
+            HDFSEndpoint mhe = hdfsEndpoint.resolve();
             return partialResolve(mhe);
         }
     }
 
     public static class XML extends Base {
 
-        private HDFSEndpointJSON.XML manifestHDFSEndpoint;
+        private HDFSEndpointJSON.XML hdfsEndpoint;
 
-        public HDFSEndpointJSON.XML getManifestHDFSEndpoint() {
-            return manifestHDFSEndpoint;
+        public HDFSEndpointJSON.XML getHdfsEndpoint() {
+            return hdfsEndpoint;
         }
 
-        public void setManifestHDFSEndpoint(HDFSEndpointJSON.XML manifestHDFSEndpoint) {
-            this.manifestHDFSEndpoint = manifestHDFSEndpoint;
+        public void setHdfsEndpoint(HDFSEndpointJSON.XML hdfsEndpoint) {
+            this.hdfsEndpoint = hdfsEndpoint;
         }
 
         public HopsTorrentDownloadEvent.StartRequest resolve() {
-            HDFSEndpoint mhe = manifestHDFSEndpoint.resolve();
+            HDFSEndpoint mhe = hdfsEndpoint.resolve();
             return partialResolve(mhe);
         }
     }
