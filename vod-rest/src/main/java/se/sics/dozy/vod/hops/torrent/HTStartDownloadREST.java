@@ -68,23 +68,29 @@ public class HTStartDownloadREST implements DozyResource {
         LOG.debug("waiting for download:{}<{}> response", request.torrentId, request.eventId);
         DozyResult result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus;
-        Object entityResult;
-        if (result.getValue() instanceof HopsTorrentDownloadEvent.Starting) {
-            DozyResult<HopsTorrentDownloadEvent.Starting> r = (DozyResult<HopsTorrentDownloadEvent.Starting>) result;
-            wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload1(r);
-            entityResult = new SuccessJSON();
-        } else if (result.getValue() instanceof HopsTorrentDownloadEvent.AlreadyExists) {
-            DozyResult<HopsTorrentDownloadEvent.AlreadyExists> r = (DozyResult<HopsTorrentDownloadEvent.AlreadyExists>) result;
-            wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload2(r);
-            throw new RuntimeException("slow down!?");
+        Object entityResult = null;
+        if (result.ok()) {
+            if (result.getValue() instanceof HopsTorrentDownloadEvent.Starting) {
+                DozyResult<HopsTorrentDownloadEvent.Starting> r = (DozyResult<HopsTorrentDownloadEvent.Starting>) result;
+                wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload1(r);
+                entityResult = new SuccessJSON();
+            } else if (result.getValue() instanceof HopsTorrentDownloadEvent.AlreadyExists) {
+                DozyResult<HopsTorrentDownloadEvent.AlreadyExists> r = (DozyResult<HopsTorrentDownloadEvent.AlreadyExists>) result;
+                wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload2(r);
+                throw new RuntimeException("slow down!?");
+            } else {
+                throw new RuntimeException("what?!?");
+            }
         } else {
-            throw new RuntimeException("what!?");
+            wsStatus = ResponseStatusMapper.resolveDozyError(result);
+            entityResult = new ErrorDescJSON(wsStatus.getValue1());
         }
+
         LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(entityResult).build();
         } else {
-            return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+            return Response.status(wsStatus.getValue0()).entity(entityResult).build();
         }
     }
 
@@ -92,8 +98,7 @@ public class HTStartDownloadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**
-     * consumes - HTStartDownloadJSON.Basic
-     * produces - SuccessJSON
+     * consumes - HTStartDownloadJSON.Basic produces - SuccessJSON
      */
     public static class Basic extends HTStartDownloadREST {
 
@@ -107,8 +112,7 @@ public class HTStartDownloadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**
-     * consumes - HTStartDownloadJSON.XML
-     * produces - SuccessJSON
+     * consumes - HTStartDownloadJSON.XML produces - SuccessJSON
      */
     public static class XML extends HTStartDownloadREST {
 

@@ -152,13 +152,14 @@ public class VoDNatLauncher extends ComponentDefinition {
                     setHopsHelperSyncI();
                     setTorrentSyncI();
                     setWebserver();
+                    
+                    startWebserver();
 
                     trigger(Start.event, libraryMngrComp.control());
                     trigger(Start.event, systemSyncIComp.control());
                     trigger(Start.event, hopsHelperSyncIComp.control());
                     trigger(Start.event, hopsTorrentSyncIComp.control());
 
-                    startWebserver();
                     LOG.info("{}starting complete...", logPrefix);
                 }
             };

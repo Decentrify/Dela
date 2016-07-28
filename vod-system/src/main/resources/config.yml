@@ -20,6 +20,8 @@ logging:
     "Kompics": WARN
     "se.sics.kompics": WARN
     "se.sics.dozy": INFO 
+    "se.sics.nstream.library.LibraryMngrComp": INFO
+    "org.apache.hadoop.hdfs.DFSClient": ERROR
     
   console:
       enabled: true

@@ -37,6 +37,10 @@ import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
  */
 public class ResponseStatusMapper {
 
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveDozyError(DozyResult result) {
+        return resolve(result, null);
+    }
+
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveLibraryContents(DozyResult<LibraryContentsEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().content : null));
     }
