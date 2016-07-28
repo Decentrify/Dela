@@ -31,6 +31,7 @@ import se.sics.dozy.DozySyncComp;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
+import se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST;
 import se.sics.dozy.vod.hops.torrent.HTStartDownloadREST;
 import se.sics.dozy.vod.hops.torrent.HTStopREST;
 import se.sics.dozy.vod.hops.torrent.HTUploadREST;
@@ -193,6 +194,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
         resp.add(HopsTorrentDownloadEvent.Starting.class);
         resp.add(HopsTorrentDownloadEvent.AlreadyExists.class);
+        resp.add(HopsTorrentDownloadEvent.AdvanceResponse.class);
         resp.add(HopsTorrentUploadEvent.Uploading.class);
         resp.add(HopsTorrentUploadEvent.AlreadyExists.class);
         resp.add(HopsTorrentStopEvent.Response.class);
@@ -214,6 +216,8 @@ public class VoDNatLauncher extends ComponentDefinition {
         
         resources.add(new HTStartDownloadREST.Basic());
         resources.add(new HTStartDownloadREST.XML());
+        resources.add(new HTAdvanceDownloadREST.Basic());
+        resources.add(new HTAdvanceDownloadREST.XML());
         resources.add(new HTUploadREST.Basic());
         resources.add(new HTUploadREST.XML());
         resources.add(new HTStopREST());
