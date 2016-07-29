@@ -63,13 +63,12 @@ import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsTorrentPort;
-import se.sics.nstream.hops.library.HopsTorrentProvider;
+import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 import se.sics.nstream.hops.library.event.core.HopsTorrentStopEvent;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 import se.sics.nstream.library.LibraryMngrComp;
 import se.sics.nstream.library.SystemPort;
-import se.sics.nstream.library.TorrentProvider;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
 import se.sics.nstream.util.CoreExtPorts;
 
@@ -166,8 +165,7 @@ public class VoDNatLauncher extends ComponentDefinition {
 
     private void setLibraryMngr() {
         CoreExtPorts extPorts = new CoreExtPorts(timerComp.getPositive(Timer.class), networkMngrComp.getPositive(Network.class));
-        TorrentProvider torrentProvider = new HopsTorrentProvider();
-        libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(extPorts, selfAdr, torrentProvider));
+        libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(extPorts, selfAdr, new HopsLibraryProvider()));
     }
     
     private void setSystemSyncI() {

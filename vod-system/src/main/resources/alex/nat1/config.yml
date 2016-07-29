@@ -31,6 +31,7 @@ logging:
     "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": INFO
     "se.sics.dozy": DEBUG
     "se.sics.ktoolbox.hops.managedStore.storage.cache.HDFSReadCacheImpl": INFO
+    "se.sics.nstream.library.LibraryMngrComp": INFO
     
   console:
       enabled: true

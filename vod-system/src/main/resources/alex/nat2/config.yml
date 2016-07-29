@@ -28,7 +28,7 @@ logging:
     "NettyNetwork@42003": WARN
     "NettyNetwork@40000": WARN
     "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": DEBUG
-    "org.apache.hadoop.hdfs.DFSClient": TRACE
+    "se.sics.nstream.library.LibraryMngrComp": INFO
     
   console:
       enabled: true
