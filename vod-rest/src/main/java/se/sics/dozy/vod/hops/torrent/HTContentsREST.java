@@ -16,12 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.hops.torrent;
 
 import com.google.common.base.Optional;
 import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -32,11 +32,12 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.vod.model.ErrorDescJSON;
+import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.hops.torrent.model.HopsContentsReqJSON;
 import se.sics.dozy.vod.hops.torrent.model.HopsContentsSummaryJSON;
+import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.nstream.library.event.torrent.ContentsSummaryEvent;
+import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -44,7 +45,7 @@ import se.sics.nstream.library.event.torrent.ContentsSummaryEvent;
 @Path("/library/contents")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ContentsSummaryREST implements DozyResource {
+public class HTContentsREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -67,7 +68,7 @@ public class ContentsSummaryREST implements DozyResource {
      * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
      * error
      */
-    @PUT
+    @POST
     public Response getContentsSummary(HopsContentsReqJSON req) {
         LOG.info("received hops library contents request");
         if (!hopsTorrentI.isReady()) {
@@ -78,9 +79,9 @@ public class ContentsSummaryREST implements DozyResource {
         if (req.getProjectId() != null) {
             projectId = Optional.of(req.getProjectId());
         }
-        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request(projectId);
+        HopsContentsEvent.Request request = new HopsContentsEvent.Request(projectId);
         LOG.debug("waiting for hops contents:{} response", request.eventId);
-        DozyResult<ContentsSummaryEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
+        DozyResult<HopsContentsEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
         LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {

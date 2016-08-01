@@ -28,7 +28,7 @@ import se.sics.nstream.hops.library.event.helper.HDFSConnectionEvent;
 import se.sics.nstream.hops.library.event.helper.HDFSFileCreateEvent;
 import se.sics.nstream.hops.library.event.helper.HDFSFileDeleteEvent;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
-import se.sics.nstream.library.event.torrent.ContentsSummaryEvent;
+import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 import se.sics.nstream.library.event.torrent.LibraryContentsEvent;
 import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
 
@@ -84,7 +84,7 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsSummary(DozyResult<ContentsSummaryEvent.Response> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsSummary(DozyResult<HopsContentsEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 

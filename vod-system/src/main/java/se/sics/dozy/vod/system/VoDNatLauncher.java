@@ -32,6 +32,7 @@ import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST;
+import se.sics.dozy.vod.hops.torrent.HTContentsREST;
 import se.sics.dozy.vod.hops.torrent.HTStartDownloadREST;
 import se.sics.dozy.vod.hops.torrent.HTStopREST;
 import se.sics.dozy.vod.hops.torrent.HTUploadREST;
@@ -62,14 +63,15 @@ import se.sics.ktoolbox.util.status.StatusPort;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.hops.library.HopsHelperPort;
-import se.sics.nstream.hops.library.HopsTorrentPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
+import se.sics.nstream.hops.library.HopsTorrentPort;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 import se.sics.nstream.hops.library.event.core.HopsTorrentStopEvent;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 import se.sics.nstream.library.LibraryMngrComp;
 import se.sics.nstream.library.SystemPort;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
+import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 import se.sics.nstream.util.CoreExtPorts;
 
 /**
@@ -197,6 +199,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         resp.add(HopsTorrentUploadEvent.Uploading.class);
         resp.add(HopsTorrentUploadEvent.AlreadyExists.class);
         resp.add(HopsTorrentStopEvent.Response.class);
+        resp.add(HopsContentsEvent.Response.class);
         
         hopsTorrentSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsTorrentPort.class, resp));
 
@@ -220,6 +223,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         resources.add(new HTUploadREST.Basic());
         resources.add(new HTUploadREST.XML());
         resources.add(new HTStopREST());
+        resources.add(new HTContentsREST());
         
 //        resources.add(new HDFSConnectionREST.Basic());
 //        resources.add(new HDFSConnectionREST.XML());

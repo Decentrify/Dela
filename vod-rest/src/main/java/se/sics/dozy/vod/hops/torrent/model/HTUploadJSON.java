@@ -34,6 +34,7 @@ public class HTUploadJSON {
     public static class Base {
 
         private TorrentIdJSON torrentId;
+        private String torrentName;
         private HDFSResourceJSON manifestHDFSResource;
 
         public TorrentIdJSON getTorrentId() {
@@ -44,6 +45,14 @@ public class HTUploadJSON {
             this.torrentId = torrentId;
         }
 
+        public String getTorrentName() {
+            return torrentName;
+        }
+
+        public void setTorrentName(String torrentName) {
+            this.torrentName = torrentName;
+        }
+        
         public HDFSResourceJSON getManifestHDFSResource() {
             return manifestHDFSResource;
         }
@@ -55,7 +64,7 @@ public class HTUploadJSON {
         protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint) {
             Identifier tId = torrentId.resolve();
             HDFSResource mr = manifestHDFSResource.resolve();
-            return new HopsTorrentUploadEvent.Request(tId, hdfsEndpoint, mr);
+            return new HopsTorrentUploadEvent.Request(tId, torrentName, hdfsEndpoint, mr);
         }
     }
 

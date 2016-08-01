@@ -20,7 +20,6 @@ package se.sics.dozy.vod.hops.torrent.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.javatuples.Pair;
 import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
@@ -37,6 +36,7 @@ import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 public class HTStartDownloadJSON {
     public static abstract class Base {
         protected TorrentIdJSON torrentId;
+        protected String torrentName;
         protected HDFSResourceJSON manifestHDFSResource;
         protected List<AddressJSON> partners;
         
@@ -46,6 +46,14 @@ public class HTStartDownloadJSON {
 
         public void setTorrentId(TorrentIdJSON torrentId) {
             this.torrentId = torrentId;
+        }
+
+        public String getTorrentName() {
+            return torrentName;
+        }
+
+        public void setTorrentName(String torrentName) {
+            this.torrentName = torrentName;
         }
         
         public HDFSResourceJSON getManifestHDFSResource() {
@@ -71,7 +79,7 @@ public class HTStartDownloadJSON {
             for (AddressJSON partner : partners) {
                 p.add(partner.resolve());
             }
-            return new HopsTorrentDownloadEvent.StartRequest(tId, Pair.with(mhe, mhr), p);
+            return new HopsTorrentDownloadEvent.StartRequest(tId, torrentName, mhe, mhr, p);
         }
     }
     

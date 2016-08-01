@@ -65,6 +65,6 @@ public class ElementSummaryJSON {
 
     
     public static ElementSummaryJSON resolve(ElementSummary les) {
-        return new ElementSummaryJSON(les.name, TorrentIdJSON.toJSON(les.torrentId), les.status.name());
+        return new ElementSummaryJSON(les.fileName, TorrentIdJSON.toJSON(les.torrentId), les.status.name());
     }
 }
