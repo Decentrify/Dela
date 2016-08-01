@@ -64,7 +64,10 @@ public abstract class HTAdvanceDownloadJSON {
 
     protected HopsTorrentDownloadEvent.AdvanceRequest partialResolve(HDFSEndpoint he) {
         Identifier tId = torrentId.resolve();
-        KafkaEndpoint ke = kafkaEndpoint.resolve();
+        KafkaEndpoint ke = null;
+        if (kafkaEndpoint != null) {
+            ke = kafkaEndpoint.resolve();
+        }
         Map<String, FileExtendedDetails> ed = extendedDetails.resolve(he, ke);
         return new HopsTorrentDownloadEvent.AdvanceRequest(tId, Result.success(ed));
     }
@@ -80,13 +83,13 @@ public abstract class HTAdvanceDownloadJSON {
         public void setHdfsEndpoint(HDFSEndpointJSON.Basic hdfsEndpoint) {
             this.hdfsEndpoint = hdfsEndpoint;
         }
-        
+
         public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
             HDFSEndpoint he = hdfsEndpoint.resolve();
             return partialResolve(he);
         }
     }
-    
+
     public static class XML extends HTAdvanceDownloadJSON {
 
         private HDFSEndpointJSON.XML hdfsEndpoint;
@@ -98,7 +101,7 @@ public abstract class HTAdvanceDownloadJSON {
         public void setHdfsEndpoint(HDFSEndpointJSON.XML hdfsEndpoint) {
             this.hdfsEndpoint = hdfsEndpoint;
         }
-        
+
         public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
             HDFSEndpoint he = hdfsEndpoint.resolve();
             return partialResolve(he);

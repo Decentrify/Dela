@@ -69,19 +69,16 @@ public class HTAdvanceDownloadREST implements DozyResource {
         DozyResult result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus;
         Object entityResult;
-        if (result.getValue() instanceof HopsTorrentDownloadEvent.AdvanceResponse) {
+        if (result.ok() && result.getValue() instanceof HopsTorrentDownloadEvent.AdvanceResponse) {
             DozyResult<HopsTorrentDownloadEvent.AdvanceResponse> r = (DozyResult<HopsTorrentDownloadEvent.AdvanceResponse>) result;
             wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload3(r);
             entityResult = new SuccessJSON();
         } else {
-            throw new RuntimeException("what!?");
+            wsStatus = ResponseStatusMapper.resolveDozyError(result);
+            entityResult = new ErrorDescJSON(wsStatus.getValue1());
         }
         LOG.info("download:{}<{}> status:{} details:{}", new Object[]{request.torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
-        if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(entityResult).build();
-        } else {
-            return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
-        }
+        return Response.status(wsStatus.getValue0()).entity(entityResult).build();
     }
 
     @Path("/torrent/hops/download/advance/basic")
