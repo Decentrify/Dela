@@ -32,10 +32,11 @@ import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.vod.DozyVoD;
-import se.sics.dozy.vod.model.ElementDescJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
+import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.nstream.hops.library.event.core.HopsTorrentStopEvent;
 
 /**
@@ -45,7 +46,7 @@ import se.sics.nstream.hops.library.event.core.HopsTorrentStopEvent;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 /**
- * consumes - ElementDescJSON
+ * consumes - TorrentIdJSON
  * produces - SuccessJSON
  */
 public class HTStopREST implements DozyResource {
@@ -66,18 +67,19 @@ public class HTStopREST implements DozyResource {
     }
 
     @POST
-    public Response stop(ElementDescJSON req) {
-        LOG.trace("received stop torrent request:{}", req.getFileName());
+    public Response stop(TorrentIdJSON req) {
+        Identifier torrentId = req.resolve();
+        LOG.trace("received stop torrent request:{}", torrentId);
 
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        HopsTorrentStopEvent.Request request = new HopsTorrentStopEvent.Request(req.getTorrentId().resolve());
-        LOG.debug("waiting for stop:{}<{}> response", req.getFileName(), request.eventId);
+        HopsTorrentStopEvent.Request request = new HopsTorrentStopEvent.Request(torrentId);
+        LOG.debug("waiting for stop:{}<{}> response", torrentId, request.eventId);
         DozyResult<HopsTorrentStopEvent.Response> result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentStop(result);
-        LOG.info("stop:{}<{}> status:{} details:{}", new Object[]{request.eventId, req.getFileName(), wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.info("stop:{}<{}> status:{} details:{}", new Object[]{torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
             return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
