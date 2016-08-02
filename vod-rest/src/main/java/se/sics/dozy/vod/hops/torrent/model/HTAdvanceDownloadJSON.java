@@ -18,6 +18,7 @@
  */
 package se.sics.dozy.vod.hops.torrent.model;
 
+import com.google.common.base.Optional;
 import java.util.Map;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
@@ -69,7 +70,7 @@ public abstract class HTAdvanceDownloadJSON {
             ke = kafkaEndpoint.resolve();
         }
         Map<String, FileExtendedDetails> ed = extendedDetails.resolve(he, ke);
-        return new HopsTorrentDownloadEvent.AdvanceRequest(tId, Result.success(ed));
+        return new HopsTorrentDownloadEvent.AdvanceRequest(tId, he, Optional.fromNullable(ke), Result.success(ed));
     }
 
     public static class Basic extends HTAdvanceDownloadJSON {
