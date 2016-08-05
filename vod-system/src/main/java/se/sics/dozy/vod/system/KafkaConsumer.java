@@ -28,12 +28,12 @@ import se.sics.nstream.hops.kafka.KafkaResource;
  */
 public class KafkaConsumer {
     public static void main(String[] args) {
-        if(args.length != 2) {
-            throw new RuntimeException("expected 2 arg - projectId sessionId");
+        if(args.length != 3) {
+            throw new RuntimeException("expected 3 arg - projectId topicName sessionId");
         }
         String projectId = args[0];
         String sessionId = args[1];
-        String topicName = "testTopic";
+        String topicName = args[2];
         String brokerEndpoint = "10.0.2.15:9091";
         String restEndpoint = "http://bbc1.sics.se:14003";
         String domain = "bbc1.sics.se";
