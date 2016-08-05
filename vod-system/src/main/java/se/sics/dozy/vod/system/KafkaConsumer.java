@@ -42,8 +42,8 @@ public class KafkaConsumer {
         String truststore = "/tmp/newDestination__meb10000__tstore.jks";
         
         System.err.println("connecting");
-        KafkaEndpoint ke = new KafkaEndpoint(brokerEndpoint, restEndpoint, domain, topicName, keystore, truststore);
-        KafkaResource kr = new KafkaResource(sessionId, projectId);
+        KafkaEndpoint ke = new KafkaEndpoint(brokerEndpoint, restEndpoint, domain, projectId, keystore, truststore);
+        KafkaResource kr = new KafkaResource(sessionId, topicName);
         HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(ke, kr);
         kc.consume();
     }
