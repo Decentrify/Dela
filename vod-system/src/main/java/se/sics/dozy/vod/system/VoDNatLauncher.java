@@ -36,6 +36,7 @@ import se.sics.dozy.vod.hops.torrent.HTContentsREST;
 import se.sics.dozy.vod.hops.torrent.HTStartDownloadREST;
 import se.sics.dozy.vod.hops.torrent.HTStopREST;
 import se.sics.dozy.vod.hops.torrent.HTUploadREST;
+import se.sics.dozy.vod.library.TorrentExtendedStatusREST;
 import se.sics.gvod.network.GVoDSerializerSetup;
 import se.sics.kompics.Channel;
 import se.sics.kompics.ClassMatchedHandler;
@@ -72,6 +73,7 @@ import se.sics.nstream.library.LibraryMngrComp;
 import se.sics.nstream.library.SystemPort;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
 import se.sics.nstream.library.event.torrent.HopsContentsEvent;
+import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
 import se.sics.nstream.util.CoreExtPorts;
 
 /**
@@ -200,6 +202,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         resp.add(HopsTorrentUploadEvent.AlreadyExists.class);
         resp.add(HopsTorrentStopEvent.Response.class);
         resp.add(HopsContentsEvent.Response.class);
+        resp.add(TorrentExtendedStatusEvent.Response.class);
         
         hopsTorrentSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsTorrentPort.class, resp));
 
@@ -224,6 +227,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         resources.add(new HTUploadREST.XML());
         resources.add(new HTStopREST());
         resources.add(new HTContentsREST());
+        resources.add(new TorrentExtendedStatusREST());
         
 //        resources.add(new HDFSConnectionREST.Basic());
 //        resources.add(new HDFSConnectionREST.XML());

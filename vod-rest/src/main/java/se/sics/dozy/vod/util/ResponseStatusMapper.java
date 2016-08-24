@@ -87,6 +87,10 @@ public class ResponseStatusMapper {
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsSummary(DozyResult<HopsContentsEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
+    
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveContentsExtendedSummary(DozyResult<TorrentExtendedStatusEvent.Response> result) {
+        return resolve(result, (result.hasValue() ? result.getValue().result : null));
+    }
 
     public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsFileDelete(DozyResult<HDFSFileDeleteEvent.Response> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));

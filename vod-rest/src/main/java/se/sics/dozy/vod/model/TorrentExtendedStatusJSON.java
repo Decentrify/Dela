@@ -18,9 +18,8 @@
  */
 package se.sics.dozy.vod.model;
 
-import java.io.UnsupportedEncodingException;
+import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.gvod.mngr.util.TorrentExtendedStatus;
-import se.sics.ktoolbox.util.identifiable.basic.ByteIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -30,10 +29,10 @@ public class TorrentExtendedStatusJSON {
     private TorrentIdJSON torrentId;
     private String torrentStatus;
     private int downloadSpeed;
-    private int percentageCompleted;
+    private double percentageCompleted;
 
     public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, int downloadSpeed,
-            int percentageCompleted) {
+            double percentageCompleted) {
         this.torrentId = torrentId;
         this.torrentStatus = torrentStatus;
         this.downloadSpeed = downloadSpeed;
@@ -67,11 +66,11 @@ public class TorrentExtendedStatusJSON {
         this.torrentId = torrentId;
     }
 
-    public int getPercentageCompleted() {
+    public double getPercentageCompleted() {
         return percentageCompleted;
     }
 
-    public void setPercentageCompleted(int percentageCompleted) {
+    public void setPercentageCompleted(double percentageCompleted) {
         this.percentageCompleted = percentageCompleted;
     }
 
