@@ -18,43 +18,21 @@
  */
 package se.sics.dozy.vod.model.hops.util;
 
-import se.sics.ktoolbox.hdfs.HDFSResource;
+import se.sics.nstream.hops.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HDFSResourceJSON {
-    private String hopsIp;
-    private int hopsPort;
-    private String user;
     private String dirPath;
     private String fileName;
     
-    public HDFSResourceJSON(String hopsIp, int hopsPort, String user, String dirPath, String fileName) {
-        this.hopsIp = hopsIp;
-        this.hopsPort = hopsPort;
-        this.user = user;
+    public HDFSResourceJSON(String dirPath, String fileName) {
         this.dirPath = dirPath;
         this.fileName = fileName;
     }
     
     public HDFSResourceJSON() {}
-
-    public String getHopsIp() {
-        return hopsIp;
-    }
-
-    public void setHopsIp(String hopsIp) {
-        this.hopsIp = hopsIp;
-    }
-
-    public int getHopsPort() {
-        return hopsPort;
-    }
-
-    public void setHopsPort(int hopsPort) {
-        this.hopsPort = hopsPort;
-    }
 
     public String getDirPath() {
         return dirPath;
@@ -72,15 +50,7 @@ public class HDFSResourceJSON {
         this.fileName = fileName;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public static HDFSResource fromJSON(HDFSResourceJSON file) {
-        return new HDFSResource(file.hopsIp, file.hopsPort, file.user, file.dirPath, file.fileName);
+    public HDFSResource resolve() {
+        return new HDFSResource(dirPath, fileName);
     }
 }

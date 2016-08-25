@@ -29,6 +29,22 @@
         </dependency>
         
         <dependency>
+            <groupId>se.sics.gvod.hops</groupId>
+            <artifactId>core</artifactId>
+            <version>${vod.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.hops</groupId>
+                    <artifactId>hadoop-yarn-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
             <groupId>se.sics.ktoolbox.netmngr</groupId>
             <artifactId>core</artifactId>
             <version>${ktoolbox.version}</version>

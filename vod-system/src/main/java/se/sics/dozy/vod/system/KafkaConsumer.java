@@ -19,31 +19,32 @@
 package se.sics.dozy.vod.system;
 
 import io.hops.kafkautil.HopsKafkaConsumer;
-import se.sics.ktoolbox.kafka.KafkaHelper;
-import se.sics.ktoolbox.kafka.KafkaResource;
+import se.sics.nstream.hops.kafka.KafkaEndpoint;
+import se.sics.nstream.hops.kafka.KafkaHelper;
+import se.sics.nstream.hops.kafka.KafkaResource;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class KafkaConsumer {
     public static void main(String[] args) {
-        if(args.length != 2) {
-            throw new RuntimeException("expected 2 arg - projectId sessionId");
+        if(args.length != 3) {
+            throw new RuntimeException("expected 3 arg - projectId topicName sessionId");
         }
         String projectId = args[0];
         String sessionId = args[1];
-        String topicName = "testTopic";
+        String topicName = args[2];
         String brokerEndpoint = "10.0.2.15:9091";
-        String restEndpoint = "http://193.10.67.182:14008";
-        String domain = "193.10.67.182";
+        String restEndpoint = "http://bbc1.sics.se:14003";
+        String domain = "bbc1.sics.se";
         
-        String keystore = "/tmp/vod/testProject__meb10000__kstore.jks";
-        String truststore = "/tmp/vod/testProject__meb10000__tstore.jks";
+        String keystore = "/tmp/newDestination__meb10000__kstore.jks";
+        String truststore = "/tmp/newDestination__meb10000__tstore.jks";
         
         System.err.println("connecting");
-        KafkaResource kr = new KafkaResource(brokerEndpoint, restEndpoint, domain, sessionId, projectId, topicName, keystore, truststore);
-        HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(kr);
+        KafkaEndpoint ke = new KafkaEndpoint(brokerEndpoint, restEndpoint, domain, projectId, keystore, truststore);
+        KafkaResource kr = new KafkaResource(sessionId, topicName);
+        HopsKafkaConsumer kc = KafkaHelper.getKafkaConsumer(ke, kr);
         kc.consume();
     }
 }

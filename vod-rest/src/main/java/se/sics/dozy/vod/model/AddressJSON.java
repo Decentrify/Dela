@@ -20,8 +20,6 @@ package se.sics.dozy.vod.model;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.network.basic.BasicAddress;
@@ -68,15 +66,15 @@ public class AddressJSON {
         this.id = id;
     }
     
-    public static AddressJSON resolveToJSON(KAddress adr) {
-        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntIdentifier)adr.getId()).id);
-    }
-    
-    public static KAddress resolveFromJSON(AddressJSON adr) {
+    public KAddress resolve() {
         try {
-            return NatAwareAddressImpl.open(new BasicAddress(InetAddress.getByName(adr.ip), adr.port, new IntIdentifier(adr.id)));
+            return NatAwareAddressImpl.open(new BasicAddress(InetAddress.getByName(ip), port, new IntIdentifier(id)));
         } catch (UnknownHostException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    public static AddressJSON resolveToJSON(KAddress adr) {
+        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntIdentifier)adr.getId()).id);
     }
 }

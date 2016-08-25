@@ -18,59 +18,14 @@
  */
 package se.sics.dozy.vod.model.hops.util;
 
-import se.sics.ktoolbox.kafka.KafkaResource;
+import se.sics.nstream.hops.kafka.KafkaResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class KafkaResourceJSON {
-
-    private String brokerEndpoint;
-    private String restEndpoint;
-    private String domain;
     private String sessionId;
-    private String projectId;
     private String topicName;
-    private String keyStore;
-    private String trustStore;
-
-    public KafkaResourceJSON(String brokerEndpoint, String restEndpoint, String domain, String sessionId,
-            String projectId, String topicName, String keyStore, String trustStore) {
-        this.brokerEndpoint = brokerEndpoint;
-        this.restEndpoint = restEndpoint;
-        this.domain = domain;
-        this.sessionId = sessionId;
-        this.projectId = projectId;
-        this.topicName = topicName;
-        this.keyStore = keyStore;
-        this.trustStore = trustStore;
-    }
-    
-    public KafkaResourceJSON() {}
-
-    public String getBrokerEndpoint() {
-        return brokerEndpoint;
-    }
-
-    public void setBrokerEndpoint(String brokerEndpoint) {
-        this.brokerEndpoint = brokerEndpoint;
-    }
-
-    public String getRestEndpoint() {
-        return restEndpoint;
-    }
-
-    public void setRestEndpoint(String restEndpoint) {
-        this.restEndpoint = restEndpoint;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
 
     public String getSessionId() {
         return sessionId;
@@ -79,15 +34,7 @@ public class KafkaResourceJSON {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
+    
     public String getTopicName() {
         return topicName;
     }
@@ -96,23 +43,7 @@ public class KafkaResourceJSON {
         this.topicName = topicName;
     }
 
-    public String getKeyStore() {
-        return keyStore;
-    }
-
-    public void setKeyStore(String keyStore) {
-        this.keyStore = keyStore;
-    }
-
-    public String getTrustStore() {
-        return trustStore;
-    }
-
-    public void setTrustStore(String trustStore) {
-        this.trustStore = trustStore;
-    }
-    
-    public static KafkaResource fromJSON(KafkaResourceJSON json) {
-        return new KafkaResource(json.brokerEndpoint, json.restEndpoint, json.domain, json.sessionId, json.projectId, json.topicName, json.keyStore, json.trustStore);
+    public KafkaResource resolve() {
+        return new KafkaResource(sessionId, topicName);
     }
 }

@@ -42,6 +42,16 @@ public class TorrentIdJSON {
         this.val = val;
     }
 
+    public Identifier resolve() {
+        try {
+            byte[] bTorrentId = val.getBytes("UTF-8");
+            Identifier torrentId = new SimpleByteIdentifier(bTorrentId);
+            return torrentId;
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException("logic error", ex);
+        }
+    }
+    
     public static TorrentIdJSON toJSON(Identifier torrentId) {
         try {
             String sTorrentId = new String(((SimpleByteIdentifier)torrentId).id, "UTF-8");
@@ -51,13 +61,4 @@ public class TorrentIdJSON {
         }
     }
     
-    public static Identifier fromJSON(TorrentIdJSON jsonTorrentId) {
-        try {
-            byte[] bTorrentId = jsonTorrentId.val.getBytes("UTF-8");
-            Identifier torrentId = new SimpleByteIdentifier(bTorrentId);
-            return torrentId;
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException("logic error", ex);
-        }
-    }
 }

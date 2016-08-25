@@ -16,12 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dozy.vod;
+package se.sics.dozy.vod.hops.torrent;
 
-import com.google.common.base.Optional;
 import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -32,61 +31,78 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.vod.DozyVoD;
+import se.sics.dozy.vod.hops.torrent.model.HTUploadJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
-import se.sics.dozy.vod.model.hops.HopsContentsReqJSON;
-import se.sics.dozy.vod.model.hops.HopsContentsSummaryJSON;
+import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
-import se.sics.gvod.stream.mngr.hops.torrent.event.ContentsSummaryEvent;
+import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/library/contents")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class ContentsSummaryREST implements DozyResource {
+public class HTUploadREST implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    private DozySyncI hopsTorrentI = null;
+    private DozySyncI vodTorrentI = null;
 
     @Override
     public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
-        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
-        if (hopsTorrentI == null) {
+        vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+        if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
     }
 
-    /**
-     * @return Response[{@link se.sics.dozy.vod.model.LibraryContentsJSON type}]
-     * with OK status or
-     * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
-     * error
-     */
-    @PUT
-    public Response getContentsSummary(HopsContentsReqJSON req) {
-        LOG.info("received hops library contents request");
-        if (!hopsTorrentI.isReady()) {
+    protected Response upload(HopsTorrentUploadEvent.Request request) {
+        LOG.trace("received upload torrent request:{}", request.torrentId);
+
+        if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Optional<Integer> projectId = Optional.absent();
-        if (req.getProjectId() != null) {
-            projectId = Optional.of(req.getProjectId());
-        }
-        ContentsSummaryEvent.Request request = new ContentsSummaryEvent.Request(projectId);
-        LOG.debug("waiting for hops contents:{} response", request.eventId);
-        DozyResult<ContentsSummaryEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
-        LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
+        LOG.debug("waiting for upload:{}<{}> response", request.torrentId, request.eventId);
+        DozyResult<HopsTorrentUploadEvent.Response> result = vodTorrentI.sendReq(request, timeout);
+        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveHopsTorrentUpload(result);
+        LOG.info("upload:{}<{}> status:{} details:{}", new Object[]{request.torrentId, request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
         if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(HopsContentsSummaryJSON.resolve(result.getValue().value)).build();
+            return Response.status(Response.Status.OK).entity(new SuccessJSON()).build();
         } else {
             return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+        }
+    }
+
+    @Path("/torrent/hops/upload/basic")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes HTUploadJSON.Basic
+     * produces SuccessJSON
+     */
+    public static class Basic extends HTUploadREST {
+
+        @POST
+        public Response uploadBasic(HTUploadJSON.Basic req) {
+            return upload(req.resolve());
+        }
+    }
+
+    @Path("/torrent/hops/upload/xml")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    /**
+     * consumes HTUploadJSON.XML
+     * produces SuccessJSON
+     */
+    public static class XML extends HTUploadREST {
+
+        @POST
+        public Response uploadXML(HTUploadJSON.XML req) {
+            return upload(req.resolve());
         }
     }
 }
