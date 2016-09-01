@@ -61,6 +61,7 @@ import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.setup.BasicSerializerSetup;
 import se.sics.ktoolbox.util.status.Status;
 import se.sics.ktoolbox.util.status.StatusPort;
+import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.hops.library.HopsHelperPort;
@@ -118,6 +119,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         serializerId = NetworkMngrSerializerSetup.registerSerializers(serializerId);
         serializerId = StunSerializerSetup.registerSerializers(serializerId);
         serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
+        serializerId = LedbatSerializerSetup.registerSerializers(serializerId);
     }
 
     private void registerPortTracking() {

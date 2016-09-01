@@ -115,6 +115,17 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>se.sics.ledbat</groupId>
+            <artifactId>network</artifactId>
+            <version>${ktoolbox.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>se.sics.ktoolbox.netmngr</groupId>
             <artifactId>network</artifactId>
             <version>${ktoolbox.version}</version>
