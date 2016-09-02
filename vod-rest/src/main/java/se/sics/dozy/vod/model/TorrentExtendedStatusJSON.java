@@ -18,7 +18,6 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.gvod.mngr.util.TorrentExtendedStatus;
 
 /**
@@ -28,10 +27,10 @@ public class TorrentExtendedStatusJSON {
 
     private TorrentIdJSON torrentId;
     private String torrentStatus;
-    private int downloadSpeed;
+    private long downloadSpeed;
     private double percentageCompleted;
 
-    public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, int downloadSpeed,
+    public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, long downloadSpeed,
             double percentageCompleted) {
         this.torrentId = torrentId;
         this.torrentStatus = torrentStatus;
@@ -50,11 +49,11 @@ public class TorrentExtendedStatusJSON {
         this.torrentStatus = torrentStatus;
     }
 
-    public int getDownloadSpeed() {
+    public long getDownloadSpeed() {
         return downloadSpeed;
     }
 
-    public void setDownloadSpeed(int downloadSpeed) {
+    public void setDownloadSpeed(long downloadSpeed) {
         this.downloadSpeed = downloadSpeed;
     }
 
@@ -76,6 +75,6 @@ public class TorrentExtendedStatusJSON {
 
     public static TorrentExtendedStatusJSON resolveToJson(TorrentExtendedStatus tes) {
         return new TorrentExtendedStatusJSON(TorrentIdJSON.toJSON(tes.torrentId), tes.torrentStatus.name(),
-                tes.downloadSpeed, tes.percentageComplete);
+                tes.transferSpeed.totalDownloadSpeed, tes.percentageComplete);
     }
 }
