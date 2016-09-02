@@ -18,58 +18,75 @@
  */
 package se.sics.dozy.dropwizard;
 
-import se.sics.dozy.DozyResource;
-import com.yammer.dropwizard.Service;
-import com.yammer.dropwizard.assets.AssetsBundle;
-import com.yammer.dropwizard.config.Bootstrap;
-import com.yammer.dropwizard.config.Configuration;
-import com.yammer.dropwizard.config.Environment;
+import io.dropwizard.Application;
+import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
+import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.server.SimpleServerFactory;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DropwizardDozy extends Service<Configuration> {
+public class DropwizardDozy extends Application<DropwizardDozyConfig> {
+
     private static final Logger LOG = LoggerFactory.getLogger(DropwizardDozy.class);
     private String logPrefix = "";
 
     private final Map<String, DozySyncI> syncInterfaces;
     private final List<DozyResource> resources;
-    
+
     public DropwizardDozy(Map<String, DozySyncI> syncInterfaces, List<DozyResource> resources) {
         this.syncInterfaces = syncInterfaces;
         this.resources = resources;
     }
 
     @Override
-    public void initialize(Bootstrap<Configuration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/interface/", "/webapp/"));
+    public void initialize(Bootstrap<DropwizardDozyConfig> bootstrap) {
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/interface/", "/webapp/"));
     }
 
     @Override
-    public void run(Configuration configuration, Environment environment) throws Exception {
-        for(DozyResource resource : resources) {
+    public void run(DropwizardDozyConfig configuration, Environment environment) throws Exception {
+        for (DozyResource resource : resources) {
             resource.setSyncInterfaces(syncInterfaces);
-            environment.addProvider(resource);
+            environment.jersey().register(resource);
         }
-        
+
         /*
          * To allow cross origin resource request from angular js client
          */
-        environment.addFilter(CrossOriginFilter.class, "/*").
-                setInitParam("allowedOrigins", "*").
-                setInitParam("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin").
-                setInitParam("allowedMethods", "GET,PUT,POST,DELETE,OPTIONS").
-                setInitParam("preflightMaxAge", "5184000"). // 2 months
-                setInitParam("allowCredentials", "true");
-        
-        final int webPort = configuration.getHttpConfiguration().getPort();
+        FilterRegistration.Dynamic filter = environment.servlets().addFilter("CORSFilter", CrossOriginFilter.class);
+        filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, environment.getApplicationContext().getContextPath() + "*");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,OPTIONS");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "allowed_host");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "Origin, Content-Type, Accept");
+        filter.setInitParameter(CrossOriginFilter.ALLOW_CREDENTIALS_PARAM, "true");
+//        environment.servlets().addFilter(CrossOriginFilter.class, "/*").
+//                setInitParam("allowedOrigins", "*").
+//                setInitParam("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin").
+//                setInitParam("allowedMethods", "GET,PUT,POST,DELETE,OPTIONS").
+//                setInitParam("preflightMaxAge", "5184000"). // 2 months
+//                setInitParam("allowCredentials", "true");
+
+//        final int webPort = configuration.getHttpConfiguration().getPort();
+        int webPort = 0;
+        SimpleServerFactory serverFactory = (SimpleServerFactory) configuration.getServerFactory();
+        HttpConnectorFactory connector = (HttpConnectorFactory) serverFactory.getConnector();
+        if (connector.getClass().isAssignableFrom(HttpConnectorFactory.class)) {
+            webPort = connector.getPort();
+        }
         LOG.info("{}running on port:{}", logPrefix, webPort);
     }
-    
+
 }
