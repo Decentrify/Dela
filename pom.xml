@@ -11,7 +11,7 @@
         <module>api</module>
         <module>core</module>
         <module>dropwizard</module>
-        <module>test-rest</module>
+        <!--<module>test-rest</module>-->
         <module>vod-rest</module>
         <module>vod-system</module>
     </modules>
@@ -26,28 +26,14 @@
         <vod.version>0.0.8-SNAPSHOT</vod.version>
         <nat.version>0.0.3-SNAPSHOT</nat.version>
         
+        <!-- dropwizard interdependant -->
         <dropwizard.version>1.0.0</dropwizard.version>
+        <!--<javax.version>3.1.0</javax.version>-->
+        <!-- ************************* -->
         <logger.version>1.7.5</logger.version>
     </properties>
     
     <dependencies>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.dropwizard-bundles</groupId>
-            <artifactId>dropwizard-configurable-assets-bundle</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-jetty</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

@@ -1,8 +1,10 @@
-http:
-  port: 18180
-  adminPort: 18181
-  gzip:
-    enabled: false
+server:
+    type: simple
+    applicationContextPath: /application
+    adminContextPath: /admin
+    connector:
+        type: http
+        port: 18080
 
 logging:
 
@@ -23,10 +25,11 @@ logging:
     "se.sics.nstream.library.LibraryMngrComp": INFO
     "org.apache.hadoop.hdfs.DFSClient": ERROR
     
-  console:
-      enabled: true
+  appenders:
+      type: console
 
-  file:
-      enabled: true
-      currentLogFilename: "vodRest.log"
-      archivedLogFilenamePattern: "vodRest-%d{yyyy-mm-dd}.log.gz"
+  appenders:
+      type: file
+      currentLogFilename: "dozyRest.log"
+      archivedLogFilenamePattern: "dozyRest-%d{yyyy-mm-dd}.log"
+      archivedFileCount: 10
