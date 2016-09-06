@@ -28,13 +28,15 @@ public class TorrentExtendedStatusJSON {
     private TorrentIdJSON torrentId;
     private String torrentStatus;
     private long downloadSpeed;
+    private long uploadSpeed;
     private double percentageCompleted;
 
-    public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, long downloadSpeed,
+    public TorrentExtendedStatusJSON(TorrentIdJSON torrentId, String torrentStatus, long downloadSpeed, long uploadSpeed,
             double percentageCompleted) {
         this.torrentId = torrentId;
         this.torrentStatus = torrentStatus;
         this.downloadSpeed = downloadSpeed;
+        this.uploadSpeed = uploadSpeed;
         this.percentageCompleted = percentageCompleted;
     }
 
@@ -57,6 +59,14 @@ public class TorrentExtendedStatusJSON {
         this.downloadSpeed = downloadSpeed;
     }
 
+    public long getUploadSpeed() {
+        return uploadSpeed;
+    }
+
+    public void setUploadSpeed(long uploadSpeed) {
+        this.uploadSpeed = uploadSpeed;
+    }
+    
     public TorrentIdJSON getTorrentId() {
         return torrentId;
     }
@@ -75,6 +85,6 @@ public class TorrentExtendedStatusJSON {
 
     public static TorrentExtendedStatusJSON resolveToJson(TorrentExtendedStatus tes) {
         return new TorrentExtendedStatusJSON(TorrentIdJSON.toJSON(tes.torrentId), tes.torrentStatus.name(),
-                tes.transferSpeed.totalDownloadSpeed, tes.percentageComplete);
+                tes.transferSpeed.totalDownloadSpeed, tes.transferSpeed.totalUploadSpeed, tes.percentageComplete);
     }
 }
