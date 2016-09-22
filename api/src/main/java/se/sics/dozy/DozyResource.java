@@ -24,5 +24,5 @@ import java.util.Map;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public interface DozyResource {
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces);
+    public void initialize(Map<String, DozySyncI> interfaces);
 }

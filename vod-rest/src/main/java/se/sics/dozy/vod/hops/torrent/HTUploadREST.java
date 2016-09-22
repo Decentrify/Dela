@@ -36,6 +36,7 @@ import se.sics.dozy.vod.hops.torrent.model.HTUploadJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 
 /**
@@ -49,13 +50,19 @@ public class HTUploadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
+    protected OverlayIdFactory overlayIdFactory;
+
+    public HTUploadREST(OverlayIdFactory overlayIdFactory) {
+        this.overlayIdFactory = overlayIdFactory;
+    }
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
+        this.overlayIdFactory = overlayIdFactory;
     }
 
     protected Response upload(HopsTorrentUploadEvent.Request request) {
@@ -80,14 +87,17 @@ public class HTUploadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**
-     * consumes HTUploadJSON.Basic
-     * produces SuccessJSON
+     * consumes HTUploadJSON.Basic produces SuccessJSON
      */
     public static class Basic extends HTUploadREST {
 
+        public Basic(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+
         @POST
         public Response uploadBasic(HTUploadJSON.Basic req) {
-            return upload(req.resolve());
+            return upload(req.resolve(overlayIdFactory));
         }
     }
 
@@ -95,14 +105,17 @@ public class HTUploadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     /**
-     * consumes HTUploadJSON.XML
-     * produces SuccessJSON
+     * consumes HTUploadJSON.XML produces SuccessJSON
      */
     public static class XML extends HTUploadREST {
 
+        public XML(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+
         @POST
         public Response uploadXML(HTUploadJSON.XML req) {
-            return upload(req.resolve());
+            return upload(req.resolve(overlayIdFactory));
         }
     }
 }

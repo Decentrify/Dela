@@ -18,21 +18,23 @@
  */
 package se.sics.dozy.vod.model;
 
-import java.io.UnsupportedEncodingException;
-import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.SimpleByteIdentifier;
+import se.sics.ktoolbox.util.identifiable.BasicBuilders;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class TorrentIdJSON {
+
     private String val;
-    
+
     public TorrentIdJSON(String val) {
         this.val = val;
     }
-    
-    public TorrentIdJSON() {}
+
+    public TorrentIdJSON() {
+    }
 
     public String getVal() {
         return val;
@@ -42,23 +44,14 @@ public class TorrentIdJSON {
         this.val = val;
     }
 
-    public Identifier resolve() {
-        try {
-            byte[] bTorrentId = val.getBytes("UTF-8");
-            Identifier torrentId = new SimpleByteIdentifier(bTorrentId);
-            return torrentId;
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException("logic error", ex);
-        }
+    public OverlayId resolve(OverlayIdFactory overlayIdFactory) {
+        OverlayId torrentId = overlayIdFactory.id(new BasicBuilders.StringBuilder(val));
+        return torrentId;
     }
-    
-    public static TorrentIdJSON toJSON(Identifier torrentId) {
-        try {
-            String sTorrentId = new String(((SimpleByteIdentifier)torrentId).id, "UTF-8");
-            return new TorrentIdJSON(sTorrentId);
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException("logic error", ex);
-        }
+
+    public static TorrentIdJSON toJSON(OverlayId torrentId) {
+        String sTorrentId = torrentId.toString();
+        return new TorrentIdJSON(sTorrentId);
     }
-    
+
 }

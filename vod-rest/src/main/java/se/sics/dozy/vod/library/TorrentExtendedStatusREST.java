@@ -36,6 +36,7 @@ import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.TorrentExtendedStatusJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
 
 /**
@@ -53,9 +54,14 @@ public class TorrentExtendedStatusREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI hopsTorrentI = null;
+    protected OverlayIdFactory overlayIdFactory;
 
+    public TorrentExtendedStatusREST(OverlayIdFactory overlayIdFactory) {
+        this.overlayIdFactory = overlayIdFactory;
+    }
+    
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (hopsTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
@@ -75,7 +81,7 @@ public class TorrentExtendedStatusREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(req.resolve());
+        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(req.resolve(overlayIdFactory));
         LOG.debug("waiting for library extended response:{}", request.eventId);
         DozyResult<TorrentExtendedStatusEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsExtendedSummary(result);

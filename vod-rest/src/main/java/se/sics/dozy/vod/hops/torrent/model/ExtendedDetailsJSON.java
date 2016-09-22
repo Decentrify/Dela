@@ -18,18 +18,13 @@
  */
 package se.sics.dozy.vod.hops.torrent.model;
 
-import com.google.common.base.Optional;
 import java.util.HashMap;
 import java.util.Map;
 import org.javatuples.Pair;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
-import se.sics.nstream.hops.HopsFED;
-import se.sics.nstream.hops.hdfs.HDFSEndpoint;
 import se.sics.nstream.hops.hdfs.HDFSResource;
-import se.sics.nstream.hops.kafka.KafkaEndpoint;
 import se.sics.nstream.hops.kafka.KafkaResource;
-import se.sics.nstream.util.FileExtendedDetails;
 
 /**
  *
@@ -56,20 +51,17 @@ public class ExtendedDetailsJSON {
         this.kafkaDetails = kafkaDetails;
     }
 
-    public Map<String, FileExtendedDetails> resolve(HDFSEndpoint hdfsEndpoint, KafkaEndpoint kafkaEndpoint) {
-        Map<String, FileExtendedDetails> extendedDetails = new HashMap<>();
-        for (Map.Entry<String, HDFSResourceJSON> f : hdfsDetails.entrySet()) {
-            Pair<HDFSEndpoint, HDFSResource> mainResource = Pair.with(hdfsEndpoint, f.getValue().resolve());
-            Optional<Pair<KafkaEndpoint, KafkaResource>> secondaryResource;
-            KafkaResourceJSON kafkaResource = kafkaDetails.get(f.getKey());
-            if (kafkaResource == null) {
-                secondaryResource = Optional.absent();
-            } else {
-                secondaryResource = Optional.of(Pair.with(kafkaEndpoint, kafkaResource.resolve()));
-            }
-            FileExtendedDetails fed = new HopsFED(mainResource, secondaryResource);
-            extendedDetails.put(f.getKey(), fed);
+    public Pair<Map<String, HDFSResource>, Map<String, KafkaResource>> resolve() {
+        Map<String, HDFSResource> hdfsResult = new HashMap<>();
+        for(Map.Entry<String, HDFSResourceJSON> e : hdfsDetails.entrySet()) {
+            hdfsResult.put(e.getKey(), e.getValue().resolve());
         }
-        return extendedDetails;
+        
+        Map<String, KafkaResource> kafkaResult = new HashMap<>();
+        for(Map.Entry<String, KafkaResourceJSON> e : kafkaDetails.entrySet()) {
+            kafkaResult.put(e.getKey(), e.getValue().resolve());
+        }
+        
+        return Pair.with(hdfsResult, kafkaResult);
     }
 }

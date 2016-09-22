@@ -36,6 +36,7 @@ import se.sics.dozy.vod.hops.torrent.model.HTAdvanceDownloadJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 
 /**
@@ -49,9 +50,14 @@ public class HTAdvanceDownloadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
+    protected OverlayIdFactory overlayIdFactory;
+
+    public HTAdvanceDownloadREST(OverlayIdFactory overlayIdFactory) {
+        this.overlayIdFactory = overlayIdFactory;
+    }
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
@@ -86,9 +92,13 @@ public class HTAdvanceDownloadREST implements DozyResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public static class Basic extends HTAdvanceDownloadREST {
 
+        public Basic(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+
         @POST
         public Response downloadBasic(HTAdvanceDownloadJSON.Basic req) {
-            return download(req.resolve());
+            return download(req.resolve(overlayIdFactory));
         }
     }
 
@@ -97,9 +107,13 @@ public class HTAdvanceDownloadREST implements DozyResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public static class XML extends HTAdvanceDownloadREST {
 
+        public XML(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+
         @POST
         public Response downloadBasic(HTAdvanceDownloadJSON.XML req) {
-            return download(req.resolve());
+            return download(req.resolve(overlayIdFactory));
         }
     }
 }

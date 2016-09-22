@@ -18,7 +18,6 @@
  */
 package se.sics.dozy.dropwizard;
 
-import se.sics.dozy.DozyResource;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
@@ -29,6 +28,7 @@ import java.util.Map;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
 
 /**
@@ -54,7 +54,7 @@ public class DropwizardDozy extends Service<Configuration> {
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
         for(DozyResource resource : resources) {
-            resource.setSyncInterfaces(syncInterfaces);
+            resource.initialize(syncInterfaces);
             environment.addProvider(resource);
         }
         

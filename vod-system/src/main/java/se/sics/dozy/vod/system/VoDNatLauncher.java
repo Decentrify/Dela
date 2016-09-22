@@ -57,6 +57,11 @@ import se.sics.ktoolbox.gradient.GradientSerializerSetup;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
 import se.sics.ktoolbox.netmngr.event.NetMngrReady;
 import se.sics.ktoolbox.overlaymngr.OMngrSerializerSetup;
+import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
+import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
+import se.sics.ktoolbox.util.identifiable.IdentifierRegistry;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayRegistry;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.setup.BasicSerializerSetup;
 import se.sics.ktoolbox.util.status.Status;
@@ -64,6 +69,7 @@ import se.sics.ktoolbox.util.status.StatusPort;
 import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
+import se.sics.nstream.TorrentIds;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
@@ -98,6 +104,8 @@ public class VoDNatLauncher extends ComponentDefinition {
     private Component hopsHelperSyncIComp;
     private Component hopsTorrentSyncIComp;
     private DropwizardDozy webserver;
+    //**************************************************************************
+    private OverlayIdFactory torrentIdFactory;
 
     public VoDNatLauncher() {
         LOG.info("{}starting...", logPrefix);
@@ -105,11 +113,28 @@ public class VoDNatLauncher extends ComponentDefinition {
         subscribe(handleStart, control);
         subscribe(handleNetReady, otherStatusPort);
 
-        registerSerializers();
-        registerPortTracking();
+        systemSetup();
     }
 
-    private void registerSerializers() {
+    private void systemSetup() {
+        //identifier setup
+        TorrentIds.registerDefaults(config().getValue("system.seed", Long.class));
+
+        overlaysSetup();
+        serializersSetup();
+    }
+    
+    private void overlaysSetup() {
+        OverlayRegistry.initiate(new SystemOverlays.TypeFactory(), new SystemOverlays.Comparator());
+        
+        byte torrentOwnerId = 1;
+        OverlayRegistry.registerPrefix("torrentOverlays", torrentOwnerId);
+        
+        IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
+        torrentBaseIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
+    }
+    
+    private void serializersSetup() {
         MessageRegistrator.register();
         int serializerId = 128;
         serializerId = BasicSerializerSetup.registerBasicSerializers(serializerId);
@@ -120,9 +145,6 @@ public class VoDNatLauncher extends ComponentDefinition {
         serializerId = StunSerializerSetup.registerSerializers(serializerId);
         serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
         serializerId = LedbatSerializerSetup.registerSerializers(serializerId);
-    }
-
-    private void registerPortTracking() {
     }
 
     Handler handleStart = new Handler<Start>() {
@@ -221,15 +243,15 @@ public class VoDNatLauncher extends ComponentDefinition {
         List<DozyResource> resources = new ArrayList<>();
         resources.add(new VoDEndpointREST());
         
-        resources.add(new HTStartDownloadREST.Basic());
-        resources.add(new HTStartDownloadREST.XML());
-        resources.add(new HTAdvanceDownloadREST.Basic());
-        resources.add(new HTAdvanceDownloadREST.XML());
-        resources.add(new HTUploadREST.Basic());
-        resources.add(new HTUploadREST.XML());
-        resources.add(new HTStopREST());
-        resources.add(new HTContentsREST());
-        resources.add(new TorrentExtendedStatusREST());
+        resources.add(new HTStartDownloadREST.Basic(torrentIdFactory));
+        resources.add(new HTStartDownloadREST.XML(torrentIdFactory));
+        resources.add(new HTAdvanceDownloadREST.Basic(torrentIdFactory));
+        resources.add(new HTAdvanceDownloadREST.XML(torrentIdFactory));
+        resources.add(new HTUploadREST.Basic(torrentIdFactory));
+        resources.add(new HTUploadREST.XML(torrentIdFactory));
+        resources.add(new HTStopREST(torrentIdFactory));
+        resources.add(new HTContentsREST(torrentIdFactory));
+        resources.add(new TorrentExtendedStatusREST(torrentIdFactory));
         
 //        resources.add(new HDFSConnectionREST.Basic());
 //        resources.add(new HDFSConnectionREST.XML());

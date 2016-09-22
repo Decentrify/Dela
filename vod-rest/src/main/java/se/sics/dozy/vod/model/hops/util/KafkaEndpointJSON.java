@@ -21,7 +21,6 @@ package se.sics.dozy.vod.model.hops.util;
 import se.sics.nstream.hops.kafka.KafkaEndpoint;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class KafkaEndpointJSON {

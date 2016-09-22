@@ -19,7 +19,6 @@
 package se.sics.dozy.vod.model;
 
 import se.sics.gvod.mngr.util.ElementSummary;
-import se.sics.ktoolbox.util.identifiable.basic.OverlayIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

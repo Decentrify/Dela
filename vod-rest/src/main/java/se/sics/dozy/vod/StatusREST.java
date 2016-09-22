@@ -44,7 +44,7 @@ public class StatusREST implements DozyResource {
     private Map<String, DozySyncI> interfaces;
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         this.interfaces = interfaces;
     }
 

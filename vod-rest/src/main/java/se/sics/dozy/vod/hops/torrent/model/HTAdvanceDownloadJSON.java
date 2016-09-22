@@ -20,15 +20,17 @@ package se.sics.dozy.vod.hops.torrent.model;
 
 import com.google.common.base.Optional;
 import java.util.Map;
+import org.javatuples.Pair;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaEndpointJSON;
-import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.result.Result;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.hops.hdfs.HDFSEndpoint;
+import se.sics.nstream.hops.hdfs.HDFSResource;
 import se.sics.nstream.hops.kafka.KafkaEndpoint;
+import se.sics.nstream.hops.kafka.KafkaResource;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
-import se.sics.nstream.util.FileExtendedDetails;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -63,14 +65,14 @@ public abstract class HTAdvanceDownloadJSON {
         this.extendedDetails = extendedDetails;
     }
 
-    protected HopsTorrentDownloadEvent.AdvanceRequest partialResolve(HDFSEndpoint he) {
-        Identifier tId = torrentId.resolve();
-        KafkaEndpoint ke = null;
+    protected HopsTorrentDownloadEvent.AdvanceRequest partialResolve(OverlayIdFactory torrentIdFactory, HDFSEndpoint he) {
+        OverlayId tId = torrentId.resolve(torrentIdFactory);
+        Optional<KafkaEndpoint> ke = Optional.absent();
         if (kafkaEndpoint != null) {
-            ke = kafkaEndpoint.resolve();
+            ke = Optional.of(kafkaEndpoint.resolve());
         }
-        Map<String, FileExtendedDetails> ed = extendedDetails.resolve(he, ke);
-        return new HopsTorrentDownloadEvent.AdvanceRequest(tId, he, Optional.fromNullable(ke), Result.success(ed));
+        Pair<Map<String, HDFSResource>, Map<String, KafkaResource>> ed = extendedDetails.resolve();
+        return new HopsTorrentDownloadEvent.AdvanceRequest(tId, he, ke, ed.getValue0(), ed.getValue1());
     }
 
     public static class Basic extends HTAdvanceDownloadJSON {
@@ -85,9 +87,9 @@ public abstract class HTAdvanceDownloadJSON {
             this.hdfsEndpoint = hdfsEndpoint;
         }
 
-        public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
+        public HopsTorrentDownloadEvent.AdvanceRequest resolve(OverlayIdFactory overlayIdFactory) {
             HDFSEndpoint he = hdfsEndpoint.resolve();
-            return partialResolve(he);
+            return partialResolve(overlayIdFactory, he);
         }
     }
 
@@ -103,9 +105,9 @@ public abstract class HTAdvanceDownloadJSON {
             this.hdfsEndpoint = hdfsEndpoint;
         }
 
-        public HopsTorrentDownloadEvent.AdvanceRequest resolve() {
+        public HopsTorrentDownloadEvent.AdvanceRequest resolve(OverlayIdFactory overlayIdFactory) {
             HDFSEndpoint he = hdfsEndpoint.resolve();
-            return partialResolve(he);
+            return partialResolve(overlayIdFactory, he);
         }
     }
 }

@@ -20,7 +20,12 @@ package se.sics.dozy.vod.model;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import se.sics.ktoolbox.util.identifiable.basic.IntIdentifier;
+import se.sics.ktoolbox.util.identifiable.BasicBuilders;
+import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
+import se.sics.ktoolbox.util.identifiable.Identifier;
+import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
+import se.sics.ktoolbox.util.identifiable.IdentifierRegistry;
+import se.sics.ktoolbox.util.identifiable.basic.IntId;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.network.basic.BasicAddress;
 import se.sics.ktoolbox.util.network.nat.NatAwareAddressImpl;
@@ -68,13 +73,15 @@ public class AddressJSON {
     
     public KAddress resolve() {
         try {
-            return NatAwareAddressImpl.open(new BasicAddress(InetAddress.getByName(ip), port, new IntIdentifier(id)));
+            IdentifierFactory nodeIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.NODE.toString());
+            Identifier nodeId = nodeIdFactory.id(new BasicBuilders.IntBuilder(id));
+            return NatAwareAddressImpl.open(new BasicAddress(InetAddress.getByName(ip), port, nodeId));
         } catch (UnknownHostException ex) {
             throw new RuntimeException(ex);
         }
     }
     
     public static AddressJSON resolveToJSON(KAddress adr) {
-        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntIdentifier)adr.getId()).id);
+        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntId)adr.getId()).id);
     }
 }

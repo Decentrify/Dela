@@ -46,7 +46,7 @@ public class TestJsonREST implements DozyResource {
     }
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
     }
 
     @GET

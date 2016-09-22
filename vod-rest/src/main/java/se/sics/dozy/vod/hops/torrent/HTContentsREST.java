@@ -37,6 +37,7 @@ import se.sics.dozy.vod.hops.torrent.model.HopsContentsReqJSON;
 import se.sics.dozy.vod.hops.torrent.model.HopsContentsSummaryJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 
 /**
@@ -53,9 +54,14 @@ public class HTContentsREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI hopsTorrentI = null;
+    protected OverlayIdFactory overlayIdFactory;
 
+    public HTContentsREST(OverlayIdFactory overlayIdFactory) {
+        this.overlayIdFactory = overlayIdFactory;
+    }
+    
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (hopsTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");

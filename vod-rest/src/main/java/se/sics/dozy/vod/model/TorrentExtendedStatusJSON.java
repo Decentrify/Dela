@@ -85,6 +85,6 @@ public class TorrentExtendedStatusJSON {
 
     public static TorrentExtendedStatusJSON resolveToJson(TorrentExtendedStatus tes) {
         return new TorrentExtendedStatusJSON(TorrentIdJSON.toJSON(tes.torrentId), tes.torrentStatus.name(),
-                tes.transferSpeed.totalDownloadSpeed, tes.transferSpeed.totalUploadSpeed, tes.percentageComplete);
+                (long)tes.downloadSpeed, 0, tes.percentageComplete);
     }
 }

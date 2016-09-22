@@ -36,6 +36,7 @@ import se.sics.dozy.vod.hops.torrent.model.HTStartDownloadJSON;
 import se.sics.dozy.vod.model.ErrorDescJSON;
 import se.sics.dozy.vod.model.SuccessJSON;
 import se.sics.dozy.vod.util.ResponseStatusMapper;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 
 /**
@@ -49,9 +50,14 @@ public class HTStartDownloadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
+    protected OverlayIdFactory overlayIdFactory;
+
+    public HTStartDownloadREST(OverlayIdFactory overlayIdFactory) {
+        this.overlayIdFactory = overlayIdFactory;
+    }
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
@@ -102,9 +108,13 @@ public class HTStartDownloadREST implements DozyResource {
      */
     public static class Basic extends HTStartDownloadREST {
 
+        public Basic(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+
         @POST
         public Response downloadBasic(HTStartDownloadJSON.Basic req) {
-            return download(req.resolve());
+            return download(req.resolve(overlayIdFactory));
         }
     }
 
@@ -116,9 +126,13 @@ public class HTStartDownloadREST implements DozyResource {
      */
     public static class XML extends HTStartDownloadREST {
 
+        public XML(OverlayIdFactory overlayIdFactory) {
+            super(overlayIdFactory);
+        }
+        
         @POST
         public Response downloadBasic(HTStartDownloadJSON.XML req) {
-            return download(req.resolve());
+            return download(req.resolve(overlayIdFactory));
         }
     }
 }

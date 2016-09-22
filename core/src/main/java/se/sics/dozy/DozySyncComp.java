@@ -39,7 +39,6 @@ import se.sics.kompics.timer.Timeout;
 import se.sics.kompics.timer.Timer;
 import se.sics.ktoolbox.util.identifiable.Identifiable;
 import se.sics.ktoolbox.util.identifiable.Identifier;
-import se.sics.ktoolbox.util.identifiable.basic.UUIDIdentifier;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -175,11 +174,7 @@ public class DozySyncComp extends ComponentDefinition implements DozySyncI {
 
         @Override
         public String toString() {
-            return "RequestTimeout<" + getId() + ">";
-        }
-
-        public Identifier getId() {
-            return new UUIDIdentifier(getTimeoutId());
+            return "RequestTimeout<" + getTimeoutId()+ ">";
         }
     }
 }

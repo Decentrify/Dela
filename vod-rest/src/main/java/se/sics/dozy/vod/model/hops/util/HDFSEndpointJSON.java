@@ -70,7 +70,7 @@ public interface HDFSEndpointJSON {
         
         @Override
         public HDFSEndpoint resolve() {
-            return new HDFSEndpoint(ip, port, user);
+            return HDFSEndpoint.getBasic(user, ip, port);
         }
     }
 
@@ -103,7 +103,7 @@ public interface HDFSEndpointJSON {
 
         @Override
         public HDFSEndpoint resolve() {
-            return new HDFSEndpoint(xmlPath, user);
+            return HDFSEndpoint.getXML(xmlPath, user);
         }
     }
 }

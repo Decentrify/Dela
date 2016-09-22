@@ -24,7 +24,8 @@ import se.sics.dozy.vod.model.AddressJSON;
 import se.sics.dozy.vod.model.TorrentIdJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
-import se.sics.ktoolbox.util.identifiable.Identifier;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
+import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.nstream.hops.hdfs.HDFSEndpoint;
 import se.sics.nstream.hops.hdfs.HDFSResource;
@@ -72,8 +73,8 @@ public class HTStartDownloadJSON {
             this.partners = partners;
         }
         
-        protected HopsTorrentDownloadEvent.StartRequest partialResolve(HDFSEndpoint mhe) {
-            Identifier tId = torrentId.resolve();
+        protected HopsTorrentDownloadEvent.StartRequest partialResolve(HDFSEndpoint mhe, OverlayIdFactory overlayIdFactory) {
+            OverlayId tId = torrentId.resolve(overlayIdFactory);
             HDFSResource mhr = manifestHDFSResource.resolve();
             List<KAddress> p = new ArrayList<>();
             for (AddressJSON partner : partners) {
@@ -94,9 +95,9 @@ public class HTStartDownloadJSON {
             this.hdfsEndpoint = hdfsEndpoint;
         }
 
-        public HopsTorrentDownloadEvent.StartRequest resolve() {
+        public HopsTorrentDownloadEvent.StartRequest resolve(OverlayIdFactory overlayIdFactory) {
             HDFSEndpoint mhe = hdfsEndpoint.resolve();
-            return partialResolve(mhe);
+            return partialResolve(mhe, overlayIdFactory);
         }
     }
 
@@ -112,9 +113,9 @@ public class HTStartDownloadJSON {
             this.hdfsEndpoint = hdfsEndpoint;
         }
 
-        public HopsTorrentDownloadEvent.StartRequest resolve() {
+        public HopsTorrentDownloadEvent.StartRequest resolve(OverlayIdFactory overlayIdFactory) {
             HDFSEndpoint mhe = hdfsEndpoint.resolve();
-            return partialResolve(mhe);
+            return partialResolve(mhe, overlayIdFactory);
         }
     }
 }

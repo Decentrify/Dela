@@ -51,7 +51,7 @@ public class VoDEndpointREST implements DozyResource {
     private DozySyncI vodSystemI = null;
 
     @Override
-    public void setSyncInterfaces(Map<String, DozySyncI> interfaces) {
+    public void initialize(Map<String, DozySyncI> interfaces) {
         vodSystemI = interfaces.get(DozyVoD.systemDozyName);
         if (vodSystemI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
