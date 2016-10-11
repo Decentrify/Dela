@@ -50,10 +50,10 @@ public class HTUploadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
+    protected OverlayIdFactory torrentIdFactory;
 
-    public HTUploadREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
+    public HTUploadREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
     }
 
     @Override
@@ -62,7 +62,6 @@ public class HTUploadREST implements DozyResource {
         if (vodTorrentI == null) {
             throw new RuntimeException("no sync interface found for vod REST API");
         }
-        this.overlayIdFactory = overlayIdFactory;
     }
 
     protected Response upload(HopsTorrentUploadEvent.Request request) {
@@ -97,7 +96,7 @@ public class HTUploadREST implements DozyResource {
 
         @POST
         public Response uploadBasic(HTUploadJSON.Basic req) {
-            return upload(req.resolve(overlayIdFactory));
+            return upload(req.resolve(torrentIdFactory));
         }
     }
 
@@ -115,7 +114,7 @@ public class HTUploadREST implements DozyResource {
 
         @POST
         public Response uploadXML(HTUploadJSON.XML req) {
-            return upload(req.resolve(overlayIdFactory));
+            return upload(req.resolve(torrentIdFactory));
         }
     }
 }

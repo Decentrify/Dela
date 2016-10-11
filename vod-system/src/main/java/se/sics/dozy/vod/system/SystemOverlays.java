@@ -29,7 +29,7 @@ public class SystemOverlays {
     public static class TypeFactory implements OverlayId.TypeFactory {
 
         private final OverlayId.BasicTypeFactory basicTypesFactory;
-        private final se.sics.nstream.TorrentIds.TypeFactory torrentTypesFactory;
+        private final TorrentIds.TypeFactory torrentTypesFactory;
 
         public TypeFactory() {
             this.basicTypesFactory = new OverlayId.BasicTypeFactory((byte)0);
@@ -59,7 +59,7 @@ public class SystemOverlays {
                 //maybe it is a different type
             }
             try {
-                return basicTypesFactory.toByte(type);
+                return torrentTypesFactory.toByte(type);
             } catch (OverlayId.UnknownTypeException ex) {
                 //maybe it is a different type
             }

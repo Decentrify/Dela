@@ -50,10 +50,10 @@ public class HTStartDownloadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
+    protected OverlayIdFactory torrentIdFactory;
 
-    public HTStartDownloadREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
+    public HTStartDownloadREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
     }
 
     @Override
@@ -76,12 +76,12 @@ public class HTStartDownloadREST implements DozyResource {
         Pair<Response.Status, String> wsStatus;
         Object entityResult = null;
         if (result.ok()) {
-            if (result.getValue() instanceof HopsTorrentDownloadEvent.Starting) {
-                DozyResult<HopsTorrentDownloadEvent.Starting> r = (DozyResult<HopsTorrentDownloadEvent.Starting>) result;
+            if (result.getValue() instanceof HopsTorrentDownloadEvent.Success) {
+                DozyResult<HopsTorrentDownloadEvent.Success> r = (DozyResult<HopsTorrentDownloadEvent.Success>) result;
                 wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload1(r);
                 entityResult = new SuccessJSON();
-            } else if (result.getValue() instanceof HopsTorrentDownloadEvent.AlreadyExists) {
-                DozyResult<HopsTorrentDownloadEvent.AlreadyExists> r = (DozyResult<HopsTorrentDownloadEvent.AlreadyExists>) result;
+            } else if (result.getValue() instanceof HopsTorrentDownloadEvent.Failed) {
+                DozyResult<HopsTorrentDownloadEvent.Failed> r = (DozyResult<HopsTorrentDownloadEvent.Failed>) result;
                 wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload2(r);
                 throw new RuntimeException("slow down!?");
             } else {
@@ -108,13 +108,13 @@ public class HTStartDownloadREST implements DozyResource {
      */
     public static class Basic extends HTStartDownloadREST {
 
-        public Basic(OverlayIdFactory overlayIdFactory) {
-            super(overlayIdFactory);
+        public Basic(OverlayIdFactory torrentIdFactory) {
+            super(torrentIdFactory);
         }
-
+        
         @POST
         public Response downloadBasic(HTStartDownloadJSON.Basic req) {
-            return download(req.resolve(overlayIdFactory));
+            return download(req.resolve(torrentIdFactory));
         }
     }
 
@@ -126,13 +126,13 @@ public class HTStartDownloadREST implements DozyResource {
      */
     public static class XML extends HTStartDownloadREST {
 
-        public XML(OverlayIdFactory overlayIdFactory) {
-            super(overlayIdFactory);
+        public XML(OverlayIdFactory torrentIdFactory) {
+            super(torrentIdFactory);
         }
         
         @POST
         public Response downloadBasic(HTStartDownloadJSON.XML req) {
-            return download(req.resolve(overlayIdFactory));
+            return download(req.resolve(torrentIdFactory));
         }
     }
 }

@@ -68,11 +68,11 @@ public class ResponseStatusMapper {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentDownload1(DozyResult<HopsTorrentDownloadEvent.Starting> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentDownload1(DozyResult<HopsTorrentDownloadEvent.Success> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 
-    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentDownload2(DozyResult<HopsTorrentDownloadEvent.AlreadyExists> result) {
+    public static Pair<javax.ws.rs.core.Response.Status, String> resolveHopsTorrentDownload2(DozyResult<HopsTorrentDownloadEvent.Failed> result) {
         return resolve(result, (result.hasValue() ? result.getValue().result : null));
     }
 

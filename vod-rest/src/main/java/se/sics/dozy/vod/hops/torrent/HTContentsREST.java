@@ -54,12 +54,12 @@ public class HTContentsREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI hopsTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
-
-    public HTContentsREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
-    }
+    protected OverlayIdFactory torrentIdFactory;
     
+    public HTContentsREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
+    }
+
     @Override
     public void initialize(Map<String, DozySyncI> interfaces) {
         hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);

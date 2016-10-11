@@ -50,12 +50,12 @@ public class HTAdvanceDownloadREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
+    protected OverlayIdFactory torrentIdFactory;
 
-    public HTAdvanceDownloadREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
+    public HTAdvanceDownloadREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
     }
-
+    
     @Override
     public void initialize(Map<String, DozySyncI> interfaces) {
         vodTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
@@ -91,14 +91,14 @@ public class HTAdvanceDownloadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public static class Basic extends HTAdvanceDownloadREST {
-
-        public Basic(OverlayIdFactory overlayIdFactory) {
-            super(overlayIdFactory);
+        
+        public Basic(OverlayIdFactory torrentIdFactory) {
+            super(torrentIdFactory);
         }
-
+        
         @POST
         public Response downloadBasic(HTAdvanceDownloadJSON.Basic req) {
-            return download(req.resolve(overlayIdFactory));
+            return download(req.resolve(torrentIdFactory));
         }
     }
 
@@ -106,14 +106,13 @@ public class HTAdvanceDownloadREST implements DozyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public static class XML extends HTAdvanceDownloadREST {
-
-        public XML(OverlayIdFactory overlayIdFactory) {
-            super(overlayIdFactory);
+        public XML(OverlayIdFactory torrentIdFactory) {
+            super(torrentIdFactory);
         }
-
+        
         @POST
         public Response downloadBasic(HTAdvanceDownloadJSON.XML req) {
-            return download(req.resolve(overlayIdFactory));
+            return download(req.resolve(torrentIdFactory));
         }
     }
 }

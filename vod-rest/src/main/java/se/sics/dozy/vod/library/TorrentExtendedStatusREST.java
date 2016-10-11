@@ -54,10 +54,10 @@ public class TorrentExtendedStatusREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI hopsTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
+    protected OverlayIdFactory torrentIdFactory;
 
-    public TorrentExtendedStatusREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
+    public TorrentExtendedStatusREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
     }
     
     @Override
@@ -81,7 +81,7 @@ public class TorrentExtendedStatusREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(req.resolve(overlayIdFactory));
+        TorrentExtendedStatusEvent.Request request = new TorrentExtendedStatusEvent.Request(req.resolve(torrentIdFactory));
         LOG.debug("waiting for library extended response:{}", request.eventId);
         DozyResult<TorrentExtendedStatusEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsExtendedSummary(result);

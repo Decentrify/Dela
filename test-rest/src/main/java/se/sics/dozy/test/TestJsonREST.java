@@ -42,9 +42,6 @@ public class TestJsonREST implements DozyResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
-    public TestJsonREST() {
-    }
-
     @Override
     public void initialize(Map<String, DozySyncI> interfaces) {
     }

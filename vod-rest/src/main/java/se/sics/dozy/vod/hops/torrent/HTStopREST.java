@@ -58,10 +58,10 @@ public class HTStopREST implements DozyResource {
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
     private DozySyncI vodTorrentI = null;
-    protected OverlayIdFactory overlayIdFactory;
+    protected OverlayIdFactory torrentIdFactory;
 
-    public HTStopREST(OverlayIdFactory overlayIdFactory) {
-        this.overlayIdFactory = overlayIdFactory;
+    public HTStopREST(OverlayIdFactory torrentIdFactory) {
+        this.torrentIdFactory = torrentIdFactory;
     }
     
     @Override
@@ -74,7 +74,7 @@ public class HTStopREST implements DozyResource {
 
     @POST
     public Response stop(TorrentIdJSON req) {
-        OverlayId torrentId = req.resolve(overlayIdFactory);
+        OverlayId torrentId = req.resolve(torrentIdFactory);
         LOG.trace("received stop torrent request:{}", torrentId);
 
         if (!vodTorrentI.isReady()) {

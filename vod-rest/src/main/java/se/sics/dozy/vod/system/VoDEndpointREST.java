@@ -50,6 +50,8 @@ public class VoDEndpointREST implements DozyResource {
 
     private DozySyncI vodSystemI = null;
 
+    public VoDEndpointREST() {
+    }
     @Override
     public void initialize(Map<String, DozySyncI> interfaces) {
         vodSystemI = interfaces.get(DozyVoD.systemDozyName);

@@ -81,6 +81,13 @@ import se.sics.nstream.library.SystemPort;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
 import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
+import se.sics.nstream.torrent.tracking.TorrentStatusPort;
+import se.sics.nstream.storage.durable.DEndpointControlPort;
+import se.sics.nstream.storage.durable.DStorageMngrComp;
+import se.sics.nstream.storage.durable.DStoragePort;
+import se.sics.nstream.storage.durable.DStreamControlPort;
+import se.sics.nstream.torrent.TorrentMngrComp;
+import se.sics.nstream.torrent.TorrentMngrPort;
 import se.sics.nstream.util.CoreExtPorts;
 
 /**
@@ -100,6 +107,8 @@ public class VoDNatLauncher extends ComponentDefinition {
     private Component timerComp;
     private Component networkMngrComp;
     private Component libraryMngrComp;
+    private Component torrentMngrComp;
+    private Component storageMngrComp;
     private Component systemSyncIComp;
     private Component hopsHelperSyncIComp;
     private Component hopsTorrentSyncIComp;
@@ -119,7 +128,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     private void systemSetup() {
         //identifier setup
         TorrentIds.registerDefaults(config().getValue("system.seed", Long.class));
-
+        
         overlaysSetup();
         serializersSetup();
     }
@@ -131,7 +140,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         OverlayRegistry.registerPrefix("torrentOverlays", torrentOwnerId);
         
         IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
-        torrentBaseIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
+        torrentIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
     }
     
     private void serializersSetup() {
@@ -174,6 +183,8 @@ public class VoDNatLauncher extends ComponentDefinition {
                     LOG.info("{}network mngr ready", logPrefix);
                     selfAdr = content.systemAdr;
 
+                    setStorageMngr();
+                    setTorrentMngr();
                     setLibraryMngr();
                     setSystemSyncI();
                     setHopsHelperSyncI();
@@ -182,6 +193,8 @@ public class VoDNatLauncher extends ComponentDefinition {
                     
                     startWebserver();
 
+                    trigger(Start.event, storageMngrComp.control());
+                    trigger(Start.event, torrentMngrComp.control());
                     trigger(Start.event, libraryMngrComp.control());
                     trigger(Start.event, systemSyncIComp.control());
                     trigger(Start.event, hopsHelperSyncIComp.control());
@@ -191,9 +204,24 @@ public class VoDNatLauncher extends ComponentDefinition {
                 }
             };
 
+    private void setStorageMngr() {
+        storageMngrComp = create(DStorageMngrComp.class, new DStorageMngrComp.Init(selfAdr.getId()));
+    }
+    
+    private void setTorrentMngr() {
+        torrentMngrComp = create(TorrentMngrComp.class, new TorrentMngrComp.Init(selfAdr));
+        connect(torrentMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
+        connect(torrentMngrComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
+        connect(torrentMngrComp.getNegative(DStreamControlPort.class), storageMngrComp.getPositive(DStreamControlPort.class), Channel.TWO_WAY);
+        connect(torrentMngrComp.getNegative(DStoragePort.class), storageMngrComp.getPositive(DStoragePort.class), Channel.TWO_WAY);
+    }
+    
     private void setLibraryMngr() {
         CoreExtPorts extPorts = new CoreExtPorts(timerComp.getPositive(Timer.class), networkMngrComp.getPositive(Network.class));
-        libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(extPorts, selfAdr, new HopsLibraryProvider()));
+        libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(selfAdr, new HopsLibraryProvider()));
+        connect(libraryMngrComp.getNegative(DEndpointControlPort.class), storageMngrComp.getPositive(DEndpointControlPort.class), Channel.TWO_WAY);
+        connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class), Channel.TWO_WAY);
+        connect(libraryMngrComp.getNegative(TorrentMngrPort.class), torrentMngrComp.getPositive(TorrentMngrPort.class), Channel.TWO_WAY);
     }
     
     private void setSystemSyncI() {
@@ -219,11 +247,11 @@ public class VoDNatLauncher extends ComponentDefinition {
     
     private void setTorrentSyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
-        resp.add(HopsTorrentDownloadEvent.Starting.class);
-        resp.add(HopsTorrentDownloadEvent.AlreadyExists.class);
+        resp.add(HopsTorrentDownloadEvent.Success.class);
+        resp.add(HopsTorrentDownloadEvent.Failed.class);
         resp.add(HopsTorrentDownloadEvent.AdvanceResponse.class);
-        resp.add(HopsTorrentUploadEvent.Uploading.class);
-        resp.add(HopsTorrentUploadEvent.AlreadyExists.class);
+        resp.add(HopsTorrentUploadEvent.Success.class);
+        resp.add(HopsTorrentUploadEvent.Failed.class);
         resp.add(HopsTorrentStopEvent.Response.class);
         resp.add(HopsContentsEvent.Response.class);
         resp.add(TorrentExtendedStatusEvent.Response.class);

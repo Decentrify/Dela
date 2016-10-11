@@ -23,7 +23,7 @@ import java.util.Map;
 import se.sics.ktoolbox.util.profiling.KProfiler;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistry;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
-import se.sics.nstream.torrent.TorrentComp;
+import se.sics.nstream.torrent.core.TransferComp;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -31,7 +31,7 @@ import se.sics.nstream.torrent.TorrentComp;
 public class KProfilerPrinter {
      public static void main(String[] args) {
          Map<String, KProfiler.Type> kProfilerRegistryMap = new HashMap<>();
-         kProfilerRegistryMap.put(TorrentComp.class.getCanonicalName(), KProfiler.Type.LOG);
+         kProfilerRegistryMap.put(TransferComp.class.getCanonicalName(), KProfiler.Type.LOG);
          KProfilerRegistry kProfilerRegistry = new KProfilerRegistry(kProfilerRegistryMap);
          System.out.println(KProfilerRegistryConverter.jsonPrettyPrint(kProfilerRegistry));
      }
