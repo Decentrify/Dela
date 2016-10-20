@@ -22,6 +22,7 @@ package se.sics.dozy.vod;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class DozyVoD {
-    public static final String libraryDozyName = "vod-library";
-    public static final String torrentDozyName = "vod-torrent";
+    public static final String systemDozyName = "vod-system";
+    public static final String hopsHelperDozyName = "vod-hopsHelper";
+    public static final String hopsTorrentDozyName = "vod-hopsTorrent";
 }

@@ -17,3 +17,7 @@ hs_err_pid*
 /vod-rest/target/
 /core/target/
 /vod-system/target/
+/vod-system/*.log*
+/vod-system/*.log.gz
+
+vod-system/lib/

@@ -55,7 +55,7 @@ public class DozyResult<V extends Object> {
         if(details.isPresent()) {
             return details.get();
         }
-        return "";
+        return null;
     }
     
     public boolean hasValue() {
