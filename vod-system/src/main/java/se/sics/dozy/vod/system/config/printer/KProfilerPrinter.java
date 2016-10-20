@@ -23,7 +23,7 @@ import java.util.Map;
 import se.sics.ktoolbox.util.profiling.KProfiler;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistry;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
-import se.sics.nstream.torrent.core.TransferComp;
+import se.sics.nstream.torrent.transfer.TransferComp;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

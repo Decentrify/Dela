@@ -76,12 +76,12 @@ public class HTStartDownloadREST implements DozyResource {
         Pair<Response.Status, String> wsStatus;
         Object entityResult = null;
         if (result.ok()) {
-            if (result.getValue() instanceof HopsTorrentDownloadEvent.Success) {
-                DozyResult<HopsTorrentDownloadEvent.Success> r = (DozyResult<HopsTorrentDownloadEvent.Success>) result;
+            if (result.getValue() instanceof HopsTorrentDownloadEvent.StartSuccess) {
+                DozyResult<HopsTorrentDownloadEvent.StartSuccess> r = (DozyResult<HopsTorrentDownloadEvent.StartSuccess>) result;
                 wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload1(r);
                 entityResult = new SuccessJSON();
-            } else if (result.getValue() instanceof HopsTorrentDownloadEvent.Failed) {
-                DozyResult<HopsTorrentDownloadEvent.Failed> r = (DozyResult<HopsTorrentDownloadEvent.Failed>) result;
+            } else if (result.getValue() instanceof HopsTorrentDownloadEvent.StartFailed) {
+                DozyResult<HopsTorrentDownloadEvent.StartFailed> r = (DozyResult<HopsTorrentDownloadEvent.StartFailed>) result;
                 wsStatus = ResponseStatusMapper.resolveHopsTorrentDownload2(r);
                 throw new RuntimeException("slow down!?");
             } else {

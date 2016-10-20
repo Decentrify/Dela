@@ -81,13 +81,14 @@ import se.sics.nstream.library.SystemPort;
 import se.sics.nstream.library.event.system.SystemAddressEvent;
 import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 import se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent;
-import se.sics.nstream.torrent.tracking.TorrentStatusPort;
-import se.sics.nstream.storage.durable.DEndpointControlPort;
+import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
 import se.sics.nstream.torrent.TorrentMngrComp;
 import se.sics.nstream.torrent.TorrentMngrPort;
+import se.sics.nstream.torrent.tracking.TorrentStatusPort;
+import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
 
 /**
@@ -137,7 +138,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         OverlayRegistry.initiate(new SystemOverlays.TypeFactory(), new SystemOverlays.Comparator());
         
         byte torrentOwnerId = 1;
-        OverlayRegistry.registerPrefix("torrentOverlays", torrentOwnerId);
+        OverlayRegistry.registerPrefix(TorrentIds.TORRENT_OVERLAYS, torrentOwnerId);
         
         IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
         torrentIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
@@ -219,9 +220,10 @@ public class VoDNatLauncher extends ComponentDefinition {
     private void setLibraryMngr() {
         CoreExtPorts extPorts = new CoreExtPorts(timerComp.getPositive(Timer.class), networkMngrComp.getPositive(Network.class));
         libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(selfAdr, new HopsLibraryProvider()));
-        connect(libraryMngrComp.getNegative(DEndpointControlPort.class), storageMngrComp.getPositive(DEndpointControlPort.class), Channel.TWO_WAY);
-        connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class), Channel.TWO_WAY);
+        connect(libraryMngrComp.getNegative(DEndpointCtrlPort.class), storageMngrComp.getPositive(DEndpointCtrlPort.class), Channel.TWO_WAY);
         connect(libraryMngrComp.getNegative(TorrentMngrPort.class), torrentMngrComp.getPositive(TorrentMngrPort.class), Channel.TWO_WAY);
+        connect(libraryMngrComp.getNegative(TransferCtrlPort.class), torrentMngrComp.getPositive(TransferCtrlPort.class), Channel.TWO_WAY);
+        connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class), Channel.TWO_WAY);
     }
     
     private void setSystemSyncI() {
@@ -247,8 +249,8 @@ public class VoDNatLauncher extends ComponentDefinition {
     
     private void setTorrentSyncI() {
         List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
-        resp.add(HopsTorrentDownloadEvent.Success.class);
-        resp.add(HopsTorrentDownloadEvent.Failed.class);
+        resp.add(HopsTorrentDownloadEvent.StartSuccess.class);
+        resp.add(HopsTorrentDownloadEvent.StartFailed.class);
         resp.add(HopsTorrentDownloadEvent.AdvanceResponse.class);
         resp.add(HopsTorrentUploadEvent.Success.class);
         resp.add(HopsTorrentUploadEvent.Failed.class);
