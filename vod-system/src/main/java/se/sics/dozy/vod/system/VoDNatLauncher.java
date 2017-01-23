@@ -56,7 +56,7 @@ import se.sics.ktoolbox.croupier.CroupierSerializerSetup;
 import se.sics.ktoolbox.gradient.GradientSerializerSetup;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
 import se.sics.ktoolbox.netmngr.event.NetMngrReady;
-import se.sics.ktoolbox.overlaymngr.OMngrSerializerSetup;
+import se.sics.ktoolbox.omngr.OMngrSerializerSetup;
 import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
 import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
 import se.sics.ktoolbox.util.identifiable.IdentifierRegistry;

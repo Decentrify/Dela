@@ -32,10 +32,16 @@ logging:
     "se.sics.dozy": DEBUG
     "se.sics.ktoolbox.hops.managedStore.storage.cache.HDFSReadCacheImpl": INFO
     "se.sics.nstream.library.LibraryMngrComp": INFO
-    "se.sics.nstream.storage.cache.KCache": INFO
+    "se.sics.nstream.storage.cache.SimpleKCache": INFO
     "se.sics.nstream.torrent.TransferFSM": INFO
     "se.sics.nstream.hops.hdfs.HDFSComp": INFO
     "se.sics.nstream.hops.hdfs.HDFSHelper": INFO
+    "se.sics.nutil.tracking.load.NetworkQueueLoadProxy": WARN
+    "se.sics.nstream.torrent.TorrentComp": INFO
+    "se.sics.nutil.network.bestEffort.BestEffortNetworkComp": INFO
+    "se.sics.nstream.torrent.transfer.DwnlConnComp": INFO
+    "se.sics.nstream.torrent.transfer.UpldConnComp": INFO
+    "se.sics.ktoolbox.util.network.ports.One2NChannel": INFO
     
   console:
       enabled: true
