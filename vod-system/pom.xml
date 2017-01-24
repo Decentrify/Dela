@@ -149,8 +149,8 @@
         </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
+<!--     <build>
+       <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -219,5 +219,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 </project>
