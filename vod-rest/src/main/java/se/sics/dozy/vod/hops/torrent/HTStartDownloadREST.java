@@ -45,7 +45,7 @@ import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 public class HTStartDownloadREST implements DozyResource {
 
     //TODO Alex - make into config?
-    public static long timeout = 5000;
+    public static long timeout = 30000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
 
