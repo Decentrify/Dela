@@ -42,6 +42,10 @@ logging:
     "se.sics.nstream.torrent.transfer.DwnlConnComp": INFO
     "se.sics.nstream.torrent.transfer.UpldConnComp": INFO
     "se.sics.ktoolbox.util.network.ports.One2NChannel": INFO
+    "se.sics.nstream.storage.cache": WARN
+    "se.sics.nstream.torrent.transfer.tracking": INFO
+    "se.sics.nstream.torrent.transfer": WARN
+    "se.sics.nstream.torrent.tracking": WARN
     
   console:
       enabled: true

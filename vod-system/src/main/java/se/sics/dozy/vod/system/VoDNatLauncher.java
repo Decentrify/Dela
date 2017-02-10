@@ -56,6 +56,7 @@ import se.sics.ktoolbox.croupier.CroupierSerializerSetup;
 import se.sics.ktoolbox.gradient.GradientSerializerSetup;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
 import se.sics.ktoolbox.netmngr.event.NetMngrReady;
+import se.sics.ktoolbox.nutil.fsm.ids.FSMIdRegistry;
 import se.sics.ktoolbox.omngr.OMngrSerializerSetup;
 import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
 import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
@@ -70,6 +71,7 @@ import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
+import se.sics.nstream.hops.libmngr.LocalLibTorrentFSM;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
@@ -132,6 +134,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         
         overlaysSetup();
         serializersSetup();
+        fsmSetup();
     }
     
     private void overlaysSetup() {
@@ -155,6 +158,10 @@ public class VoDNatLauncher extends ComponentDefinition {
         serializerId = StunSerializerSetup.registerSerializers(serializerId);
         serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
         serializerId = LedbatSerializerSetup.registerSerializers(serializerId);
+    }
+    
+    private void fsmSetup() {
+      FSMIdRegistry.registerPrefix(LocalLibTorrentFSM.NAME, (byte)1);
     }
 
     Handler handleStart = new Handler<Start>() {
