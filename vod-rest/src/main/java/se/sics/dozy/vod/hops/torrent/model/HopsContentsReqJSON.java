@@ -22,15 +22,15 @@ package se.sics.dozy.vod.hops.torrent.model;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsContentsReqJSON {
-    private Integer projectId;
+    private String projectId;
     
     public HopsContentsReqJSON() {}
 
-    public Integer getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Integer projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
 }

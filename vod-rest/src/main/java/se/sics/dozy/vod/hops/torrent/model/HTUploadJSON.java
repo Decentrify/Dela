@@ -35,7 +35,7 @@ public class HTUploadJSON {
     public static class Base {
 
         private TorrentIdJSON torrentId;
-        private String projectId = "";
+        private String projectId;
         private String torrentName;
         private HDFSResourceJSON manifestHDFSResource;
 

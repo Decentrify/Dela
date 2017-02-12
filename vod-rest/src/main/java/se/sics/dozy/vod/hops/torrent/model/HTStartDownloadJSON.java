@@ -39,7 +39,7 @@ public class HTStartDownloadJSON {
   public static abstract class Base {
 
     protected TorrentIdJSON torrentId;
-    protected String projectId = "";
+    protected String projectId;
     protected String torrentName;
     protected HDFSResourceJSON manifestHDFSResource;
     protected List<AddressJSON> partners;

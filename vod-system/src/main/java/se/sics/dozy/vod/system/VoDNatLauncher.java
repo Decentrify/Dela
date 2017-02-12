@@ -71,7 +71,7 @@ import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
-import se.sics.nstream.hops.libmngr.LocalLibTorrentFSM;
+import se.sics.nstream.hops.libmngr.LibTorrentFSM;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
@@ -161,7 +161,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
     
     private void fsmSetup() {
-      FSMIdRegistry.registerPrefix(LocalLibTorrentFSM.NAME, (byte)1);
+      FSMIdRegistry.registerPrefix(LibTorrentFSM.NAME, (byte)1);
     }
 
     Handler handleStart = new Handler<Start>() {

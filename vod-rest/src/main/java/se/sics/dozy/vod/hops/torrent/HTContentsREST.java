@@ -81,7 +81,7 @@ public class HTContentsREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Optional<Integer> projectId = Optional.absent();
+        Optional<String> projectId = Optional.absent();
         if (req.getProjectId() != null) {
             projectId = Optional.of(req.getProjectId());
         }
