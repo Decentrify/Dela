@@ -39,7 +39,7 @@ public class HTStartDownloadJSON {
   public static abstract class Base {
 
     protected TorrentIdJSON torrentId;
-    protected String projectId;
+    protected Integer projectId;
     protected String torrentName;
     protected HDFSResourceJSON manifestHDFSResource;
     protected List<AddressJSON> partners;
@@ -60,11 +60,11 @@ public class HTStartDownloadJSON {
       this.torrentName = torrentName;
     }
 
-    public String getProjectId() {
+    public Integer getProjectId() {
       return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Integer projectId) {
       this.projectId = projectId;
     }
 
