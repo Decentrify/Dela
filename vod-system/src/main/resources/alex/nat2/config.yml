@@ -23,21 +23,23 @@ logging:
     "se.sics.gvod.stream.congestion.PullLedbat": WARN
     "se.sics.gvod.stream.report.ReportComp": INFO
     "se.sics.nat.stun.client.StunClientComp": WARN
-    "NettyNetwork@41003": WARN
+    "NettyNetwork@30001": WARN
     "NettyNetwork@42003": WARN
     "NettyNetwork@40000": WARN
     "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": DEBUG
     "se.sics.nstream.library.LibraryMngrComp": INFO
-    "se.sics.nstream.storage.cache.SimpleKCache": INFO
     "se.sics.nstream.torrent.TransferFSM": INFO
     "se.sics.nstream.hops.hdfs.HDFSComp": INFO
     "se.sics.nstream.hops.hdfs.HDFSHelper": INFO
-    "se.sics.nutil.tracking.load.NetworkQueueLoadProxy": WARN
     "se.sics.nstream.torrent.TorrentComp": INFO
     "se.sics.nutil.network.bestEffort.BestEffortNetworkComp": INFO
     "se.sics.nstream.torrent.transfer.DwnlConnComp": INFO
     "se.sics.nstream.torrent.transfer.UpldConnComp": INFO
     "se.sics.ktoolbox.util.network.ports.One2NChannel": INFO
+    "se.sics.nstream.storage.cache.SimpleKCache": INFO
+    "se.sics.nstream.storage.durable.disk.DiskComp": INFO
+    "se.sics.ledbat.core.RTTEstimator": INFO
+    "se.sics.nutil.tracking.load.NetworkQueueLoadProxy": INFO
     
   console:
       enabled: true
