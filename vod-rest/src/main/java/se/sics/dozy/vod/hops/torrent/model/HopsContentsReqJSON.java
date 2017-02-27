@@ -18,19 +18,21 @@
  */
 package se.sics.dozy.vod.hops.torrent.model;
 
+import java.util.List;
+
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsContentsReqJSON {
-    private Integer projectId;
+    private List<Integer> projectIds;
     
     public HopsContentsReqJSON() {}
 
-    public Integer getProjectId() {
-        return projectId;
+    public List<Integer> getProjectIds() {
+        return projectIds;
     }
 
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Integer> projectIds) {
+        this.projectIds = projectIds;
     }
 }

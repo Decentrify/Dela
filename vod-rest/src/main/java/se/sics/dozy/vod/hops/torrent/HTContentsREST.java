@@ -18,7 +18,6 @@
  */
 package se.sics.dozy.vod.hops.torrent;
 
-import com.google.common.base.Optional;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -81,11 +80,7 @@ public class HTContentsREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
-        Optional<Integer> projectId = Optional.absent();
-        if (req.getProjectId() != null) {
-            projectId = Optional.of(req.getProjectId());
-        }
-        HopsContentsEvent.Request request = new HopsContentsEvent.Request(projectId);
+        HopsContentsEvent.Request request = new HopsContentsEvent.Request(req.getProjectIds());
         LOG.debug("waiting for hops contents:{} response", request.eventId);
         DozyResult<HopsContentsEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);

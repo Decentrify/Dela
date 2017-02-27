@@ -18,8 +18,10 @@
  */
 package se.sics.dozy.vod.hops.torrent.model;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import se.sics.dozy.vod.model.ElementSummaryJSON;
 import se.sics.gvod.mngr.util.ElementSummary;
 
@@ -27,28 +29,33 @@ import se.sics.gvod.mngr.util.ElementSummary;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HopsContentsSummaryJSON {
-    private List<ElementSummaryJSON> contents = new ArrayList<>();
 
-    public HopsContentsSummaryJSON(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
-    }
+  private Map<Integer, List<ElementSummaryJSON>> contents;
 
-    public HopsContentsSummaryJSON() {
-    }
+  public HopsContentsSummaryJSON(Map<Integer, List<ElementSummaryJSON>> contents) {
+    this.contents = contents;
+  }
 
-    public List<ElementSummaryJSON> getContents() {
-        return contents;
-    }
+  public HopsContentsSummaryJSON() {
+  }
 
-    public void setContents(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
-    }
+  public Map<Integer, List<ElementSummaryJSON>> getContents() {
+    return contents;
+  }
 
-    public static HopsContentsSummaryJSON resolve(List<ElementSummary> contents) {
-        List<ElementSummaryJSON> jsonContents = new ArrayList<>();
-        for (ElementSummary es : contents) {
-            jsonContents.add(ElementSummaryJSON.resolve(es));
-        }
-        return new HopsContentsSummaryJSON(jsonContents);
+  public void setContents(Map<Integer, List<ElementSummaryJSON>> contents) {
+    this.contents = contents;
+  }
+
+  public static HopsContentsSummaryJSON resolve(Map<Integer, List<ElementSummary>> contents) {
+    Map<Integer, List<ElementSummaryJSON>> jsonContents = new TreeMap<>();
+    for (Map.Entry<Integer, List<ElementSummary>> projectSummary : contents.entrySet()) {
+      List<ElementSummaryJSON> ps = new LinkedList<>();
+      jsonContents.put(projectSummary.getKey(), ps);
+      for (ElementSummary es : projectSummary.getValue()) {
+        ps.add(ElementSummaryJSON.resolve(es));
+      }
     }
+    return new HopsContentsSummaryJSON(jsonContents);
+  }
 }
