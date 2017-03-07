@@ -71,7 +71,7 @@ import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
-import se.sics.nstream.hops.libmngr.LibTorrentFSM;
+import se.sics.nstream.hops.libmngr.fsm.LibTFSM;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
@@ -161,7 +161,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
     
     private void fsmSetup() {
-      FSMIdRegistry.registerPrefix(LibTorrentFSM.NAME, (byte)1);
+      FSMIdRegistry.registerPrefix(LibTFSM.NAME, (byte)1);
     }
 
     Handler handleStart = new Handler<Start>() {
@@ -287,7 +287,8 @@ public class VoDNatLauncher extends ComponentDefinition {
         resources.add(new HTUploadREST.Basic(torrentIdFactory));
         resources.add(new HTUploadREST.XML(torrentIdFactory));
         resources.add(new HTStopREST(torrentIdFactory));
-        resources.add(new HTContentsREST(torrentIdFactory));
+        resources.add(new HTContentsREST.Basic(torrentIdFactory));
+        resources.add(new HTContentsREST.Hops(torrentIdFactory));
         resources.add(new TorrentExtendedStatusREST(torrentIdFactory));
         
 //        resources.add(new HDFSConnectionREST.Basic());

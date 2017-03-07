@@ -25,45 +25,50 @@ import se.sics.gvod.mngr.util.ElementSummary;
  */
 public class ElementSummaryJSON {
 
-    private String fileName;
-    private TorrentIdJSON torrentId;
-    private String torrentStatus;
-    
-    public ElementSummaryJSON(String name, TorrentIdJSON torrentId, String status) {
-        this.fileName = name;
-        this.torrentId = torrentId;
-        this.torrentStatus = status;
-    }
+  private String fileName;
+  private TorrentIdJSON torrentId;
+  private String torrentStatus;
 
-    public ElementSummaryJSON() {
-    }
+  public ElementSummaryJSON(String name, TorrentIdJSON torrentId, String status) {
+    this.fileName = name;
+    this.torrentId = torrentId;
+    this.torrentStatus = status;
+  }
 
-    public String getFileName() {
-        return fileName;
-    }
+  public ElementSummaryJSON() {
+  }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+  public String getFileName() {
+    return fileName;
+  }
 
-    public TorrentIdJSON getTorrentId() {
-        return torrentId;
-    }
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 
-    public void setTorrentId(TorrentIdJSON torrentId) {
-        this.torrentId = torrentId;
-    }
+  public TorrentIdJSON getTorrentId() {
+    return torrentId;
+  }
 
-    public String getTorrentStatus() {
-        return torrentStatus;
-    }
+  public void setTorrentId(TorrentIdJSON torrentId) {
+    this.torrentId = torrentId;
+  }
 
-    public void setTorrentStatus(String torrentStatus) {
-        this.torrentStatus = torrentStatus;
-    }
+  public String getTorrentStatus() {
+    return torrentStatus;
+  }
 
-    
-    public static ElementSummaryJSON resolve(ElementSummary les) {
-        return new ElementSummaryJSON(les.fileName, TorrentIdJSON.toJSON(les.torrentId), les.status.name());
-    }
+  public void setTorrentStatus(String torrentStatus) {
+    this.torrentStatus = torrentStatus;
+  }
+
+  @Override
+  public String toString() {
+    return "ElementSummaryJSON{" + "fileName=" + fileName + ", torrentId=" + torrentId + ", torrentStatus="
+      + torrentStatus + '}';
+  }
+
+  public static ElementSummaryJSON resolve(ElementSummary les) {
+    return new ElementSummaryJSON(les.fileName, TorrentIdJSON.toJSON(les.torrentId), les.status.name());
+  }
 }

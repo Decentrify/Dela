@@ -42,10 +42,12 @@ import se.sics.nstream.library.event.torrent.HopsContentsEvent;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Path("/library/contents")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class HTContentsREST implements DozyResource {
+public class HTContentsREST {
+
+  @Path("/library/hopscontents")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public static class Hops implements DozyResource {
 
     //TODO Alex - make into config?
     public static long timeout = 5000;
@@ -54,17 +56,17 @@ public class HTContentsREST implements DozyResource {
 
     private DozySyncI hopsTorrentI = null;
     protected OverlayIdFactory torrentIdFactory;
-    
-    public HTContentsREST(OverlayIdFactory torrentIdFactory) {
-        this.torrentIdFactory = torrentIdFactory;
+
+    public Hops(OverlayIdFactory torrentIdFactory) {
+      this.torrentIdFactory = torrentIdFactory;
     }
 
     @Override
     public void initialize(Map<String, DozySyncI> interfaces) {
-        hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
-        if (hopsTorrentI == null) {
-            throw new RuntimeException("no sync interface found for vod REST API");
-        }
+      hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+      if (hopsTorrentI == null) {
+        throw new RuntimeException("no sync interface found for vod REST API");
+      }
     }
 
     /**
@@ -75,20 +77,78 @@ public class HTContentsREST implements DozyResource {
      */
     @POST
     public Response getContentsSummary(HopsContentsReqJSON req) {
-        LOG.info("received hops library contents request");
-        if (!hopsTorrentI.isReady()) {
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
-        }
+      LOG.info("received hops library contents request for projects:{}", req.getProjectIds());
+      if (!hopsTorrentI.isReady()) {
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
+      }
 
-        HopsContentsEvent.Request request = new HopsContentsEvent.Request(req.getProjectIds());
-        LOG.debug("waiting for hops contents:{} response", request.eventId);
-        DozyResult<HopsContentsEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
-        Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
-        LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.getValue1()});
-        if (wsStatus.getValue0().equals(Response.Status.OK)) {
-            return Response.status(Response.Status.OK).entity(HopsContentsSummaryJSON.resolve(result.getValue().result.getValue())).build();
-        } else {
-            return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
-        }
+      HopsContentsEvent.Request request = new HopsContentsEvent.Request(req.getProjectIds());
+      LOG.debug("waiting for hops contents:{} response", request.eventId);
+      DozyResult<HopsContentsEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
+      Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
+      LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.
+        getValue1()});
+      if (wsStatus.getValue0().equals(Response.Status.OK)) {
+        HopsContentsSummaryJSON.Hops res = HopsContentsSummaryJSON.resolveHops(result.getValue().result.getValue());
+        LOG.info("returning contents:{}", new Object[]{res.getContents()});
+        return Response.status(Response.Status.OK).entity(res).build();
+      } else {
+        return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+      }
     }
+  }
+  
+  @Path("/library/basiccontents")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public static class Basic implements DozyResource {
+
+    //TODO Alex - make into config?
+    public static long timeout = 5000;
+
+    private static final Logger LOG = LoggerFactory.getLogger(DozyResource.class);
+
+    private DozySyncI hopsTorrentI = null;
+    protected OverlayIdFactory torrentIdFactory;
+
+    public Basic(OverlayIdFactory torrentIdFactory) {
+      this.torrentIdFactory = torrentIdFactory;
+    }
+
+    @Override
+    public void initialize(Map<String, DozySyncI> interfaces) {
+      hopsTorrentI = interfaces.get(DozyVoD.hopsTorrentDozyName);
+      if (hopsTorrentI == null) {
+        throw new RuntimeException("no sync interface found for vod REST API");
+      }
+    }
+
+    /**
+     * @return Response[{@link se.sics.dozy.vod.model.LibraryContentsJSON type}]
+     * with OK status or
+     * Response[{@link se.sics.dozy.vod.model.ErrorDescJSON type}] in case of
+     * error
+     */
+    @POST
+    public Response getContentsSummary(HopsContentsReqJSON req) {
+      LOG.info("received hops library contents request for projects:{}", req.getProjectIds());
+      if (!hopsTorrentI.isReady()) {
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
+      }
+
+      HopsContentsEvent.Request request = new HopsContentsEvent.Request(req.getProjectIds());
+      LOG.debug("waiting for hops contents:{} response", request.eventId);
+      DozyResult<HopsContentsEvent.Response> result = hopsTorrentI.sendReq(request, timeout);
+      Pair<Response.Status, String> wsStatus = ResponseStatusMapper.resolveContentsSummary(result);
+      LOG.info("hops contents:{} status:{} details:{}", new Object[]{request.eventId, wsStatus.getValue0(), wsStatus.
+        getValue1()});
+      if (wsStatus.getValue0().equals(Response.Status.OK)) {
+        HopsContentsSummaryJSON.Basic res = HopsContentsSummaryJSON.resolveBasic(result.getValue().result.getValue());
+        LOG.info("returning contents:{}", new Object[]{res.getContents()});
+        return Response.status(Response.Status.OK).entity(res).build();
+      } else {
+        return Response.status(wsStatus.getValue0()).entity(new ErrorDescJSON(wsStatus.getValue1())).build();
+      }
+    }
+  }
 }
