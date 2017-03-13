@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import se.sics.dozy.vod.model.ElementSummaryJSON;
-import se.sics.gvod.mngr.util.ElementSummary;
+import se.sics.nstream.mngr.util.ElementSummary;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
