@@ -36,6 +36,7 @@ public class HTUploadJSON {
 
     private TorrentIdJSON torrentId;
     private Integer projectId;
+    private Integer datasetId;
     private String torrentName;
     private HDFSResourceJSON manifestHDFSResource;
 
@@ -74,7 +75,7 @@ public class HTUploadJSON {
     protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint, OverlayIdFactory overlayIdFactory) {
       OverlayId tId = torrentId.resolve(overlayIdFactory);
       HDFSResource mr = manifestHDFSResource.resolve();
-      return new HopsTorrentUploadEvent.Request(tId, torrentName, projectId, hdfsEndpoint, mr);
+      return new HopsTorrentUploadEvent.Request(tId, torrentName, projectId, datasetId, hdfsEndpoint, mr);
     }
   }
 

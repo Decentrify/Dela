@@ -40,6 +40,7 @@ public class HTStartDownloadJSON {
 
     protected TorrentIdJSON torrentId;
     protected Integer projectId;
+    protected Integer datasetId;
     protected String torrentName;
     protected HDFSResourceJSON manifestHDFSResource;
     protected List<AddressJSON> partners;
@@ -68,6 +69,14 @@ public class HTStartDownloadJSON {
       this.projectId = projectId;
     }
 
+    public Integer getDatasetId() {
+      return datasetId;
+    }
+
+    public void setDatasetId(Integer datasetId) {
+      this.datasetId = datasetId;
+    }
+
     public HDFSResourceJSON getManifestHDFSResource() {
       return manifestHDFSResource;
     }
@@ -91,7 +100,7 @@ public class HTStartDownloadJSON {
       for (AddressJSON partner : partners) {
         p.add(partner.resolve());
       }
-      return new HopsTorrentDownloadEvent.StartRequest(tId, torrentName, projectId, mhe, mhr, p);
+      return new HopsTorrentDownloadEvent.StartRequest(tId, torrentName, projectId, datasetId, mhe, mhr, p);
     }
   }
 
