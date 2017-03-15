@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model.hops.util;
 
-import se.sics.nstream.hops.hdfs.HDFSEndpoint;
+import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

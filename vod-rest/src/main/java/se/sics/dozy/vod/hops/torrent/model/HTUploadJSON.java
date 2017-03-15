@@ -23,8 +23,8 @@ import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
-import se.sics.nstream.hops.hdfs.HDFSEndpoint;
-import se.sics.nstream.hops.hdfs.HDFSResource;
+import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
+import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 
 /**

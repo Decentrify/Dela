@@ -23,7 +23,7 @@ import java.util.Map;
 import org.javatuples.Pair;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
-import se.sics.nstream.hops.hdfs.HDFSResource;
+import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 import se.sics.nstream.hops.kafka.KafkaResource;
 
 /**
