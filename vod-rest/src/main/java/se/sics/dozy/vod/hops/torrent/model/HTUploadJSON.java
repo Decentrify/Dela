@@ -23,9 +23,9 @@ import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
+import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
 import se.sics.nstream.hops.storage.hdfs.HDFSResource;
-import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -64,6 +64,14 @@ public class HTUploadJSON {
       this.projectId = projectId;
     }
 
+    public Integer getDatasetId() {
+      return datasetId;
+    }
+
+    public void setDatasetId(Integer datasetId) {
+      this.datasetId = datasetId;
+    }
+    
     public HDFSResourceJSON getManifestHDFSResource() {
       return manifestHDFSResource;
     }

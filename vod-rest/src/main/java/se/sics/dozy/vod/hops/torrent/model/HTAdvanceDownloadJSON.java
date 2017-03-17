@@ -26,11 +26,11 @@ import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaEndpointJSON;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
-import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
-import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 import se.sics.nstream.hops.kafka.KafkaEndpoint;
 import se.sics.nstream.hops.kafka.KafkaResource;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
+import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
+import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -39,7 +39,7 @@ public abstract class HTAdvanceDownloadJSON {
 
     private TorrentIdJSON torrentId;
     private KafkaEndpointJSON kafkaEndpoint;
-    private ExtendedDetailsJSON extendedDetails;
+    private ExtendedDetailsJSON.Raw extendedDetails;
 
     public TorrentIdJSON getTorrentId() {
         return torrentId;
@@ -57,11 +57,11 @@ public abstract class HTAdvanceDownloadJSON {
         this.kafkaEndpoint = kafkaEndpoint;
     }
 
-    public ExtendedDetailsJSON getExtendedDetails() {
+    public ExtendedDetailsJSON.Raw getExtendedDetails() {
         return extendedDetails;
     }
 
-    public void setExtendedDetails(ExtendedDetailsJSON extendedDetails) {
+    public void setExtendedDetails(ExtendedDetailsJSON.Raw extendedDetails) {
         this.extendedDetails = extendedDetails;
     }
 

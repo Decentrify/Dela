@@ -19,49 +19,101 @@
 package se.sics.dozy.vod.hops.torrent.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.javatuples.Pair;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.dozy.vod.model.hops.util.KafkaResourceJSON;
-import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 import se.sics.nstream.hops.kafka.KafkaResource;
+import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class ExtendedDetailsJSON {
 
-    private Map<String, HDFSResourceJSON> hdfsDetails;
-    private Map<String, KafkaResourceJSON> kafkaDetails;
+  public static class Raw {
+    private List<RawHdfs> hdfsDetails;
+    private List<RawKafka> kafkaDetails;
 
-    public Map<String, HDFSResourceJSON> getHdfsDetails() {
-        return hdfsDetails;
+    public Raw() {
     }
 
-    public void setHdfsDetails(Map<String, HDFSResourceJSON> hdfsDetails) {
-        this.hdfsDetails = hdfsDetails;
+    public Raw(List<RawHdfs> hdfsDetails, List<RawKafka> kafkaDetails) {
+      this.hdfsDetails = hdfsDetails;
+      this.kafkaDetails = kafkaDetails;
     }
 
-    public Map<String, KafkaResourceJSON> getKafkaDetails() {
-        return kafkaDetails;
+    public List<RawHdfs> getHdfsDetails() {
+      return hdfsDetails;
     }
 
-    public void setKafkaDetails(Map<String, KafkaResourceJSON> kafkaDetails) {
-        this.kafkaDetails = kafkaDetails;
+    public void setHdfsDetails(List<RawHdfs> hdfsDetails) {
+      this.hdfsDetails = hdfsDetails;
     }
 
+    public List<RawKafka> getKafkaDetails() {
+      return kafkaDetails;
+    }
+
+    public void setKafkaDetails(List<RawKafka> kafkaDetails) {
+      this.kafkaDetails = kafkaDetails;
+    }
+    
     public Pair<Map<String, HDFSResource>, Map<String, KafkaResource>> resolve() {
-        Map<String, HDFSResource> hdfsResult = new HashMap<>();
-        for(Map.Entry<String, HDFSResourceJSON> e : hdfsDetails.entrySet()) {
-            hdfsResult.put(e.getKey(), e.getValue().resolve());
-        }
-        
-        Map<String, KafkaResource> kafkaResult = new HashMap<>();
-        for(Map.Entry<String, KafkaResourceJSON> e : kafkaDetails.entrySet()) {
-            kafkaResult.put(e.getKey(), e.getValue().resolve());
-        }
-        
-        return Pair.with(hdfsResult, kafkaResult);
+      Map<String, HDFSResource> hdfsResult = new HashMap<>();
+      for (RawHdfs e : hdfsDetails) {
+        hdfsResult.put(e.getFile(), e.getResource().resolve());
+      }
+
+      Map<String, KafkaResource> kafkaResult = new HashMap<>();
+      for (RawKafka e : kafkaDetails) {
+        kafkaResult.put(e.getFile(), e.getResource().resolve());
+      }
+
+      return Pair.with(hdfsResult, kafkaResult);
     }
+  }
+  
+  private static class RawHdfs {
+    private String file;
+    private HDFSResourceJSON resource;
+
+    public String getFile() {
+      return file;
+    }
+
+    public void setFile(String file) {
+      this.file = file;
+    }
+
+    public HDFSResourceJSON getResource() {
+      return resource;
+    }
+
+    public void setResource(HDFSResourceJSON resource) {
+      this.resource = resource;
+    }
+  }
+  
+  private static class RawKafka {
+    private String file;
+    private KafkaResourceJSON resource;
+
+    public String getFile() {
+      return file;
+    }
+
+    public void setFile(String file) {
+      this.file = file;
+    }
+
+    public KafkaResourceJSON getResource() {
+      return resource;
+    }
+
+    public void setResource(KafkaResourceJSON resource) {
+      this.resource = resource;
+    }
+  }
 }
