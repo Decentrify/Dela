@@ -66,7 +66,7 @@ public class HTUploadREST implements DozyResource {
 
     protected Response upload(HopsTorrentUploadEvent.Request request) {
         LOG.trace("received upload torrent request:{}", request.torrentId);
-
+        LOG.debug("received upload torrent:{} pid:{} did{}", new Object[]{request.torrentId, request.projectId, request.datasetId});
         if (!vodTorrentI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }

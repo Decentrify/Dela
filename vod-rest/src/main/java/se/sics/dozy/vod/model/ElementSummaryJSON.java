@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.util.ElementSummary;
+import se.sics.nstream.mngr.util.ElementSummary;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
