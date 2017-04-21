@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.system;
 
-import io.hops.util.dela.HopsConsumer;
+import io.hops.util.dela.DelaConsumer;
 import se.sics.nstream.hops.kafka.KafkaEndpoint;
 import se.sics.nstream.hops.kafka.KafkaHelper;
 import se.sics.nstream.hops.kafka.KafkaResource;
@@ -44,7 +44,7 @@ public class KafkaConsumer {
         System.err.println("connecting");
         KafkaEndpoint ke = new KafkaEndpoint(brokerEndpoint, restEndpoint, domain, projectId, keystore, truststore);
         KafkaResource kr = new KafkaResource(sessionId, topicName);
-        HopsConsumer kc = KafkaHelper.getKafkaConsumer(ke, kr);
+        DelaConsumer kc = KafkaHelper.getKafkaConsumer(ke, kr);
         kc.consume();
     }
 }
