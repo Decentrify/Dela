@@ -71,6 +71,7 @@ import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
+import se.sics.nstream.hops.SystemOverlays;
 import se.sics.nstream.hops.libmngr.fsm.LibTFSM;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
