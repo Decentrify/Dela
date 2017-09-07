@@ -71,6 +71,7 @@ public class HTAdvanceDownloadREST implements DozyResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
         }
 
+        LOG.debug("received advance request with kafka details:{}", request.kafkaDetails.size());
         LOG.debug("waiting for download:{}<{}> response", request.torrentId, request.eventId);
         DozyResult result = vodTorrentI.sendReq(request, timeout);
         Pair<Response.Status, String> wsStatus;

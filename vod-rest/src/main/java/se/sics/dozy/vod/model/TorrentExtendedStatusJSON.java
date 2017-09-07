@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.util.TorrentExtendedStatus;
+import se.sics.nstream.util.TorrentExtendedStatus;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -19,7 +19,7 @@
 package se.sics.dozy.vod.system;
 
 import java.util.Map;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -60,8 +60,8 @@ public class VoDEndpointREST implements DozyResource {
         }
     }
 
-    @GET
-    public Response vodEndpoint() {
+    @POST
+    public Response vodEndpoint(String delaVersion) {
         LOG.info("received vod endpoint request");
         if (!vodSystemI.isReady()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ErrorDescJSON("vod not ready")).build();
