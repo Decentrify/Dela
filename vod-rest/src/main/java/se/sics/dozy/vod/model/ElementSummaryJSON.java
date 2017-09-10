@@ -18,6 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
+import se.sics.nstream.library.util.TorrentState;
 import se.sics.nstream.mngr.util.ElementSummary;
 
 /**
@@ -69,10 +70,10 @@ public abstract class ElementSummaryJSON {
   }
 
   public static ElementSummaryJSON resolve(ElementSummary es) {
-    if (es instanceof ElementSummary.Download) {
-      ElementSummary.Download aux = (ElementSummary.Download) es;
-      return new ElementSummaryJSON.Download(aux.fileName, TorrentIdJSON.toJSON(aux.torrentId), aux.status.name(),
-        aux.speed, aux.dynamic);
+    if (es.status.equals(TorrentState.DOWNLOADING)) {
+      ElementSummary.Download d = (ElementSummary.Download)es;
+      return new ElementSummaryJSON.Download(es.fileName, TorrentIdJSON.toJSON(es.torrentId), es.status.name(),
+        d.speed, d.dynamic);
     } else {
       return new ElementSummaryJSON.Upload(es.fileName, TorrentIdJSON.toJSON(es.torrentId), es.status.name());
     }
