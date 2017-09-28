@@ -20,7 +20,7 @@ package se.sics.dozy;
 
 import com.google.common.util.concurrent.SettableFuture;
 import se.sics.kompics.KompicsEvent;
-import se.sics.ktoolbox.util.identifiable.Identifiable;
+import se.sics.kompics.id.Identifiable;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
