@@ -93,10 +93,11 @@ import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
 import se.sics.nstream.torrent.TorrentMngrPort;
-import se.sics.nstream.torrent.tracking.TorrentStatusPort;
 import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
 import se.sics.silk.CobwebMngrComp;
+import se.sics.silk.supervisor.TorrentCtrlPort;
+import se.sics.silk.supervisor.TorrentInfoPort;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -236,7 +237,9 @@ public class VoDNatLauncher extends ComponentDefinition {
       Channel.TWO_WAY);
     connect(libraryMngrComp.getNegative(TransferCtrlPort.class), cobwebMngrComp.getPositive(TransferCtrlPort.class),
       Channel.TWO_WAY);
-    connect(libraryMngrComp.getNegative(TorrentStatusPort.class), cobwebMngrComp.getPositive(TorrentStatusPort.class),
+    connect(libraryMngrComp.getNegative(TorrentCtrlPort.class), cobwebMngrComp.getPositive(TorrentCtrlPort.class),
+      Channel.TWO_WAY);
+    connect(libraryMngrComp.getNegative(TorrentInfoPort.class), cobwebMngrComp.getPositive(TorrentInfoPort.class),
       Channel.TWO_WAY);
   }
 
