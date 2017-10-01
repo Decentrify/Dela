@@ -92,11 +92,11 @@ import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
-import se.sics.nstream.torrent.TorrentMngrComp;
 import se.sics.nstream.torrent.TorrentMngrPort;
 import se.sics.nstream.torrent.tracking.TorrentStatusPort;
 import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
+import se.sics.silk.CobwebMngrComp;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -115,7 +115,7 @@ public class VoDNatLauncher extends ComponentDefinition {
   private Component timerComp;
   private Component networkMngrComp;
   private Component libraryMngrComp;
-  private Component torrentMngrComp;
+  private Component cobwebMngrComp;
   private Component storageMngrComp;
   private Component systemSyncIComp;
   private Component hopsHelperSyncIComp;
@@ -192,7 +192,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         selfAdr = content.systemAdr;
 
         setStorageMngr();
-        setTorrentMngr();
+        setCobwebMngr();
         setLibraryMngr();
         setSystemSyncI();
         setHopsHelperSyncI();
@@ -202,7 +202,7 @@ public class VoDNatLauncher extends ComponentDefinition {
         startWebserver();
 
         trigger(Start.event, storageMngrComp.control());
-        trigger(Start.event, torrentMngrComp.control());
+        trigger(Start.event, cobwebMngrComp.control());
         trigger(Start.event, libraryMngrComp.control());
         trigger(Start.event, systemSyncIComp.control());
         trigger(Start.event, hopsHelperSyncIComp.control());
@@ -216,13 +216,13 @@ public class VoDNatLauncher extends ComponentDefinition {
     storageMngrComp = create(DStorageMngrComp.class, new DStorageMngrComp.Init(selfAdr.getId()));
   }
 
-  private void setTorrentMngr() {
-    torrentMngrComp = create(TorrentMngrComp.class, new TorrentMngrComp.Init(selfAdr));
-    connect(torrentMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-    connect(torrentMngrComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
-    connect(torrentMngrComp.getNegative(DStreamControlPort.class), storageMngrComp.getPositive(DStreamControlPort.class),
+  private void setCobwebMngr() {
+    cobwebMngrComp = create(CobwebMngrComp.class, new CobwebMngrComp.Init(selfAdr));
+    connect(cobwebMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
+    connect(cobwebMngrComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
+    connect(cobwebMngrComp.getNegative(DStreamControlPort.class), storageMngrComp.getPositive(DStreamControlPort.class),
       Channel.TWO_WAY);
-    connect(torrentMngrComp.getNegative(DStoragePort.class), storageMngrComp.getPositive(DStoragePort.class),
+    connect(cobwebMngrComp.getNegative(DStoragePort.class), storageMngrComp.getPositive(DStoragePort.class),
       Channel.TWO_WAY);
   }
 
@@ -232,11 +232,11 @@ public class VoDNatLauncher extends ComponentDefinition {
     libraryMngrComp = create(LibraryMngrComp.class, new LibraryMngrComp.Init(selfAdr, new HopsLibraryProvider()));
     connect(libraryMngrComp.getNegative(DEndpointCtrlPort.class), storageMngrComp.getPositive(DEndpointCtrlPort.class),
       Channel.TWO_WAY);
-    connect(libraryMngrComp.getNegative(TorrentMngrPort.class), torrentMngrComp.getPositive(TorrentMngrPort.class),
+    connect(libraryMngrComp.getNegative(TorrentMngrPort.class), cobwebMngrComp.getPositive(TorrentMngrPort.class),
       Channel.TWO_WAY);
-    connect(libraryMngrComp.getNegative(TransferCtrlPort.class), torrentMngrComp.getPositive(TransferCtrlPort.class),
+    connect(libraryMngrComp.getNegative(TransferCtrlPort.class), cobwebMngrComp.getPositive(TransferCtrlPort.class),
       Channel.TWO_WAY);
-    connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class),
+    connect(libraryMngrComp.getNegative(TorrentStatusPort.class), cobwebMngrComp.getPositive(TorrentStatusPort.class),
       Channel.TWO_WAY);
   }
 
