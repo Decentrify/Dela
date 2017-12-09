@@ -26,3 +26,4 @@ hs_err_pid*
 /vod-system/*.log.gz
 
 vod-system/lib/
+/client/target/

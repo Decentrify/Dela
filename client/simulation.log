@@ -1,0 +1,23 @@
+[22:46:31,617] INFO  {Launcher} starting
+[22:46:31,624] INFO  {Launcher} path:https://bbc5.sics.se:42004/hops-site/api/public/cluster/dela/version
+[22:46:37,254] ERROR {Launcher} Handling an event caused a fault! Might be handled later...
+java.lang.RuntimeException: problem contacting hopssite - dela version
+	at se.sics.dela.client.Launcher.getDelaVersion(Launcher.java:189)
+	at se.sics.dela.client.Launcher.access$200(Launcher.java:67)
+	at se.sics.dela.client.Launcher$1.handle(Launcher.java:168)
+	at se.sics.dela.client.Launcher$1.handle(Launcher.java:163)
+	at se.sics.kompics.JavaComponent.executeEvent(JavaComponent.java:389)
+	at se.sics.kompics.JavaComponent.execute(JavaComponent.java:357)
+	at se.sics.kompics.ComponentCore.run(ComponentCore.java:212)
+	at se.sics.kompics.ComponentCore.exec(ComponentCore.java:283)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1689)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1644)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+[22:46:37,257] ERROR {Launcher} A fault was escalated to the root component: 
+KompicsFault(java.lang.RuntimeException: problem contacting hopssite - dela version thrown in Component(8aeb8542-81ca-4007-8c8d-6e2a9002a336):se.sics.dela.client.Launcher@20bfcddb while handling event se.sics.kompics.Start@3ea5d6d1) 
+
+
+[22:46:58,991] INFO  {Launcher} starting
+[22:46:58,996] INFO  {Launcher} path:https://bbc5.sics.se:42004/hops-site/api/public/cluster/dela/version

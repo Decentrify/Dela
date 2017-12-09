@@ -14,6 +14,7 @@
         <module>test-rest</module>
         <module>vod-rest</module>
         <module>vod-system</module>
+        <module>client</module>
     </modules>
     
     <properties>

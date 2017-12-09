@@ -3,8 +3,21 @@ package se.sics.dela.client;
 import com.google.common.base.Optional;
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Random;
 import java.util.UUID;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.caracaldb.MessageRegistrator;
@@ -75,6 +88,7 @@ public class Launcher extends ComponentDefinition {
   private Component storageMngrComp;
   //**************************************************************************
   private OverlayIdFactory torrentIdFactory;
+  private WebTarget hopssite;
 
   public Launcher() {
     LOG.debug("{}starting...", logPrefix);
@@ -83,12 +97,13 @@ public class Launcher extends ComponentDefinition {
     subscribe(handleNetReady, otherStatusPort);
 
     systemSetup();
+    setClient();
   }
 
   private void systemSetup() {
     //dela dir
     String delaS = config().getValue("hops.library.disk.summary", String.class);
-    if(delaS == null) {
+    if (delaS == null) {
       delaS = System.getProperty("user.home") + File.separator + ".dela" + File.separator + "library.summary";
       Config.Builder cb = config().modify(id());
       cb.setValue("hops.library.disk.summary", delaS);
@@ -146,6 +161,12 @@ public class Launcher extends ComponentDefinition {
     public void handle(Start event) {
       LOG.info("{}starting", logPrefix);
 
+      String delaVersion = getDelaVersion();
+      LOG.info("dela version:{}", delaVersion);
+      if(!delaVersion.equals("0.1")) {
+        LOG.error("wrong dela version");
+        Kompics.shutdown();
+      }
       timerComp = create(JavaTimer.class, Init.NONE);
       setNetworkMngr();
 
@@ -153,6 +174,60 @@ public class Launcher extends ComponentDefinition {
       trigger(Start.event, networkMngrComp.control());
     }
   };
+
+  private void setClient() {
+
+    String hopssiteVersion = config().getValue("hopssite.version", String.class);
+    String hopssiteTarget = config().getValue("hopssite.target", String.class);
+    TrustManager[] trustAllCerts = new TrustManager[]{
+      new X509TrustManager() {
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        }
+      }
+    };
+    
+    HostnameVerifier anyHost = new HostnameVerifier() {
+      @Override
+      public boolean verify(String string, SSLSession ssls) {
+        return true;
+      }
+    };
+
+    try {
+      SSLContext sc = SSLContext.getInstance("SSL");
+      sc.init(null, trustAllCerts, new java.security.SecureRandom());
+      if (hopssiteVersion.equals("bbc5")) {
+        hopssite = ClientBuilder.newBuilder().sslContext(sc).hostnameVerifier(anyHost).build().target(hopssiteTarget);
+      }
+    } catch (NoSuchAlgorithmException | KeyManagementException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  private String getDelaVersion() {
+    WebTarget webTarget = hopssite.path(Hopssite.ClusterService.delaVersion());
+    try {
+      LOG.info("path:{}", new Object[]{webTarget.getUri().toString()});
+      Response response = webTarget.request(MediaType.APPLICATION_JSON).get();
+      if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+        return response.readEntity(String.class);
+      } else {
+        throw new RuntimeException("problem contacting hopssite - dela version");
+      }
+    } catch (ProcessingException ex) {
+      throw new RuntimeException("problem contacting hopssite - dela version");
+    }
+  }
 
   private void setNetworkMngr() {
     LOG.info("{}setting up network mngr", logPrefix);
