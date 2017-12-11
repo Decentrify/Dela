@@ -194,7 +194,7 @@ public class Launcher extends ComponentDefinition {
     = new ClassMatchedHandler<NetMngrReady, Status.Internal<NetMngrReady>>() {
       @Override
       public void handle(NetMngrReady content, Status.Internal<NetMngrReady> container) {
-        LOG.info("{}setting up dela", logPrefix);
+        LOG.info("{}setting up dela with adr:{}", new Object[]{logPrefix, content.systemAdr});
         selfAdr = content.systemAdr;
 
         setStorageMngr();
