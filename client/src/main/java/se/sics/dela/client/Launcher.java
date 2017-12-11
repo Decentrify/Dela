@@ -18,6 +18,7 @@ import se.sics.kompics.ComponentDefinition;
 import se.sics.kompics.Handler;
 import se.sics.kompics.Init;
 import se.sics.kompics.Kompics;
+import se.sics.kompics.Negative;
 import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.config.Config;
@@ -49,7 +50,6 @@ import se.sics.nstream.hops.SystemOverlays;
 import se.sics.nstream.hops.libmngr.fsm.LibTFSM;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
-import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
 import se.sics.nstream.library.LibraryMngrComp;
 import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
@@ -69,6 +69,7 @@ public class Launcher extends ComponentDefinition {
   //*****************************CONNECTIONS**********************************
   //********************INTERNAL_DO_NOT_CONNECT_TO****************************
   private Positive<StatusPort> otherStatusPort = requires(StatusPort.class);
+  private Negative<HopsTorrentPort> torrentPort = provides(HopsTorrentPort.class);
   //****************************EXTERNAL_STATE********************************
   private KAddress selfAdr;
   //****************************INTERNAL_STATE********************************
@@ -78,9 +79,8 @@ public class Launcher extends ComponentDefinition {
   private Component torrentMngrComp;
   private Component storageMngrComp;
   //**************************************************************************
-  private OverlayIdFactory torrentIdFactory;
+  private Download.State downloadState;
   private WebTarget hopssite;
-  private String libDir;
 
   public Launcher() {
     LOG.debug("{}starting...", logPrefix);
@@ -88,11 +88,13 @@ public class Launcher extends ComponentDefinition {
     subscribe(handleStart, control);
     subscribe(handleNetReady, otherStatusPort);
 
+    downloadState = new Download.State();
     systemSetup();
     String hopssiteVersion = config().getValue("hopssite.version", String.class);
     String hopssiteTarget = config().getValue("hopssite.target", String.class);
     hopssite = WebClient.getClient(hopssiteVersion, hopssiteTarget);
-    libDir = System.getProperty("user.dir");
+    downloadState.setHopssite(hopssite);
+    downloadState.setLibDir(System.getProperty("user.dir"));
   }
 
   private void systemSetup() {
@@ -135,7 +137,9 @@ public class Launcher extends ComponentDefinition {
     OverlayRegistry.registerPrefix(TorrentIds.TORRENT_OVERLAYS, torrentOwnerId);
 
     IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
-    torrentIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
+    OverlayIdFactory torrentIdFactory
+      = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
+    downloadState.setTorrentIdFactory(torrentIdFactory);
   }
 
   private void serializersSetup() {
@@ -158,7 +162,7 @@ public class Launcher extends ComponentDefinition {
 
       String delaVersion = Hopssite.getDelaVersion(hopssite);
       LOG.info("dela version:{}", delaVersion);
-      if(!delaVersion.equals("0.1")) {
+      if (!delaVersion.equals("0.1")) {
         LOG.error("wrong dela version");
         Kompics.shutdown();
       }
@@ -193,7 +197,8 @@ public class Launcher extends ComponentDefinition {
         trigger(Start.event, libraryMngrComp.control());
 
         LOG.info("{}dela started", logPrefix);
-        readCommand(libDir);
+        downloadState = downloadState.setConnection(proxy, torrentPort.getPair());
+        readCommand();
       }
     };
 
@@ -223,6 +228,7 @@ public class Launcher extends ComponentDefinition {
       Channel.TWO_WAY);
     connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class),
       Channel.TWO_WAY);
+    connect(torrentPort, libraryMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
   }
 
   private static void setupFSM() throws FSMException {
@@ -236,26 +242,20 @@ public class Launcher extends ComponentDefinition {
     Kompics.setConfig(config);
   }
 
-  private void readCommand(String libDir) {
+  private void readCommand() {
     LOG.info("commands:");
     LOG.info("1) download:dataset - example: download:datasetA_1");
     LOG.info("waiting for command...");
-    Scanner scanner = new Scanner(System. in); 
-    String input = scanner. nextLine();
+    Scanner scanner = new Scanner(System.in);
+    String input = scanner.nextLine();
     LOG.info("command:{}", input);
-    if(input.startsWith("download")) {
-      download(input.substring(input.indexOf(":") + 1), libDir);
+    if (input.startsWith("download")) {
+      String dataset = input.substring(input.indexOf(":") + 1);
+      downloadState = downloadState.download(dataset);
+      downloadState = Download.setupDownload.apply(downloadState);
     }
   }
-  
-  private void download(String publicDSId, String libDir) {
-    LOG.info("download dataset:{}", publicDSId);
-    SearchDTO.ItemDetails result = Hopssite.getDatasetDetails(hopssite, publicDSId);
-    HopsTorrentDownloadEvent.StartRequest req = Download.startRequest(torrentIdFactory, publicDSId, result, libDir);
-    LOG.info("bootstrap:{}", req.partners);
-    trigger(req, libraryMngrComp.getPositive(HopsTorrentPort.class));
-  }
-  
+
   public static void main(String[] args) throws IOException, FSMException {
     if (Kompics.isOn()) {
       Kompics.shutdown();
