@@ -98,7 +98,7 @@ public class Launcher extends ComponentDefinition {
     downloadState.setLibDir(System.getProperty("user.dir"));
     downloadState.setDownloadStatusPeriod(1000); //1s
   }
-  
+
   private WebTarget getHopssite() {
     String hopssiteVersion = config().getValue("hopssite.version", String.class);
     String hopssiteTarget = config().getValue("hopssite.target", String.class);
@@ -207,7 +207,8 @@ public class Launcher extends ComponentDefinition {
 
         LOG.info("{}dela started", logPrefix);
         downloadState = downloadState.setConnection(proxy, torrentPort, timerPort);
-        readCommand();
+//        readCommand();
+        doCommand();
       }
     };
 
@@ -263,6 +264,12 @@ public class Launcher extends ComponentDefinition {
       downloadState = downloadState.download(dataset);
       downloadState = Download.setupDownload.apply(downloadState);
     }
+  }
+
+  private void doCommand() {
+    String dataset = "datasetA_1";
+    downloadState = downloadState.download(dataset);
+    downloadState = Download.setupDownload.apply(downloadState);
   }
 
   public static void main(String[] args) throws IOException, FSMException {

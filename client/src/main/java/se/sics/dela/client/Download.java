@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.kompics.ComponentProxy;
 import se.sics.kompics.Handler;
+import se.sics.kompics.Kompics;
 import se.sics.kompics.Positive;
 import se.sics.kompics.timer.CancelPeriodicTimeout;
 import se.sics.kompics.timer.SchedulePeriodicTimeout;
@@ -113,8 +114,18 @@ public class Download {
         if (s.pendingReq != null) {
           LOG.info("download:{}", new Object[]{event.result.getValue().getPercentageComplete()});
           s.pendingReq = null;
-          if(event.result.getValue().torrentStatus.equals(TorrentState.UPLOADING)) {
+          if (event.result.getValue().torrentStatus.equals(TorrentState.UPLOADING)) {
             cancelDownloadStatus(s);
+            Kompics.forceShutdown();
+            return;
+          }
+          if (event.result.getValue().getPercentageComplete() == 0) {
+            s.abortCounter = s.abortCounter--;
+            if (s.abortCounter == 0) {
+              cancelDownloadStatus(s);
+              Kompics.forceShutdown();
+              return;
+            }
           }
         }
       }
@@ -138,6 +149,8 @@ public class Download {
     private Optional<UUID> statusTimer = Optional.empty();
     //WAITING FIXES
     private TorrentExtendedStatusEvent.Request pendingReq; //TODO Alex fix broadcasting issue 
+    //20s to get some progress or else abort
+    private int abortCounter = 20;
     //***************************************************SETUP**********************************************************
 
     public State setConnection(ComponentProxy proxy, Positive<HopsTorrentPort> torrentPort,
