@@ -18,7 +18,6 @@ import se.sics.kompics.ComponentDefinition;
 import se.sics.kompics.Handler;
 import se.sics.kompics.Init;
 import se.sics.kompics.Kompics;
-import se.sics.kompics.Negative;
 import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.config.Config;
@@ -69,7 +68,8 @@ public class Launcher extends ComponentDefinition {
   //*****************************CONNECTIONS**********************************
   //********************INTERNAL_DO_NOT_CONNECT_TO****************************
   private Positive<StatusPort> otherStatusPort = requires(StatusPort.class);
-  private Negative<HopsTorrentPort> torrentPort = provides(HopsTorrentPort.class);
+  private Positive<HopsTorrentPort> torrentPort = requires(HopsTorrentPort.class);
+  private Positive<Timer> timerPort = requires(Timer.class);
   //****************************EXTERNAL_STATE********************************
   private KAddress selfAdr;
   //****************************INTERNAL_STATE********************************
@@ -85,16 +85,24 @@ public class Launcher extends ComponentDefinition {
   public Launcher() {
     LOG.debug("{}starting...", logPrefix);
 
+    downloadState = new Download.State();
     subscribe(handleStart, control);
     subscribe(handleNetReady, otherStatusPort);
+    subscribe(Download.getHandleDownloadStatus(downloadState), timerPort);
+    subscribe(Download.getHandleDownloadStatusResponse(downloadState), torrentPort);
+    subscribe(Download.handleTorrentResult, torrentPort);
 
-    downloadState = new Download.State();
     systemSetup();
-    String hopssiteVersion = config().getValue("hopssite.version", String.class);
-    String hopssiteTarget = config().getValue("hopssite.target", String.class);
-    hopssite = WebClient.getClient(hopssiteVersion, hopssiteTarget);
+    hopssite = getHopssite();
     downloadState.setHopssite(hopssite);
     downloadState.setLibDir(System.getProperty("user.dir"));
+    downloadState.setDownloadStatusPeriod(1000); //1s
+  }
+  
+  private WebTarget getHopssite() {
+    String hopssiteVersion = config().getValue("hopssite.version", String.class);
+    String hopssiteTarget = config().getValue("hopssite.target", String.class);
+    return WebClient.getClient(hopssiteVersion, hopssiteTarget);
   }
 
   private void systemSetup() {
@@ -167,6 +175,7 @@ public class Launcher extends ComponentDefinition {
         Kompics.shutdown();
       }
       timerComp = create(JavaTimer.class, Init.NONE);
+      connect(timerPort.getPair(), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
       setNetworkMngr();
 
       trigger(Start.event, timerComp.control());
@@ -197,7 +206,7 @@ public class Launcher extends ComponentDefinition {
         trigger(Start.event, libraryMngrComp.control());
 
         LOG.info("{}dela started", logPrefix);
-        downloadState = downloadState.setConnection(proxy, torrentPort.getPair());
+        downloadState = downloadState.setConnection(proxy, torrentPort, timerPort);
         readCommand();
       }
     };
@@ -228,7 +237,7 @@ public class Launcher extends ComponentDefinition {
       Channel.TWO_WAY);
     connect(libraryMngrComp.getNegative(TorrentStatusPort.class), torrentMngrComp.getPositive(TorrentStatusPort.class),
       Channel.TWO_WAY);
-    connect(torrentPort, libraryMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
+    connect(torrentPort.getPair(), libraryMngrComp.getPositive(HopsTorrentPort.class), Channel.TWO_WAY);
   }
 
   private static void setupFSM() throws FSMException {

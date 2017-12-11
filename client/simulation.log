@@ -21,3 +21,166 @@ KompicsFault(java.lang.RuntimeException: problem contacting hopssite - dela vers
 
 [22:46:58,991] INFO  {Launcher} starting
 [22:46:58,996] INFO  {Launcher} path:https://bbc5.sics.se:42004/hops-site/api/public/cluster/dela/version
+[13:43:19,023] INFO  {Launcher} starting
+[13:43:19,517] INFO  {Launcher} dela version:0.1
+[13:43:19,528] INFO  {Launcher} setting up network mngr
+[13:43:20,207] INFO  {NatDetectionComp} <nid:1179502548> detected nat - public ip:/193.10.67.178 nat type:OP
+[13:43:20,226] INFO  {Launcher} setting up dela
+[13:43:20,445] INFO  {Launcher} dela started
+[13:43:20,446] INFO  {Launcher} commands:
+[13:43:20,447] INFO  {Launcher} 1) download:dataset - example: download:datasetA_1
+[13:43:20,447] INFO  {Launcher} waiting for command...
+[13:43:41,955] INFO  {Launcher} command:download:datasetA_1
+[13:43:41,981] INFO  {Launcher} download dataset:datasetA_1
+[13:43:42,034] INFO  {Launcher} bootstrap:[193.10.64.44:42001<1512753380>:OP]
+[13:43:42,337] INFO  {TorrentTrackingComp} reporting in:null
+[13:45:39,321] INFO  {Launcher} starting
+[13:45:40,197] INFO  {Launcher} dela version:0.1
+[13:45:40,206] INFO  {Launcher} setting up network mngr
+[13:45:41,067] INFO  {NatDetectionComp} <nid:-1449499602> detected nat - public ip:/193.10.67.178 nat type:OP
+[13:45:41,073] INFO  {Launcher} setting up dela
+[13:45:41,210] INFO  {Launcher} dela started
+[13:45:41,210] INFO  {Launcher} commands:
+[13:45:41,210] INFO  {Launcher} 1) download:dataset - example: download:datasetA_1
+[13:45:41,210] INFO  {Launcher} waiting for command...
+[13:45:48,145] INFO  {Launcher} command:download:datasetA_1
+[13:45:48,173] INFO  {Launcher} download dataset:datasetA_1
+[13:45:48,347] INFO  {Launcher} bootstrap:[193.10.64.44:42001<1512753380>:OP]
+[13:45:48,433] INFO  {TorrentTrackingComp} reporting in:null
+[13:45:49,350] INFO  {Launcher} download:0.0
+[13:45:49,534] ERROR {DwnlConnComp} <t:TORRENT,o:01,bId:datasetA_1,f:0,p:1512753380:leecher>advance download
+[13:45:49,648] INFO  {TorrentTrackingComp} <tid:TORRENT,o:01,bId:datasetA_1>download - got manifest
+[13:45:49,696] INFO  {TorrentTrackingComp} <tid:TORRENT,o:01,bId:datasetA_1>download:TORRENT,o:01,bId:datasetA_1 starting
+[13:45:50,349] INFO  {Launcher} download:0.0
+[13:45:50,349] INFO  {Launcher} download:0.0
+[13:45:50,349] INFO  {Launcher} download:0.0
+[13:45:50,702] WARN  {TransferComp} <nid:-1449499602,oid:TORRENT,o:01,bId:datasetA_1>nothing
+[13:45:51,349] INFO  {Launcher} download:0.0
+[13:45:51,349] INFO  {Launcher} download:0.0
+[13:45:51,349] INFO  {Launcher} download:0.0
+[13:45:51,698] WARN  {TransferComp} <nid:-1449499602,oid:TORRENT,o:01,bId:datasetA_1>nothing
+[13:45:51,854] ERROR {DwnlConnComp} <t:TORRENT,o:01,bId:datasetA_1,f:1,p:1512753380:leecher>advance download
+[13:45:52,349] INFO  {Launcher} download:0.0
+[13:45:52,349] INFO  {Launcher} download:0.0
+[13:45:52,349] INFO  {Launcher} download:0.0
+[13:45:52,696] WARN  {TransferComp} <nid:-1449499602,oid:TORRENT,o:01,bId:datasetA_1>nothing
+[13:45:52,696] INFO  {TorrentTrackingComp} <tid:TORRENT,o:01,bId:datasetA_1>download:TORRENT,o:01,bId:datasetA_1 done
+[13:45:53,347] INFO  {Launcher} download:100.0
+[13:45:54,348] INFO  {Launcher} download:100.0
+[13:45:55,351] INFO  {Launcher} download:100.0
+[13:45:56,349] INFO  {Launcher} download:100.0
+[13:45:57,347] INFO  {Launcher} download:100.0
+[13:45:58,351] INFO  {Launcher} download:100.0
+[13:45:59,350] INFO  {Launcher} download:100.0
+[13:46:00,350] INFO  {Launcher} download:100.0
+[13:46:01,347] INFO  {Launcher} download:100.0
+[13:46:02,350] INFO  {Launcher} download:100.0
+[13:46:03,349] INFO  {Launcher} download:100.0
+[13:46:04,347] INFO  {Launcher} download:100.0
+[13:46:05,348] INFO  {Launcher} download:100.0
+[13:46:06,350] INFO  {Launcher} download:100.0
+[13:46:07,349] INFO  {Launcher} download:100.0
+[13:46:08,348] INFO  {Launcher} download:100.0
+[13:46:09,351] INFO  {Launcher} download:100.0
+[13:46:10,349] INFO  {Launcher} download:100.0
+[13:46:11,348] INFO  {Launcher} download:100.0
+[13:46:12,350] INFO  {Launcher} download:100.0
+[13:46:13,347] INFO  {Launcher} download:100.0
+[13:46:14,350] INFO  {Launcher} download:100.0
+[13:46:15,349] INFO  {Launcher} download:100.0
+[13:46:16,348] INFO  {Launcher} download:100.0
+[13:46:17,347] INFO  {Launcher} download:100.0
+[13:46:18,349] INFO  {Launcher} download:100.0
+[13:46:19,349] INFO  {Launcher} download:100.0
+[13:46:20,348] INFO  {Launcher} download:100.0
+[13:46:21,350] INFO  {Launcher} download:100.0
+[13:46:22,348] INFO  {Launcher} download:100.0
+[13:46:23,348] INFO  {Launcher} download:100.0
+[13:46:24,349] INFO  {Launcher} download:100.0
+[13:46:25,350] INFO  {Launcher} download:100.0
+[13:46:26,348] INFO  {Launcher} download:100.0
+[13:46:27,348] INFO  {Launcher} download:100.0
+[13:46:28,351] INFO  {Launcher} download:100.0
+[13:46:29,350] INFO  {Launcher} download:100.0
+[13:46:30,349] INFO  {Launcher} download:100.0
+[13:46:31,349] INFO  {Launcher} download:100.0
+[13:46:32,349] INFO  {Launcher} download:100.0
+[13:46:33,348] INFO  {Launcher} download:100.0
+[13:46:34,348] INFO  {Launcher} download:100.0
+[13:46:35,349] INFO  {Launcher} download:100.0
+[13:46:36,350] INFO  {Launcher} download:100.0
+[13:46:37,348] INFO  {Launcher} download:100.0
+[13:46:38,348] INFO  {Launcher} download:100.0
+[13:46:39,349] INFO  {Launcher} download:100.0
+[13:46:40,349] INFO  {Launcher} download:100.0
+[13:46:41,348] INFO  {Launcher} download:100.0
+[13:46:42,350] INFO  {Launcher} download:100.0
+[13:46:43,349] INFO  {Launcher} download:100.0
+[13:46:44,348] INFO  {Launcher} download:100.0
+[13:46:45,348] INFO  {Launcher} download:100.0
+[13:46:46,348] INFO  {Launcher} download:100.0
+[13:46:47,350] INFO  {Launcher} download:100.0
+[13:46:48,349] INFO  {Launcher} download:100.0
+[13:46:49,350] INFO  {Launcher} download:100.0
+[13:46:50,349] INFO  {Launcher} download:100.0
+[13:46:51,350] INFO  {Launcher} download:100.0
+[13:46:52,350] INFO  {Launcher} download:100.0
+[13:46:53,350] INFO  {Launcher} download:100.0
+[13:46:54,348] INFO  {Launcher} download:100.0
+[13:46:55,351] INFO  {Launcher} download:100.0
+[13:46:56,349] INFO  {Launcher} download:100.0
+[13:46:57,349] INFO  {Launcher} download:100.0
+[13:46:58,349] INFO  {Launcher} download:100.0
+[13:46:59,350] INFO  {Launcher} download:100.0
+[13:47:00,350] INFO  {Launcher} download:100.0
+[13:47:01,348] INFO  {Launcher} download:100.0
+[13:47:02,349] INFO  {Launcher} download:100.0
+[13:47:03,347] INFO  {Launcher} download:100.0
+[13:47:04,347] INFO  {Launcher} download:100.0
+[13:47:05,348] INFO  {Launcher} download:100.0
+[13:47:06,348] INFO  {Launcher} download:100.0
+[13:47:07,348] INFO  {Launcher} download:100.0
+[13:47:08,350] INFO  {Launcher} download:100.0
+[13:47:09,350] INFO  {Launcher} download:100.0
+[13:47:10,348] INFO  {Launcher} download:100.0
+[13:47:11,350] INFO  {Launcher} download:100.0
+[13:47:12,349] INFO  {Launcher} download:100.0
+[13:47:13,349] INFO  {Launcher} download:100.0
+[13:47:14,349] INFO  {Launcher} download:100.0
+[13:47:15,349] INFO  {Launcher} download:100.0
+[13:47:16,349] INFO  {Launcher} download:100.0
+[13:47:17,350] INFO  {Launcher} download:100.0
+[13:47:18,348] INFO  {Launcher} download:100.0
+[13:47:19,348] INFO  {Launcher} download:100.0
+[13:47:20,350] INFO  {Launcher} download:100.0
+[13:47:21,349] INFO  {Launcher} download:100.0
+[13:47:22,349] INFO  {Launcher} download:100.0
+[13:47:23,350] INFO  {Launcher} download:100.0
+[13:47:24,350] INFO  {Launcher} download:100.0
+[13:47:25,348] INFO  {Launcher} download:100.0
+[13:47:26,350] INFO  {Launcher} download:100.0
+[13:47:27,350] INFO  {Launcher} download:100.0
+[13:47:28,349] INFO  {Launcher} download:100.0
+[13:47:29,347] INFO  {Launcher} download:100.0
+[13:47:30,349] INFO  {Launcher} download:100.0
+[13:47:31,350] INFO  {Launcher} download:100.0
+[13:47:32,348] INFO  {Launcher} download:100.0
+[13:47:33,350] INFO  {Launcher} download:100.0
+[13:47:34,350] INFO  {Launcher} download:100.0
+[13:47:35,350] INFO  {Launcher} download:100.0
+[13:47:36,348] INFO  {Launcher} download:100.0
+[13:47:37,350] INFO  {Launcher} download:100.0
+[13:47:38,350] INFO  {Launcher} download:100.0
+[13:47:39,349] INFO  {Launcher} download:100.0
+[13:47:40,349] INFO  {Launcher} download:100.0
+[13:47:41,350] INFO  {Launcher} download:100.0
+[13:47:42,351] INFO  {Launcher} download:100.0
+[13:47:43,351] INFO  {Launcher} download:100.0
+[13:47:44,348] INFO  {Launcher} download:100.0
+[13:47:45,348] INFO  {Launcher} download:100.0
+[13:47:46,350] INFO  {Launcher} download:100.0
+[13:47:47,350] INFO  {Launcher} download:100.0
+[13:47:48,350] INFO  {Launcher} download:100.0
+[13:47:49,348] INFO  {Launcher} download:100.0
+[13:47:50,350] INFO  {Launcher} download:100.0
+[13:47:51,348] INFO  {Launcher} download:100.0
