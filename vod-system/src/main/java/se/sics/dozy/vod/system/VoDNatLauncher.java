@@ -92,11 +92,12 @@ import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
-import se.sics.nstream.torrent.TorrentMngrComp;
-import se.sics.nstream.torrent.TorrentMngrPort;
+import se.sics.silk.torrent.TorrentMngrPort;
 import se.sics.nstream.torrent.tracking.TorrentStatusPort;
 import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
+import se.sics.silk.torrentmngr.TorrentMngrComp;
+import se.sics.silk.torrentmngr.TorrentMngrFSM;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -327,6 +328,7 @@ public class VoDNatLauncher extends ComponentDefinition {
   private static void setupFSM() throws FSMException {
     FSMIdentifierFactory fsmIdFactory = FSMIdentifierFactory.DEFAULT;
     fsmIdFactory.registerFSMDefId(LibTFSM.NAME);
+    fsmIdFactory.registerFSMDefId(TorrentMngrFSM.NAME);
 
     Config.Impl config = (Config.Impl) Kompics.getConfig();
     Config.Builder builder = Kompics.getConfig().modify(UUID.randomUUID());
