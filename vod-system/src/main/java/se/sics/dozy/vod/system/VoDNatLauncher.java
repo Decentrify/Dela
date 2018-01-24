@@ -214,6 +214,7 @@ public class VoDNatLauncher extends ComponentDefinition {
 
   private void setStorageMngr() {
     storageMngrComp = create(DStorageMngrComp.class, new DStorageMngrComp.Init(selfAdr.getId()));
+    connect(storageMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
   }
 
   private void setTorrentMngr() {
