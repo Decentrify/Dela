@@ -328,11 +328,11 @@
             </goals>
             <configuration>
               <shadedArtifactAttached>true</shadedArtifactAttached> 
-              <shadedClassifierName>dozy</shadedClassifierName> 
+              <shadedClassifierName>silk</shadedClassifierName> 
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>se.sics.dela.client.Launcher</mainClass> 
+                  <mainClass>se.sics.silk.client.Launcher</mainClass> 
                 </transformer>
               </transformers>
               <filters>
