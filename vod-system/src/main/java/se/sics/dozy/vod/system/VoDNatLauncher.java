@@ -75,7 +75,6 @@ import se.sics.ledbat.LedbatSerializerSetup;
 import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
-import se.sics.nstream.hops.SystemOverlays;
 import se.sics.nstream.hops.libmngr.fsm.LibTFSM;
 import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
@@ -92,11 +91,12 @@ import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
-import se.sics.nstream.torrent.TorrentMngrComp;
-import se.sics.nstream.torrent.TorrentMngrPort;
 import se.sics.nstream.torrent.tracking.TorrentStatusPort;
 import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
+import se.sics.silk.SystemOverlays;
+import se.sics.silkold.torrent.TorrentMngrPort;
+import se.sics.silkold.torrentmngr.TorrentMngrComp;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
