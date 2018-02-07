@@ -126,6 +126,7 @@ public class Launcher extends ComponentDefinition {
         + "library.summary";
       cb.setValue(ClientConfig.LIBRARY_SUMMARY, librarySummaryPath);
     }
+     LOG.info("library summary path:{}", librarySummaryPath);
     File librarySummaryFile = new File(librarySummaryPath);
     if (!librarySummaryFile.exists()) {
       librarySummaryFile.getParentFile().mkdirs();
@@ -141,11 +142,12 @@ public class Launcher extends ComponentDefinition {
     String libraryPath = config().getValue(ClientConfig.LIBRARY_PATH, String.class);
     if (libraryPath == null) {
       libraryPath = System.getProperty("user.home") + File.separator + ".dela" + File.separator + "library";
-      cb.setValue(ClientConfig.LIBRARY_SUMMARY, libraryPath);
+      cb.setValue(ClientConfig.LIBRARY_PATH, libraryPath);
     }
-    File librarySummaryDir = new File(libraryPath);
-    if (!librarySummaryDir.exists()) {
-      librarySummaryDir.mkdirs();
+    LOG.info("library path:{}", libraryPath);
+    File libraryPathDir = new File(libraryPath);
+    if (!libraryPathDir.exists()) {
+      libraryPathDir.mkdirs();
     }
     //
     ConfigUpdate cu = cb.finalise();
@@ -334,7 +336,7 @@ public class Launcher extends ComponentDefinition {
       StreamId streamId5 = TorrentIdHelper.streamId(endpointId, torrentId, file5);
       
       StreamEndpoint streamEndpoint = new DiskEndpoint();
-      String torrentPath = config.getValue("LIBRARY_PATH", String.class) + File.separator + torrentName;
+      String torrentPath = config.getValue(ClientConfig.LIBRARY_PATH, String.class) + File.separator + torrentName;
       StreamResource resource1 = new DiskResource(torrentPath, "file1");
       StreamResource resource2 = new DiskResource(torrentPath, "file2");
       StreamResource resource3 = new DiskResource(torrentPath, "file3");
