@@ -67,6 +67,7 @@ import se.sics.nstream.storage.durable.util.StreamResource;
 import se.sics.nstream.util.BlockDetails;
 import se.sics.silk.SystemOverlays;
 import se.sics.silk.TorrentIdHelper;
+import se.sics.silk.r2torrent.R2ExtendedNetworkComp;
 import se.sics.silk.r2torrent.R2TorrentComp;
 import se.sics.silk.r2torrent.torrent.R1FileDownload;
 import se.sics.silk.r2torrent.torrent.R1FileUpload;
@@ -94,6 +95,7 @@ public class Launcher extends ComponentDefinition {
   private Component timerComp;
   private Component networkMngrComp;
   private Component storageMngrComp;
+  private Component torrentNetComp;
   private Component torrentMngrComp;
 
   public Launcher() {
@@ -219,6 +221,7 @@ public class Launcher extends ComponentDefinition {
         setTorrentMngr();
         
         trigger(Start.event, storageMngrComp.control());
+        trigger(Start.event, torrentNetComp.control());
         trigger(Start.event, torrentMngrComp.control());
 
         LOG.info("{}dela started", logPrefix);
@@ -233,9 +236,13 @@ public class Launcher extends ComponentDefinition {
   }
 
   private void setTorrentMngr() {
+    torrentNetComp = create(R2ExtendedNetworkComp.class, new R2ExtendedNetworkComp.Init(selfAdr));
+    connect(torrentNetComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
+    connect(torrentNetComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
+    
     torrentMngrComp = create(R2TorrentComp.class, new R2TorrentComp.Init(selfAdr));
     connect(torrentMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-    connect(torrentMngrComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
+    connect(torrentMngrComp.getNegative(Network.class), torrentNetComp.getPositive(Network.class), Channel.TWO_WAY);
     connect(torrentMngrComp.getNegative(DEndpointCtrlPort.class), storageMngrComp.getPositive(DEndpointCtrlPort.class), 
       Channel.TWO_WAY);
     connect(torrentMngrComp.getNegative(DStreamControlPort.class), storageMngrComp.getPositive(DStreamControlPort.class),
