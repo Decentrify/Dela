@@ -53,11 +53,14 @@ import se.sics.nat.mngr.SimpleNatMngrComp;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.StreamId;
 import se.sics.nstream.TorrentIds;
+import se.sics.nstream.hops.hdfs.disk.DiskComp;
 import se.sics.nstream.hops.storage.disk.DiskEndpoint;
 import se.sics.nstream.hops.storage.disk.DiskResource;
+import se.sics.nstream.storage.durable.DEndpointCtrlPort;
 import se.sics.nstream.storage.durable.DStorageMngrComp;
 import se.sics.nstream.storage.durable.DStoragePort;
 import se.sics.nstream.storage.durable.DStreamControlPort;
+import se.sics.nstream.storage.durable.DurableStorageProvider;
 import se.sics.nstream.storage.durable.util.MyStream;
 import se.sics.nstream.storage.durable.util.StreamEndpoint;
 import se.sics.nstream.storage.durable.util.StreamResource;
@@ -217,7 +220,7 @@ public class Launcher extends ComponentDefinition {
         trigger(Start.event, torrentMngrComp.control());
 
         LOG.info("{}dela started", logPrefix);
-        Driver driver = new Driver(proxy, config(), torrentMngrComp);
+        Driver driver = new Driver(selfAdr, proxy, config(), torrentMngrComp);
         driver.doCommand();
       }
     };
@@ -231,6 +234,8 @@ public class Launcher extends ComponentDefinition {
     torrentMngrComp = create(R2TorrentComp.class, new R2TorrentComp.Init(selfAdr));
     connect(torrentMngrComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
     connect(torrentMngrComp.getNegative(Network.class), networkMngrComp.getPositive(Network.class), Channel.TWO_WAY);
+    connect(torrentMngrComp.getNegative(DEndpointCtrlPort.class), storageMngrComp.getPositive(DEndpointCtrlPort.class), 
+      Channel.TWO_WAY);
     connect(torrentMngrComp.getNegative(DStreamControlPort.class), storageMngrComp.getPositive(DStreamControlPort.class),
       Channel.TWO_WAY);
     connect(torrentMngrComp.getNegative(DStoragePort.class), storageMngrComp.getPositive(DStoragePort.class),
@@ -280,24 +285,28 @@ public class Launcher extends ComponentDefinition {
   }
 
   public static class Driver {
-
+    final KAddress selfAdr;
     final ComponentProxy proxy;
     final Component torrentMngrComp;
     final Config config;
     OverlayId torrentId;
     R1TorrentDetails torrentDetails;
 
-    public Driver(ComponentProxy proxy, Config config, Component torrentMngrComp) {
+    public Driver(KAddress selfAdr, ComponentProxy proxy, Config config, Component torrentMngrComp) {
+      this.selfAdr = selfAdr;
       this.proxy = proxy;
       this.torrentMngrComp = torrentMngrComp;
       this.config = config;
     }
 
     private void torrentDetails(String torrentName) {
+      IntIdFactory intIdFactory = new IntIdFactory(new Random());
       
       torrentId = TorrentIds.torrentId(new BasicBuilders.IntBuilder(1));
-      torrentDetails = new R1TorrentDetails(HashUtil.getAlgName(HashUtil.SHA));
-      IntIdFactory intIdFactory = new IntIdFactory(new Random());
+      Identifier endpointId = intIdFactory.id(new BasicBuilders.IntBuilder(0));
+      DurableStorageProvider endpoint = new DiskComp.StorageProvider(selfAdr.getId());
+      torrentDetails = new R1TorrentDetails(HashUtil.getAlgName(HashUtil.SHA), endpointId, endpoint);
+      
 
       Identifier file1 = intIdFactory.id(new BasicBuilders.IntBuilder(1));
       Identifier file2 = intIdFactory.id(new BasicBuilders.IntBuilder(2));
@@ -318,14 +327,13 @@ public class Launcher extends ComponentDefinition {
       torrentDetails.addMetadata(file4, fileMetadata);
       torrentDetails.addMetadata(file5, fileMetadata);
       
-      Identifier endpointId = intIdFactory.id(new BasicBuilders.IntBuilder(0));
       StreamId streamId1 = TorrentIdHelper.streamId(endpointId, torrentId, file1);
       StreamId streamId2 = TorrentIdHelper.streamId(endpointId, torrentId, file2);
       StreamId streamId3 = TorrentIdHelper.streamId(endpointId, torrentId, file3);
       StreamId streamId4 = TorrentIdHelper.streamId(endpointId, torrentId, file4);
       StreamId streamId5 = TorrentIdHelper.streamId(endpointId, torrentId, file5);
       
-      StreamEndpoint endpoint = new DiskEndpoint();
+      StreamEndpoint streamEndpoint = new DiskEndpoint();
       String torrentPath = config.getValue("LIBRARY_PATH", String.class) + File.separator + torrentName;
       StreamResource resource1 = new DiskResource(torrentPath, "file1");
       StreamResource resource2 = new DiskResource(torrentPath, "file2");
@@ -333,11 +341,11 @@ public class Launcher extends ComponentDefinition {
       StreamResource resource4 = new DiskResource(torrentPath, "file4");
       StreamResource resource5 = new DiskResource(torrentPath, "file5");
       
-      MyStream stream1 = new MyStream(endpoint, resource1);
-      MyStream stream2 = new MyStream(endpoint, resource2);
-      MyStream stream3 = new MyStream(endpoint, resource3);
-      MyStream stream4 = new MyStream(endpoint, resource4);
-      MyStream stream5 = new MyStream(endpoint, resource5);
+      MyStream stream1 = new MyStream(streamEndpoint, resource1);
+      MyStream stream2 = new MyStream(streamEndpoint, resource2);
+      MyStream stream3 = new MyStream(streamEndpoint, resource3);
+      MyStream stream4 = new MyStream(streamEndpoint, resource4);
+      MyStream stream5 = new MyStream(streamEndpoint, resource5);
       
       torrentDetails.addStorage(file1, streamId1, stream1);
       torrentDetails.addStorage(file2, streamId2, stream2);
