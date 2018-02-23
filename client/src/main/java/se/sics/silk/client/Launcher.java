@@ -76,8 +76,10 @@ import se.sics.silk.r2torrent.torrent.R1TorrentCtrlPort;
 import se.sics.silk.r2torrent.torrent.event.R1TorrentCtrlEvents;
 import se.sics.silk.r2torrent.torrent.util.R1FileMetadata;
 import se.sics.silk.r2torrent.torrent.util.R1TorrentDetails;
+import se.sics.silk.r2torrent.transfer.R1DownloadComp;
 import se.sics.silk.r2torrent.transfer.R1TransferLeecher;
 import se.sics.silk.r2torrent.transfer.R1TransferSeeder;
+import se.sics.silk.r2torrent.transfer.R1UploadComp;
 import se.sics.silkold.torrentmngr.TorrentMngrFSM;
 
 public class Launcher extends ComponentDefinition {
@@ -268,6 +270,8 @@ public class Launcher extends ComponentDefinition {
   }
 
   public static void main(String[] args) throws IOException, FSMException {
+    R1DownloadComp.HardCodedConfig.CWND_SIZE = 100;
+    R1UploadComp.HardCodedConfig.cwndSize = 100;
     Launcher.LOG.info("config file:{}", System.getProperties().getProperty("config.file"));
     if (Kompics.isOn()) {
       Kompics.shutdown();
@@ -325,8 +329,7 @@ public class Launcher extends ComponentDefinition {
 
       long fileLength = 1000 * 1000;
       int pieceSize = 1024;
-      int nrPieces = 10;
-      int nrBlocks = 5;
+      int nrPieces = 100;
       BlockDetails defaultBlock = new BlockDetails(pieceSize * nrPieces, nrPieces, pieceSize, pieceSize);
       R1FileMetadata fileMetadata = R1FileMetadata.instance(fileLength, defaultBlock);
 
