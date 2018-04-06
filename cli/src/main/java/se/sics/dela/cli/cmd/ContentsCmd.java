@@ -18,14 +18,11 @@
  */
 package se.sics.dela.cli.cmd;
 
-import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
+@Parameters(commandDescription = "Dataset transfers currently served by the dela daemon")
 public class ContentsCmd {
-  @Parameter(description = "public datasetId", names = "-dataset")
-  public String datasetId;
-  @Parameter(description = "local name of dataset - used for directory name as well", names = "-name")
-  public String datasetName;
 }

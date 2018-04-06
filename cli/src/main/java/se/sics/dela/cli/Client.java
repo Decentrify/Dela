@@ -19,6 +19,7 @@
 package se.sics.dela.cli;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
 import com.google.gson.Gson;
 import java.io.PrintWriter;
@@ -49,11 +50,20 @@ public class Client {
 
   public static void main(String[] args) {
     JCommander jc = registerCmds();
+    PrintWriter out = new PrintWriter(System.out);
     try {
       jc.parse(args);
-      executeCmd(jc.getParsedAlias());
+      executeCmd(out, jc.getParsedAlias());
+    } catch(MissingCommandException ex) {
+      out.write(ex.getMessage());
+      StringBuilder sb = new StringBuilder();
+      jc.usage(sb);
+      out.write(sb.toString());
     } catch (ParameterException ex) {
-      jc.usage();
+      out.write(ex.getMessage());
+      StringBuilder sb = new StringBuilder();
+      jc.usage(jc.getParsedCommand(), sb);
+      out.write(sb.toString());
     }
   }
 
@@ -87,8 +97,7 @@ public class Client {
     return jcb.build();
   }
 
-  private static void executeCmd(String cmdName) {
-    PrintWriter out = new PrintWriter(System.out);
+  private static void executeCmd(PrintWriter out, String cmdName) {
     switch (cmdName) {
       case Cmds.SERVICE: {
         try {

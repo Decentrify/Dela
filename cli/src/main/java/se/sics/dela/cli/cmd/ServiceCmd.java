@@ -18,8 +18,11 @@
  */
 package se.sics.dela.cli.cmd;
 
+import com.beust.jcommander.Parameters;
+
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
+@Parameters(commandDescription="Dela deamon status: online/offline")
 public class ServiceCmd {
 }

@@ -67,12 +67,15 @@ public class Dela {
 
         @Override
         public void accept(HopsContentsSummaryJSON.Hops items) {
+          out.printf("%20s", "DatasetId");
+          out.printf(" | %11s", "Status");
+          out.printf(" | DatasetName\n");
           for (HopsContentsSummaryJSON.ContentsElement projectItems : items.getContents()) {
             for (ElementSummaryJSON item : projectItems.projectContents) {
-              out.write("id:" + item.getTorrentId().getVal());
-              out.write(" name:" + item.getFileName());
-              out.write(" " + item.getTorrentStatus());
-              out.write("\n");
+              datasetIdFormat(out, item.getTorrentId().getVal());
+              out.printf(" | %11s", item.getTorrentStatus());
+              out.printf(" | %s", item.getFileName());
+              out.printf("\n");
             }
           }
         }
@@ -84,27 +87,42 @@ public class Dela {
 
         @Override
         public void accept(TorrentExtendedStatusJSON item) {
-          out.write("id:" + item.getTorrentId().getVal());
-          out.write(" " + item.getTorrentStatus());
+          out.printf("%20s", "DatasetId");
+          out.printf(" | %11s", "Status");
+          out.printf(" | Completed | DownloadSpeed\n");
+          datasetIdFormat(out, item.getTorrentId().getVal());
+          out.printf(" | %11s", item.getTorrentStatus());
           if (item.getTorrentStatus().equals("DOWNLOADING")) {
-            out.write(" " + Math.round(item.getPercentageCompleted()) + "%");
+            out.printf(" | %8s%%", Math.round(item.getPercentageCompleted()));
             downloadSpeed(out, item.getDownloadSpeed());
           }
-          out.write("\n");
+          out.printf("\n");
         }
       };
+    }
+    
+    private static void datasetIdFormat(PrintWriter out, String datasetId) {
+      if(datasetId.length() < 20) {
+        out.printf("%20s", datasetId);
+      } else if(datasetId.length() < 50) {
+        out.printf("%50s", datasetId);
+      } else if(datasetId.length() < 100) {
+        out.printf("%100s", datasetId);
+      } else {
+        out.printf(datasetId);
+      }
     }
     
     private static void downloadSpeed(PrintWriter out, long downloadSpeed) {
       DecimalFormat f = new DecimalFormat("##.00");
       if(downloadSpeed < 1024) {
-        out.write(" " + downloadSpeed + "B/s");
+        out.printf(" | %9s B/s", downloadSpeed);
       } else if (downloadSpeed < 1024*1024) {
-        double speed = (double)downloadSpeed / 1024;
-        out.write(" " + f.format(speed) + "KB/s");
+        String speed = f.format((double)downloadSpeed / 1024);
+        out.printf(" | %8s KB/s", speed);
       } else if (downloadSpeed < 1024*1024*1024) {
-        double speed = (double)downloadSpeed / (1024*1024);
-        out.write(" " + f.format(speed) + "MB/s");
+        String speed = f.format((double)downloadSpeed / (1024*1024));
+        out.printf(" | %8s MB/s", speed);
       }
     }
   }

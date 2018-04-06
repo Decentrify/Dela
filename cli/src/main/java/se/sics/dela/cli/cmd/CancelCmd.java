@@ -19,11 +19,13 @@
 package se.sics.dela.cli.cmd;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
+@Parameters(commandDescription="Cancel dataset transfer")
 public class CancelCmd {
-  @Parameter(description = "public datasetId", names = "-dataset", required = true)
+  @Parameter(description = "Public dataset id", names = "-dataset", required = true)
   public String datasetId;
 }

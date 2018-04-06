@@ -59,11 +59,27 @@ public class Tracker {
       return new Consumer<SearchServiceDTO.Item[]>() {
         @Override
         public void accept(SearchServiceDTO.Item[] items) {
+          out.printf("%20s", "DatasetId");
+          out.printf(" | DatasetName\n");
           for (SearchServiceDTO.Item item : items) {
-            out.write(item.getPublicDSId() + " - " + item.getDataset().getName() + "\n");
+            datasetIdFormat(out, item.getPublicDSId());
+            out.printf(" | %s", item.getDataset().getName());
+            out.printf("\n");
           }
         }
       };
+    }
+    
+    private static void datasetIdFormat(PrintWriter out, String datasetId) {
+      if(datasetId.length() < 20) {
+        out.printf("%20s", datasetId);
+      } else if(datasetId.length() < 50) {
+        out.printf("%50s", datasetId);
+      } else if(datasetId.length() < 100) {
+        out.printf("%100s", datasetId);
+      } else {
+        out.printf(datasetId);
+      }
     }
   }
 
