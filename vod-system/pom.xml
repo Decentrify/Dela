@@ -71,6 +71,11 @@
       <artifactId>dropwizard</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.yammer.dropwizard</groupId>
+      <artifactId>dropwizard-core</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
         
     <dependency>
       <groupId>se.sics.gvod.hops</groupId>

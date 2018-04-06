@@ -11,10 +11,10 @@
         <module>api</module>
         <module>core</module>
         <module>dropwizard</module>
-        <module>test-rest</module>
         <module>vod-rest</module>
         <module>vod-system</module>
         <module>client</module>
+        <module>cli</module>
     </modules>
     
     <properties>
@@ -34,11 +34,6 @@
     
     <dependencies>
         <!-- other -->
-        <dependency>
-            <groupId>com.yammer.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>
