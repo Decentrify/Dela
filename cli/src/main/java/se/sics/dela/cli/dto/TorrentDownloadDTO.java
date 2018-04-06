@@ -28,7 +28,7 @@ public class TorrentDownloadDTO {
 
   public static class Start {
 
-    private TorrentId torrentId;
+    private TorrentIdJSON torrentId;
     private String torrentName;
     private Integer projectId;
     private Integer datasetId;
@@ -36,7 +36,7 @@ public class TorrentDownloadDTO {
     private List<AddressJSON> partners;
     private HDFSEndpoint hdfsEndpoint;
 
-    public Start(TorrentId torrentId, String torrentName,
+    public Start(TorrentIdJSON torrentId, String torrentName,
       Integer projectId, Integer datasetId, HDFSResource manifestHDFSResource,
       List<AddressJSON> partners, HDFSEndpoint hdfsEndpoint) {
       this.torrentId = torrentId;
@@ -59,11 +59,11 @@ public class TorrentDownloadDTO {
       this.torrentName = torrentName;
     }
 
-    public TorrentId getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
       return torrentId;
     }
 
-    public void setTorrentId(TorrentId torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
       this.torrentId = torrentId;
     }
 
@@ -111,7 +111,7 @@ public class TorrentDownloadDTO {
   @XmlRootElement
   public static class Advance {
 
-    private TorrentId torrentId;
+    private TorrentIdJSON torrentId;
     private Object kafkaEndpoint;
     private HDFSEndpoint hdfsEndpoint;
     private ExtendedDetails extendedDetails;
@@ -119,18 +119,18 @@ public class TorrentDownloadDTO {
     public Advance() {
     }
 
-    public Advance(TorrentId torrentId, HDFSEndpoint hdfsEndpoint, ExtendedDetails extendedDetails) {
+    public Advance(TorrentIdJSON torrentId, HDFSEndpoint hdfsEndpoint, ExtendedDetails extendedDetails) {
       this.torrentId = torrentId;
       this.kafkaEndpoint = null;
       this.hdfsEndpoint = hdfsEndpoint;
       this.extendedDetails = extendedDetails;
     }
 
-    public TorrentId getTorrentId() {
+    public TorrentIdJSON getTorrentId() {
       return torrentId;
     }
 
-    public void setTorrentId(TorrentId torrentId) {
+    public void setTorrentId(TorrentIdJSON torrentId) {
       this.torrentId = torrentId;
     }
 

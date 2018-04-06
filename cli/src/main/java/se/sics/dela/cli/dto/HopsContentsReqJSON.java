@@ -16,18 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.cmd;
+package se.sics.dela.cli.dto;
 
-import com.beust.jcommander.Parameter;
-import se.sics.dela.cli.Tracker;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class SearchCmd {
-  @Parameter(description = "tracker used", names = "-target")
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "search term", names = "-term", required = true)
-  public String term;
+public class HopsContentsReqJSON {
+
+  private List<Integer> projectIds = new LinkedList<>();
+
+  public HopsContentsReqJSON() {
+  }
+
+  public List<Integer> getProjectIds() {
+    return projectIds;
+  }
+
+  public void setProjectIds(List<Integer> projectIds) {
+    this.projectIds = projectIds;
+  }
 }

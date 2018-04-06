@@ -16,18 +16,47 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.cmd;
-
-import com.beust.jcommander.Parameter;
-import se.sics.dela.cli.Tracker;
+package se.sics.dela.cli.dto;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class SearchCmd {
-  @Parameter(description = "tracker used", names = "-target")
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "search term", names = "-term", required = true)
-  public String term;
+public class ElementSummaryJSON {
+
+  private String fileName;
+  private TorrentIdJSON torrentId;
+  private String torrentStatus;
+
+  public ElementSummaryJSON() {
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
+  public TorrentIdJSON getTorrentId() {
+    return torrentId;
+  }
+
+  public void setTorrentId(TorrentIdJSON torrentId) {
+    this.torrentId = torrentId;
+  }
+
+  public String getTorrentStatus() {
+    return torrentStatus;
+  }
+
+  public void setTorrentStatus(String torrentStatus) {
+    this.torrentStatus = torrentStatus;
+  }
+
+  @Override
+  public String toString() {
+    return "ElementSummaryJSON{" + "fileName=" + fileName + ", torrentId=" + torrentId + ", torrentStatus="
+      + torrentStatus + '}';
+  }
 }

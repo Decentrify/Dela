@@ -19,15 +19,11 @@
 package se.sics.dela.cli.cmd;
 
 import com.beust.jcommander.Parameter;
-import se.sics.dela.cli.Tracker;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class SearchCmd {
-  @Parameter(description = "tracker used", names = "-target")
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "search term", names = "-term", required = true)
-  public String term;
+public class CancelCmd {
+  @Parameter(description = "public datasetId", names = "-dataset", required = true)
+  public String datasetId;
 }

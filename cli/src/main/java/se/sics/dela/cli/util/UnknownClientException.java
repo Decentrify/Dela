@@ -16,18 +16,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.cmd;
-
-import com.beust.jcommander.Parameter;
-import se.sics.dela.cli.Tracker;
+package se.sics.dela.cli.util;
 
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class SearchCmd {
-  @Parameter(description = "tracker used", names = "-target")
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "search term", names = "-term", required = true)
-  public String term;
+public class UnknownClientException extends Exception {
+  public UnknownClientException(String msg) {
+    super(msg);
+  }
+  
+  public UnknownClientException(Throwable cause) {
+    super(cause);
+  }
+  
+  public UnknownClientException() {
+    super();
+  }
 }

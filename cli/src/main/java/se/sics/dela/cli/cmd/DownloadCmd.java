@@ -26,9 +26,9 @@ import se.sics.dela.cli.Tracker;
  */
 public class DownloadCmd {
   @Parameter(description = "tracker used", names = "-target")
-  public String target = Tracker.Target.BBC5_TEST;
+  public String target = Tracker.Target.HOPS;
   @Parameter(description = "public datasetId", names = "-dataset", required = true)
   public String datasetId;
-  @Parameter(description = "datasetName to name to save it under", names = "-name", required = true)
+  @Parameter(description = "local name of dataset - used for directory name as well", names = "-name")
   public String datasetName;
 }

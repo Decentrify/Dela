@@ -16,35 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.cmd;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import com.beust.jcommander.Parameter;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@XmlRootElement
-public class TorrentId {
-
-  private String val;
-
-  public TorrentId() {
-  }
-
-  public TorrentId(String val) {
-    this.val = val;
-  }
-
-  public String getVal() {
-    return val;
-  }
-
-  public void setVal(String val) {
-    this.val = val;
-  }
-
-  @Override
-  public String toString() {
-    return "TorrentId{" + "val=" + val + '}';
-  }
+public class DetailsCmd {
+  @Parameter(description = "public datasetId", names = "-dataset", required = true)
+  public String datasetId;
 }

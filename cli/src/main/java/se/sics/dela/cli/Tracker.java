@@ -19,8 +19,10 @@
 package se.sics.dela.cli;
 
 import com.google.gson.Gson;
+import java.io.PrintWriter;
 import java.util.function.Consumer;
 import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.util.UnknownClientException;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.httpsclient.WebResponse;
 
@@ -31,9 +33,9 @@ public class Tracker {
 
   public static class Target {
 
-    public static String HOPS = "https://hops.site:443/hops-site/api";
+    public static String HOPS = "https://hops.site:51081/hops-site/api";
     public static String BBC5 = "https://bbc5.sics.se:43080/hops-site/api";
-    public static String BBC5_TEST = "https://localhost:52300/hops-site/api";
+    public static String BBC5_TEST = "https://bbc5.sics.se:52300/hops-site/api";
   }
 
   public static class Path {
@@ -53,14 +55,13 @@ public class Tracker {
 
   public static class Printers {
 
-    public static Consumer<SearchServiceDTO.Item[]> searchResultConsolePrinter() {
+    public static Consumer<SearchServiceDTO.Item[]> searchResultConsolePrinter(final PrintWriter out) {
       return new Consumer<SearchServiceDTO.Item[]>() {
         @Override
         public void accept(SearchServiceDTO.Item[] items) {
           for (SearchServiceDTO.Item item : items) {
-            System.out.println(item.getPublicDSId() + " - " + item.getDataset().getName());
+            out.write(item.getPublicDSId() + " - " + item.getDataset().getName() + "\n");
           }
-          System.out.flush();
         }
       };
     }
@@ -68,35 +69,54 @@ public class Tracker {
 
   public static class Ops {
 
-    public static SearchServiceDTO.Item[] search(String target, String term) {
+    public static SearchServiceDTO.Item[] search(String target, String term) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         SearchServiceDTO.Params searchParam = new SearchServiceDTO.Params(term);
         WebResponse resp;
-        resp = client
-          .setTarget(target)
-          .setPath(Path.search())
-          .setPayload(searchParam)
-          .doPost();
-        SearchServiceDTO.SearchResult pageResult = resp.readContent(SearchServiceDTO.SearchResult.class);
 
-        resp = client
-          .setPath(Path.searchResult(pageResult.getSessionId(), 0, pageResult.getNrHits()))
-          .setPayload(null)
-          .doGet();
-        SearchServiceDTO.Item[] result = parseSearchResult(resp);
-
-        return result;
+        try {
+          resp = client
+            .setTarget(target)
+            .setPath(Path.search())
+            .setPayload(searchParam)
+            .doPost();
+          if (!resp.statusOk()) {
+            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+          }
+          SearchServiceDTO.SearchResult pageResult = resp.readContent(SearchServiceDTO.SearchResult.class);
+          resp = client
+            .setPath(Path.searchResult(pageResult.getSessionId(), 0, pageResult.getNrHits()))
+            .setPayload(null)
+            .doGet();
+          if (!resp.statusOk()) {
+            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+          }
+          SearchServiceDTO.Item[] result = parseSearchResult(resp);
+          return result;
+        } catch (UnknownClientException ex) {
+          throw ex;
+        } catch (Exception ex) {
+          throw new UnknownClientException(ex);
+        }
       }
     }
 
-    public static SearchServiceDTO.ItemDetails datasetDetails(String target, String publicDSId) {
+    public static SearchServiceDTO.ItemDetails datasetDetails(String target, String publicDSId) throws
+      UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp = client
           .setTarget(target)
           .setPath(Path.datasetDetails(publicDSId))
           .doGet();
+        if (!resp.statusOk()) {
+          throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+        }
         SearchServiceDTO.ItemDetails result = resp.readContent(SearchServiceDTO.ItemDetails.class);
         return result;
+      } catch (UnknownClientException ex) {
+        throw ex;
+      } catch (Exception ex) {
+        throw new UnknownClientException(ex);
       }
     }
 
