@@ -181,7 +181,7 @@ public class Dela {
             if (torrentActiveError(errorDesc.get())) {
               throw new ManagedClientException("torrent: " + req.getTorrentId().getVal() + " already active");
             } else {
-              throw new UnknownClientException("dela download failed with:" + resp.response.getStatus());
+              throw new UnknownClientException("dela download failed with:" + errorDesc.get().getDetails());
             }
           } else {
             throw new UnknownClientException("dela download failed with status" + resp.response.getStatus());

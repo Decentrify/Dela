@@ -22,11 +22,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
 import com.google.gson.Gson;
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import se.sics.dela.cli.cmd.CancelCmd;
 import se.sics.dela.cli.cmd.ContentsCmd;
 import se.sics.dela.cli.cmd.DetailsCmd;
@@ -48,23 +50,28 @@ public class Client {
 
   private static Map<String, Object> cmds = new HashMap<>();
 
-  public static void main(String[] args) {
+  public static int main(String[] args) {
     JCommander jc = registerCmds();
     PrintWriter out = new PrintWriter(System.out);
     try {
       jc.parse(args);
-      executeCmd(out, jc.getParsedAlias());
-    } catch(MissingCommandException ex) {
+      return executeCmd(out, jc.getParsedAlias());
+    } catch (MissingCommandException ex) {
       out.write(ex.getMessage());
       StringBuilder sb = new StringBuilder();
       jc.usage(sb);
       out.write(sb.toString());
+      return -1;
     } catch (ParameterException ex) {
       out.write(ex.getMessage());
       StringBuilder sb = new StringBuilder();
       jc.usage(jc.getParsedCommand(), sb);
       out.write(sb.toString());
+      return -1;
+    } finally {
+      out.flush();
     }
+    
   }
 
   private static JCommander registerCmds() {
@@ -97,83 +104,129 @@ public class Client {
     return jcb.build();
   }
 
-  private static void executeCmd(PrintWriter out, String cmdName) {
+  private static int executeCmd(PrintWriter out, String cmdName) {
     switch (cmdName) {
       case Cmds.SERVICE: {
         try {
           Dela.Ops.contact(delaVersion());
           out.write("service online\n");
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         } catch (ManagedClientException ex) {
           out.write(ex.getMessage() + "\n");
+          return -1;
         }
       }
-      break;
       case Cmds.SEARCH: {
         SearchCmd cmd = (SearchCmd) cmds.get(Cmds.SEARCH);
         try {
           SearchServiceDTO.Item[] items = Tracker.Ops.search(cmd.target, cmd.term);
           Tracker.Printers.searchResultConsolePrinter(out).accept(items);
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         }
       }
-      break;
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         try {
           Dela.Ops.contact(delaVersion());
-          SearchServiceDTO.ItemDetails datasetDetails = Tracker.Ops.datasetDetails(cmd.target, cmd.datasetId);
-          String datasetName = (cmd.datasetName == null) ? cmd.datasetId : cmd.datasetName;
-          Dela.Ops.download(cmd.datasetId, datasetName, libDir(), getBootstrap(datasetDetails.getBootstrap()));
+          SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.target, cmd.datasetId);
+          TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(cmd.datasetId);
+          if (delaDetails.getTorrentStatus().equals("NONE")) {
+            String libDir = libDir();
+            String datasetName = getDatasetName(out, cmd);
+            out.printf("Library: %s \n", libDir);
+            out.printf("Saving dataset with id: %s as: %s \n", cmd.datasetId, datasetName);
+            Dela.Ops.download(cmd.datasetId, datasetName, libDir(), getBootstrap(trackerDetails.getBootstrap()));
+          } else {
+            out.printf("Dataset with id: %s already active \n", cmd.datasetId);
+          }
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         } catch (ManagedClientException ex) {
           out.write(ex.getMessage() + "\n");
+          return -1;
         }
       }
-      break;
       case Cmds.CONTENTS: {
         try {
           Dela.Ops.contact(delaVersion());
           ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
           HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents();
           Dela.Printers.contentsConsolePrinter(out).accept(contents);
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         } catch (ManagedClientException ex) {
           out.write(ex.getMessage() + "\n");
+          return -1;
         }
       }
-      break;
       case Cmds.DETAILS: {
         try {
           Dela.Ops.contact(delaVersion());
           DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
           TorrentExtendedStatusJSON torrent = Dela.Ops.details(cmd.datasetId);
           Dela.Printers.detailsConsolePrinter(out).accept(torrent);
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         } catch (ManagedClientException ex) {
           out.write(ex.getMessage() + "\n");
+          return -1;
         }
       }
-      break;
       case Cmds.CANCEL: {
         try {
           Dela.Ops.contact(delaVersion());
           CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
           Dela.Ops.cancel(cmd.datasetId);
+          return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
+          return -1;
         } catch (ManagedClientException ex) {
           out.write(ex.getMessage() + "\n");
+          return -1;
         }
       }
-      break;
+      default: return -1;
     }
-    out.flush();
+  }
+
+  private static String getDatasetName(PrintWriter out, DownloadCmd cmd) throws ManagedClientException {
+    String libDir = libDir();
+    String datasetName;
+    if (cmd.datasetName != null) {
+      datasetName = cmd.datasetName;
+      if (datasetExists(libDir, datasetName)) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Folder for dataset: ").append(cmd.datasetName);
+        sb.append("already exists in library: ").append(libDir);
+        sb.append("\nDelete folder or rename dataset.");
+        throw new ManagedClientException(sb.toString());
+      }
+    } else {
+      datasetName = cmd.datasetId;
+      Random rand = new Random();
+      while (datasetExists(libDir, datasetName)) {
+        datasetName = cmd.datasetId + "_" + rand.nextInt(Integer.MAX_VALUE);
+      }
+    }
+    return datasetName;
+  }
+
+  private static boolean datasetExists(String lib, String datasetName) {
+    File dataset = new File(lib, datasetName);
+    return dataset.exists();
   }
 
   private static String delaVersion() {

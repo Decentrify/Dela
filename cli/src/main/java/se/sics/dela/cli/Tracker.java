@@ -20,8 +20,11 @@ package se.sics.dela.cli;
 
 import com.google.gson.Gson;
 import java.io.PrintWriter;
+import java.util.Optional;
 import java.util.function.Consumer;
+import se.sics.dela.cli.dto.JsonResponse;
 import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.util.ManagedClientException;
 import se.sics.dela.cli.util.UnknownClientException;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.httpsclient.WebResponse;
@@ -69,13 +72,13 @@ public class Tracker {
         }
       };
     }
-    
+
     private static void datasetIdFormat(PrintWriter out, String datasetId) {
-      if(datasetId.length() < 20) {
+      if (datasetId.length() < 20) {
         out.printf("%20s", datasetId);
-      } else if(datasetId.length() < 50) {
+      } else if (datasetId.length() < 50) {
         out.printf("%50s", datasetId);
-      } else if(datasetId.length() < 100) {
+      } else if (datasetId.length() < 100) {
         out.printf("%100s", datasetId);
       } else {
         out.printf(datasetId);
@@ -97,7 +100,12 @@ public class Tracker {
             .setPayload(searchParam)
             .doPost();
           if (!resp.statusOk()) {
-            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+            Optional<JsonResponse> errorDesc = getErrorDesc(resp);
+            if (errorDesc.isPresent()) {
+              throw new UnknownClientException(errorDesc.get().getErrorMsg());
+            } else {
+              throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+            }
           }
           SearchServiceDTO.SearchResult pageResult = resp.readContent(SearchServiceDTO.SearchResult.class);
           resp = client
@@ -105,7 +113,12 @@ public class Tracker {
             .setPayload(null)
             .doGet();
           if (!resp.statusOk()) {
-            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+            Optional<JsonResponse> errorDesc = getErrorDesc(resp);
+            if (errorDesc.isPresent()) {
+              throw new UnknownClientException(errorDesc.get().getErrorMsg());
+            } else {
+              throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+            }
           }
           SearchServiceDTO.Item[] result = parseSearchResult(resp);
           return result;
@@ -118,18 +131,27 @@ public class Tracker {
     }
 
     public static SearchServiceDTO.ItemDetails datasetDetails(String target, String publicDSId) throws
-      UnknownClientException {
+      UnknownClientException, ManagedClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp = client
           .setTarget(target)
           .setPath(Path.datasetDetails(publicDSId))
           .doGet();
         if (!resp.statusOk()) {
-          throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+          Optional<JsonResponse> errorDesc = getErrorDesc(resp);
+          if (errorDesc.isPresent()) {
+            if (errorDesc.get().getErrorMsg().equals("no dataset")) {
+              throw new ManagedClientException("wrong dataset id - no such dataset on tracker");
+            } else {
+              throw new UnknownClientException(errorDesc.get().getErrorMsg());
+            }
+          } else {
+            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+          }
         }
         SearchServiceDTO.ItemDetails result = resp.readContent(SearchServiceDTO.ItemDetails.class);
         return result;
-      } catch (UnknownClientException ex) {
+      } catch (UnknownClientException | ManagedClientException ex) {
         throw ex;
       } catch (Exception ex) {
         throw new UnknownClientException(ex);
@@ -140,6 +162,15 @@ public class Tracker {
       String sResult = wResult.response.readEntity(String.class);
       SearchServiceDTO.Item[] result = new Gson().fromJson(sResult, SearchServiceDTO.Item[].class);
       return result;
+    }
+
+    private static Optional<JsonResponse> getErrorDesc(WebResponse resp) {
+      try {
+        JsonResponse errorDetails = resp.readErrorDetails(JsonResponse.class);
+        return Optional.of(errorDetails);
+      } catch (IllegalStateException ex) {
+        return Optional.empty();
+      }
     }
   }
 }
