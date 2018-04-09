@@ -18,6 +18,8 @@
  */
 package se.sics.dela.cli;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import java.io.File;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -46,9 +48,33 @@ import se.sics.ktoolbox.httpsclient.WebResponse;
  */
 public class Dela {
 
+  private static Config config() throws ManagedClientException {
+    String delaHome = System.getenv("DELA_HOME");
+    if (delaHome == null) {
+      throw new ManagedClientException("DELA_HOME system env var is not set");
+    }
+    String delaConfigF = delaHome + File.separator + "config" + File.separator + "application.conf";
+    File delaConfigFile = new File(delaConfigF);
+    if (!delaConfigFile.exists()) {
+      throw new ManagedClientException("no dela config file found at:" + delaConfigF);
+    }
+    Config delaConfig = ConfigFactory.parseFile(delaConfigFile);
+    return delaConfig;
+  }
+
   public static class Targets {
 
-    public static String LOCAL = "http://127.0.0.1:40003";
+    public static String local() throws ManagedClientException {
+      Config delaConfig = Dela.config();
+      String port = delaConfig.getString("http.port");
+      return "http://localhost:" + port;
+    }
+  }
+
+  public static String version() throws ManagedClientException {
+    Config delaConfig = Dela.config();
+    String version = delaConfig.getString("version");
+    return version;
   }
 
   public static class WebPath {
@@ -100,28 +126,28 @@ public class Dela {
         }
       };
     }
-    
+
     private static void datasetIdFormat(PrintWriter out, String datasetId) {
-      if(datasetId.length() < 20) {
+      if (datasetId.length() < 20) {
         out.printf("%20s", datasetId);
-      } else if(datasetId.length() < 50) {
+      } else if (datasetId.length() < 50) {
         out.printf("%50s", datasetId);
-      } else if(datasetId.length() < 100) {
+      } else if (datasetId.length() < 100) {
         out.printf("%100s", datasetId);
       } else {
         out.printf(datasetId);
       }
     }
-    
+
     private static void downloadSpeed(PrintWriter out, long downloadSpeed) {
       DecimalFormat f = new DecimalFormat("##.00");
-      if(downloadSpeed < 1024) {
+      if (downloadSpeed < 1024) {
         out.printf(" | %9s B/s", downloadSpeed);
-      } else if (downloadSpeed < 1024*1024) {
-        String speed = f.format((double)downloadSpeed / 1024);
+      } else if (downloadSpeed < 1024 * 1024) {
+        String speed = f.format((double) downloadSpeed / 1024);
         out.printf(" | %8s KB/s", speed);
-      } else if (downloadSpeed < 1024*1024*1024) {
-        String speed = f.format((double)downloadSpeed / (1024*1024));
+      } else if (downloadSpeed < 1024 * 1024 * 1024) {
+        String speed = f.format((double) downloadSpeed / (1024 * 1024));
         out.printf(" | %8s MB/s", speed);
       }
     }
@@ -129,12 +155,16 @@ public class Dela {
 
   public static class Ops {
 
-    public static void contact(String delaVersion) throws UnknownClientException, ManagedClientException {
+    public static boolean delaVersion(String trackerDelaVersion) throws ManagedClientException {
+      return Dela.version().equals(trackerDelaVersion);
+    }
+
+    public static void contact() throws UnknownClientException, ManagedClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp = client
-          .setTarget(Dela.Targets.LOCAL)
+          .setTarget(Dela.Targets.local())
           .setPath(Dela.WebPath.CONTACT)
-          .setPayload(delaVersion)
+          .setPayload(Dela.version())
           .doPost();
         if (!resp.statusOk()) {
           Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
@@ -167,11 +197,11 @@ public class Dela {
       TorrentDownloadDTO.Start req = new TorrentDownloadDTO.Start(torrentId, torrentName, -1, -1,
         resource, partners, endpoint);
       WebResponse resp;
-      
+
       try (WebClient client = WebClient.httpsInstance()) {
 
         resp = client
-          .setTarget(Dela.Targets.LOCAL)
+          .setTarget(Dela.Targets.local())
           .setPath(Dela.WebPath.DOWNLOAD)
           .setPayload(req)
           .doPost();
@@ -200,7 +230,7 @@ public class Dela {
         HopsContentsReqJSON req = new HopsContentsReqJSON();
         try {
           resp = client
-            .setTarget(Dela.Targets.LOCAL)
+            .setTarget(Dela.Targets.local())
             .setPath(Dela.WebPath.CONTENTS)
             .setPayload(req)
             .doPost();
@@ -228,7 +258,7 @@ public class Dela {
         TorrentIdJSON req = new TorrentIdJSON(publicDSId);
         try {
           resp = client
-            .setTarget(Dela.Targets.LOCAL)
+            .setTarget(Dela.Targets.local())
             .setPath(Dela.WebPath.DETAILS)
             .setPayload(req)
             .doPost();
@@ -256,7 +286,7 @@ public class Dela {
         TorrentIdJSON req = new TorrentIdJSON(publicDSId);
         try {
           resp = client
-            .setTarget(Dela.Targets.LOCAL)
+            .setTarget(Dela.Targets.local())
             .setPath(Dela.WebPath.CANCEL)
             .setPayload(req)
             .doPost();

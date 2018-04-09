@@ -50,24 +50,30 @@ public class Client {
 
   private static Map<String, Object> cmds = new HashMap<>();
 
-  public static int main(String[] args) {
+  public static void main(String[] args) {
     JCommander jc = registerCmds();
     PrintWriter out = new PrintWriter(System.out);
     try {
       jc.parse(args);
-      return executeCmd(out, jc.getParsedAlias());
+      int retVal = executeCmd(out, jc.getParsedAlias());
+      out.flush();
+      if(retVal != 0) {
+        System.exit(retVal);
+      }
     } catch (MissingCommandException ex) {
       out.write(ex.getMessage());
       StringBuilder sb = new StringBuilder();
       jc.usage(sb);
       out.write(sb.toString());
-      return -1;
+      out.flush();
+      System.exit(-1);
     } catch (ParameterException ex) {
       out.write(ex.getMessage());
       StringBuilder sb = new StringBuilder();
       jc.usage(jc.getParsedCommand(), sb);
       out.write(sb.toString());
-      return -1;
+      out.flush();
+      System.exit(-1);
     } finally {
       out.flush();
     }
@@ -108,7 +114,7 @@ public class Client {
     switch (cmdName) {
       case Cmds.SERVICE: {
         try {
-          Dela.Ops.contact(delaVersion());
+          Dela.Ops.contact();
           out.write("service online\n");
           return 0;
         } catch (UnknownClientException ex) {
@@ -133,15 +139,15 @@ public class Client {
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         try {
-          Dela.Ops.contact(delaVersion());
+          Dela.Ops.contact();
           SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.target, cmd.datasetId);
           TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(cmd.datasetId);
           if (delaDetails.getTorrentStatus().equals("NONE")) {
-            String libDir = libDir();
+            String libDir = delaLib();
             String datasetName = getDatasetName(out, cmd);
             out.printf("Library: %s \n", libDir);
             out.printf("Saving dataset with id: %s as: %s \n", cmd.datasetId, datasetName);
-            Dela.Ops.download(cmd.datasetId, datasetName, libDir(), getBootstrap(trackerDetails.getBootstrap()));
+            Dela.Ops.download(cmd.datasetId, datasetName, delaLib(), getBootstrap(trackerDetails.getBootstrap()));
           } else {
             out.printf("Dataset with id: %s already active \n", cmd.datasetId);
           }
@@ -156,7 +162,7 @@ public class Client {
       }
       case Cmds.CONTENTS: {
         try {
-          Dela.Ops.contact(delaVersion());
+          Dela.Ops.contact();
           ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
           HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents();
           Dela.Printers.contentsConsolePrinter(out).accept(contents);
@@ -171,7 +177,7 @@ public class Client {
       }
       case Cmds.DETAILS: {
         try {
-          Dela.Ops.contact(delaVersion());
+          Dela.Ops.contact();
           DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
           TorrentExtendedStatusJSON torrent = Dela.Ops.details(cmd.datasetId);
           Dela.Printers.detailsConsolePrinter(out).accept(torrent);
@@ -186,7 +192,7 @@ public class Client {
       }
       case Cmds.CANCEL: {
         try {
-          Dela.Ops.contact(delaVersion());
+          Dela.Ops.contact();
           CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
           Dela.Ops.cancel(cmd.datasetId);
           return 0;
@@ -203,7 +209,7 @@ public class Client {
   }
 
   private static String getDatasetName(PrintWriter out, DownloadCmd cmd) throws ManagedClientException {
-    String libDir = libDir();
+    String libDir = delaLib();
     String datasetName;
     if (cmd.datasetName != null) {
       datasetName = cmd.datasetName;
@@ -229,21 +235,15 @@ public class Client {
     return dataset.exists();
   }
 
-  private static String delaVersion() {
-    return "0.0.3";
+  private static String delaLib() {
+    return System.getenv("DELA_LIB");
   }
-
-  private static String libDir() {
-    return "/Users/Alex/Documents/_Work/Code/decentrify/run/dela_cli/library";
-  }
-
+  
   public static List<AddressJSON> getBootstrap(List<ClusterAddressDTO> partners) {
     List<AddressJSON> result = new LinkedList<>();
     Gson gson = new Gson();
     for (ClusterAddressDTO p : partners) {
       AddressJSON adr = gson.fromJson(p.getDelaTransferAddress(), AddressJSON.class);
-      //port forwarding test hack - remove
-//      adr.setIp("127.0.0.1"); 
       result.add(adr);
     }
     return result;
