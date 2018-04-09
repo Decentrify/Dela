@@ -26,6 +26,7 @@ import com.beust.jcommander.Parameters;
  */
 @Parameters(commandDescription="Dataset transfer details")
 public class DetailsCmd {
-  @Parameter(description = "Public dataset id", names = "-dataset", required = true)
+  @Parameter(description = "datasetId")
   public String datasetId;
+  
 }

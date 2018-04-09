@@ -24,8 +24,9 @@ import com.beust.jcommander.Parameters;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-@Parameters(commandDescription="Cancel dataset transfer")
+@Parameters(commandDescription = "Cancel dataset transfer")
 public class CancelCmd {
-  @Parameter(description = "Public dataset id", names = "-dataset", required = true)
+
+  @Parameter(description = "datasetId")
   public String datasetId;
 }

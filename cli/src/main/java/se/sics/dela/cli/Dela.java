@@ -48,15 +48,12 @@ import se.sics.ktoolbox.httpsclient.WebResponse;
  */
 public class Dela {
 
-  private static Config config() throws ManagedClientException {
-    String delaHome = System.getenv("DELA_HOME");
-    if (delaHome == null) {
-      throw new ManagedClientException("DELA_HOME system env var is not set");
-    }
-    String delaConfigF = delaHome + File.separator + "config" + File.separator + "application.conf";
-    File delaConfigFile = new File(delaConfigF);
+  
+  private static Config config(String delaDir) throws ManagedClientException {
+    String delaConfigDir = delaDir + File.separator + "config";
+    File delaConfigFile = new File(delaConfigDir, "application.conf");
     if (!delaConfigFile.exists()) {
-      throw new ManagedClientException("no dela config file found at:" + delaConfigF);
+      throw new ManagedClientException("no dela config file found at:" + delaConfigDir);
     }
     Config delaConfig = ConfigFactory.parseFile(delaConfigFile);
     return delaConfig;
@@ -64,15 +61,15 @@ public class Dela {
 
   public static class Targets {
 
-    public static String local() throws ManagedClientException {
-      Config delaConfig = Dela.config();
+    public static String local(String delaDir) throws ManagedClientException {
+      Config delaConfig = Dela.config(delaDir);
       String port = delaConfig.getString("http.port");
       return "http://localhost:" + port;
     }
   }
 
-  public static String version() throws ManagedClientException {
-    Config delaConfig = Dela.config();
+  public static String version(String delaDir) throws ManagedClientException {
+    Config delaConfig = Dela.config(delaDir);
     String version = delaConfig.getString("version");
     return version;
   }
@@ -155,16 +152,16 @@ public class Dela {
 
   public static class Ops {
 
-    public static boolean delaVersion(String trackerDelaVersion) throws ManagedClientException {
-      return Dela.version().equals(trackerDelaVersion);
+    public static boolean delaVersion(String delaDir, String trackerDelaVersion) throws ManagedClientException {
+      return Dela.version(delaDir).equals(trackerDelaVersion);
     }
 
-    public static void contact() throws UnknownClientException, ManagedClientException {
+    public static void contact(String delaDir) throws UnknownClientException, ManagedClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp = client
-          .setTarget(Dela.Targets.local())
+          .setTarget(Dela.Targets.local(delaDir))
           .setPath(Dela.WebPath.CONTACT)
-          .setPayload(Dela.version())
+          .setPayload(Dela.version(delaDir))
           .doPost();
         if (!resp.statusOk()) {
           Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
@@ -188,7 +185,8 @@ public class Dela {
       }
     }
 
-    public static void download(String publicDSId, String torrentName, String libDir, List<AddressJSON> partners)
+    public static void download(String delaDir, String libDir, String publicDSId, String torrentName, 
+      List<AddressJSON> partners)
       throws UnknownClientException, ManagedClientException {
       TorrentIdJSON torrentId = new TorrentIdJSON(publicDSId);
       HDFSEndpoint endpoint = new HDFSEndpoint();
@@ -201,7 +199,7 @@ public class Dela {
       try (WebClient client = WebClient.httpsInstance()) {
 
         resp = client
-          .setTarget(Dela.Targets.local())
+          .setTarget(Dela.Targets.local(delaDir))
           .setPath(Dela.WebPath.DOWNLOAD)
           .setPayload(req)
           .doPost();
@@ -224,13 +222,13 @@ public class Dela {
       }
     }
 
-    public static HopsContentsSummaryJSON.Hops contents() throws UnknownClientException {
+    public static HopsContentsSummaryJSON.Hops contents(String delaDir) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp;
         HopsContentsReqJSON req = new HopsContentsReqJSON();
         try {
           resp = client
-            .setTarget(Dela.Targets.local())
+            .setTarget(Dela.Targets.local(delaDir))
             .setPath(Dela.WebPath.CONTENTS)
             .setPayload(req)
             .doPost();
@@ -252,13 +250,13 @@ public class Dela {
       }
     }
 
-    public static TorrentExtendedStatusJSON details(String publicDSId) throws UnknownClientException {
+    public static TorrentExtendedStatusJSON details(String delaDir, String publicDSId) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp;
         TorrentIdJSON req = new TorrentIdJSON(publicDSId);
         try {
           resp = client
-            .setTarget(Dela.Targets.local())
+            .setTarget(Dela.Targets.local(delaDir))
             .setPath(Dela.WebPath.DETAILS)
             .setPayload(req)
             .doPost();
@@ -280,13 +278,13 @@ public class Dela {
       }
     }
 
-    public static void cancel(String publicDSId) throws UnknownClientException {
+    public static void cancel(String delaDir, String publicDSId) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp;
         TorrentIdJSON req = new TorrentIdJSON(publicDSId);
         try {
           resp = client
-            .setTarget(Dela.Targets.local())
+            .setTarget(Dela.Targets.local(delaDir))
             .setPath(Dela.WebPath.CANCEL)
             .setPayload(req)
             .doPost();

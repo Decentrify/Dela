@@ -20,7 +20,6 @@ package se.sics.dela.cli.cmd;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import se.sics.dela.cli.Tracker;
 
 /**
  *
@@ -28,8 +27,6 @@ import se.sics.dela.cli.Tracker;
  */
 @Parameters(commandDescription="Search for datasets")
 public class SearchCmd {
-  @Parameter(description = "Tracker used", names = "-target", hidden = true)
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "Search term", names = "-term", required = true)
+  @Parameter(description = "term")
   public String term;
 }

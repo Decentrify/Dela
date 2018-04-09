@@ -39,6 +39,10 @@ public class Tracker {
     public static String HOPS = "https://hops.site:51081/hops-site/api";
     public static String BBC5 = "https://bbc5.sics.se:43080/hops-site/api";
     public static String BBC5_TEST = "https://bbc5.sics.se:52300/hops-site/api";
+    
+    public static String used() {
+      return HOPS;
+    }
   }
 
   public static class Path {
@@ -88,14 +92,14 @@ public class Tracker {
 
   public static class Ops {
 
-    public static SearchServiceDTO.Item[] search(String target, String term) throws UnknownClientException {
+    public static SearchServiceDTO.Item[] search(String term) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         SearchServiceDTO.Params searchParam = new SearchServiceDTO.Params(term);
         WebResponse resp;
 
         try {
           resp = client
-            .setTarget(target)
+            .setTarget(Target.used())
             .setPath(Path.search())
             .setPayload(searchParam)
             .doPost();
@@ -130,11 +134,11 @@ public class Tracker {
       }
     }
 
-    public static SearchServiceDTO.ItemDetails datasetDetails(String target, String publicDSId) throws
+    public static SearchServiceDTO.ItemDetails datasetDetails(String publicDSId) throws
       UnknownClientException, ManagedClientException {
       try (WebClient client = WebClient.httpsInstance()) {
         WebResponse resp = client
-          .setTarget(target)
+          .setTarget(Target.used())
           .setPath(Path.datasetDetails(publicDSId))
           .doGet();
         if (!resp.statusOk()) {

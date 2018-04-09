@@ -20,16 +20,13 @@ package se.sics.dela.cli.cmd;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import se.sics.dela.cli.Tracker;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 @Parameters(commandDescription="Download dataset")
 public class DownloadCmd {
-  @Parameter(description = "Tracker used", names = "-target", hidden = true)
-  public String target = Tracker.Target.HOPS;
-  @Parameter(description = "Public dataset id", names = "-dataset", required = true)
+  @Parameter(description = "datasetId")
   public String datasetId;
   @Parameter(description = "Local name of dataset - used for dataset disk directory. If no name provided, public dataset id is used.", names = "-name")
   public String datasetName;

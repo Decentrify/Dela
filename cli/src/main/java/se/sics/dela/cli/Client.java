@@ -22,13 +22,23 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import se.sics.dela.cli.cmd.CancelCmd;
 import se.sics.dela.cli.cmd.ContentsCmd;
 import se.sics.dela.cli.cmd.DetailsCmd;
@@ -50,14 +60,31 @@ public class Client {
 
   private static Map<String, Object> cmds = new HashMap<>();
 
+  private static String getDelaDir() throws URISyntaxException {
+    String jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+    String delaDir = jarPath;
+    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    return delaDir;
+  }
+
   public static void main(String[] args) {
-    JCommander jc = registerCmds();
     PrintWriter out = new PrintWriter(System.out);
+    String sourceDir;
+    try {
+      sourceDir = getDelaDir();
+    } catch (URISyntaxException ex) {
+      out.write("problems with dela location - source dir not accessible");
+      System.exit(1);
+      return;
+    }
+    JCommander jc = registerCmds();
+
     try {
       jc.parse(args);
-      int retVal = executeCmd(out, jc.getParsedAlias());
+      int retVal = executeCmd(sourceDir, out, jc.getParsedAlias());
       out.flush();
-      if(retVal != 0) {
+      if (retVal != 0) {
         System.exit(retVal);
       }
     } catch (MissingCommandException ex) {
@@ -69,15 +96,12 @@ public class Client {
       System.exit(-1);
     } catch (ParameterException ex) {
       out.write(ex.getMessage());
-      StringBuilder sb = new StringBuilder();
+      StringBuilder sb = new StringBuilder("\n");
       jc.usage(jc.getParsedCommand(), sb);
       out.write(sb.toString());
       out.flush();
       System.exit(-1);
-    } finally {
-      out.flush();
     }
-    
   }
 
   private static JCommander registerCmds() {
@@ -110,13 +134,27 @@ public class Client {
     return jcb.build();
   }
 
-  private static int executeCmd(PrintWriter out, String cmdName) {
+  private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
     switch (cmdName) {
       case Cmds.SERVICE: {
+        ServiceCmd cmd = (ServiceCmd) cmds.get(Cmds.SERVICE);
         try {
-          Dela.Ops.contact();
-          out.write("service online\n");
-          return 0;
+          boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+          switch (cmd.value()) {
+            case START: {
+              startDaemon(isWindows, delaDir);
+              return 0;
+            }
+            case STOP: {
+              stopDaemon(isWindows, delaDir);
+              return 0;
+            }
+            case STATUS: {
+              Dela.Ops.contact(delaDir);
+              out.write("service online\n");
+              return 0;
+            }
+          }
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
           return -1;
@@ -128,7 +166,7 @@ public class Client {
       case Cmds.SEARCH: {
         SearchCmd cmd = (SearchCmd) cmds.get(Cmds.SEARCH);
         try {
-          SearchServiceDTO.Item[] items = Tracker.Ops.search(cmd.target, cmd.term);
+          SearchServiceDTO.Item[] items = Tracker.Ops.search(cmd.term);
           Tracker.Printers.searchResultConsolePrinter(out).accept(items);
           return 0;
         } catch (UnknownClientException ex) {
@@ -139,15 +177,15 @@ public class Client {
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         try {
-          Dela.Ops.contact();
-          SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.target, cmd.datasetId);
-          TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(cmd.datasetId);
+          Dela.Ops.contact(delaDir);
+          SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.datasetId);
+          TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(delaDir, cmd.datasetId);
           if (delaDetails.getTorrentStatus().equals("NONE")) {
-            String libDir = delaLib();
-            String datasetName = getDatasetName(out, cmd);
-            out.printf("Library: %s \n", libDir);
+            String datasetName = getDatasetName(delaDir, out, cmd);
+            out.printf("Library: %s \n", delaDownloadDir(delaDir));
             out.printf("Saving dataset with id: %s as: %s \n", cmd.datasetId, datasetName);
-            Dela.Ops.download(cmd.datasetId, datasetName, delaLib(), getBootstrap(trackerDetails.getBootstrap()));
+            Dela.Ops.download(delaDir, delaDownloadDir(delaDir), cmd.datasetId, datasetName,
+              getBootstrap(trackerDetails.getBootstrap()));
           } else {
             out.printf("Dataset with id: %s already active \n", cmd.datasetId);
           }
@@ -162,9 +200,9 @@ public class Client {
       }
       case Cmds.CONTENTS: {
         try {
-          Dela.Ops.contact();
+          Dela.Ops.contact(delaDir);
           ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
-          HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents();
+          HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents(delaDir);
           Dela.Printers.contentsConsolePrinter(out).accept(contents);
           return 0;
         } catch (UnknownClientException ex) {
@@ -177,9 +215,9 @@ public class Client {
       }
       case Cmds.DETAILS: {
         try {
-          Dela.Ops.contact();
+          Dela.Ops.contact(delaDir);
           DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
-          TorrentExtendedStatusJSON torrent = Dela.Ops.details(cmd.datasetId);
+          TorrentExtendedStatusJSON torrent = Dela.Ops.details(delaDir, cmd.datasetId);
           Dela.Printers.detailsConsolePrinter(out).accept(torrent);
           return 0;
         } catch (UnknownClientException ex) {
@@ -192,9 +230,9 @@ public class Client {
       }
       case Cmds.CANCEL: {
         try {
-          Dela.Ops.contact();
+          Dela.Ops.contact(delaDir);
           CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
-          Dela.Ops.cancel(cmd.datasetId);
+          Dela.Ops.cancel(delaDir, cmd.datasetId);
           return 0;
         } catch (UnknownClientException ex) {
           ex.printStackTrace(out);
@@ -204,41 +242,109 @@ public class Client {
           return -1;
         }
       }
-      default: return -1;
+      default:
+        return -1;
     }
   }
 
-  private static String getDatasetName(PrintWriter out, DownloadCmd cmd) throws ManagedClientException {
-    String libDir = delaLib();
+  private static void startDaemon(boolean isWindows, String delaDir)
+    throws ManagedClientException, UnknownClientException {
+    ProcessBuilder builder = new ProcessBuilder();
+    if (isWindows) {
+      throw new ManagedClientException("windows not supported yet");
+    } else {
+      builder.command("sh", "-c", "./bin/daemon_start");
+    }
+    builder.directory(new File(delaDir));
+
+    try {
+      Process process = builder.start();
+      StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+      ExecutorService es = Executors.newSingleThreadExecutor();
+      Future f = es.submit(outStreamGobbler);
+      if (process.waitFor() != 0) {
+        throw new ManagedClientException("daemon start did not finish successfully");
+      }
+      f.get();
+      es.shutdown();
+      System.out.flush();
+    } catch (InterruptedException | ExecutionException | IOException ex) {
+      throw new UnknownClientException(ex);
+    }
+  }
+
+  private static void stopDaemon(boolean isWindows, String delaDir)
+    throws ManagedClientException, UnknownClientException {
+    ProcessBuilder builder = new ProcessBuilder();
+    if (isWindows) {
+      throw new ManagedClientException("windows not supported yet");
+    } else {
+      builder.command("sh", "-c", "./bin/daemon_stop");
+    }
+    builder.directory(new File(delaDir));
+
+    try {
+      Process process = builder.start();
+      StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+      ExecutorService es = Executors.newSingleThreadExecutor();
+      Future f = es.submit(outStreamGobbler);
+      if (process.waitFor() != 0) {
+        throw new ManagedClientException("daemon stop did not finish successfully");
+      }
+      f.get();
+      es.shutdown();
+      System.out.flush();
+    } catch (InterruptedException | ExecutionException | IOException ex) {
+      throw new UnknownClientException(ex);
+    }
+  }
+
+  private static class StreamGobbler implements Runnable {
+
+    private final InputStream inputStream;
+    private final Consumer<String> consumer;
+
+    public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+      this.inputStream = inputStream;
+      this.consumer = consumer;
+    }
+
+    @Override
+    public void run() {
+      new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
+    }
+  }
+
+  private static String getDatasetName(String delaDir, PrintWriter out, DownloadCmd cmd) throws ManagedClientException {
     String datasetName;
     if (cmd.datasetName != null) {
       datasetName = cmd.datasetName;
-      if (datasetExists(libDir, datasetName)) {
+      if (datasetExists(delaDir, datasetName)) {
         StringBuilder sb = new StringBuilder();
         sb.append("Folder for dataset: ").append(cmd.datasetName);
-        sb.append("already exists in library: ").append(libDir);
+        sb.append("already exists in library");
         sb.append("\nDelete folder or rename dataset.");
         throw new ManagedClientException(sb.toString());
       }
     } else {
       datasetName = cmd.datasetId;
       Random rand = new Random();
-      while (datasetExists(libDir, datasetName)) {
+      while (datasetExists(delaDir, datasetName)) {
         datasetName = cmd.datasetId + "_" + rand.nextInt(Integer.MAX_VALUE);
       }
     }
     return datasetName;
   }
 
-  private static boolean datasetExists(String lib, String datasetName) {
-    File dataset = new File(lib, datasetName);
+  private static String delaDownloadDir(String delaDir) {
+    return delaDir + File.separator + "download";
+  }
+
+  private static boolean datasetExists(String delaDir, String datasetName) {
+    File dataset = new File(delaDownloadDir(delaDir), datasetName);
     return dataset.exists();
   }
 
-  private static String delaLib() {
-    return System.getenv("DELA_LIB");
-  }
-  
   public static List<AddressJSON> getBootstrap(List<ClusterAddressDTO> partners) {
     List<AddressJSON> result = new LinkedList<>();
     Gson gson = new Gson();
