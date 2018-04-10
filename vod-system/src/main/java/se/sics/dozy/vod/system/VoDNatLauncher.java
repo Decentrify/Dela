@@ -19,7 +19,9 @@
 package se.sics.dozy.vod.system;
 
 import com.google.common.base.Optional;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -307,7 +309,8 @@ public class VoDNatLauncher extends ComponentDefinition {
 //        resources.add(new HDFSFileDeleteREST());
 //        resources.add(new HDFSFileCreateREST());
 //        resources.add(new HDFSAvroFileCreateREST());
-    webserver = new DropwizardDozy(synchronousInterfaces, resources);
+    String delaBaseDir = config().getValue("system.dir", String.class);
+    webserver = new DropwizardDozy(synchronousInterfaces, resources, delaBaseDir);
   }
 
   private void startWebserver() {
@@ -325,22 +328,48 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
   }
 
-  private static void setupFSM() throws FSMException {
+  private static void setupFSM(Config.Builder builder) throws FSMException {
     FSMIdentifierFactory fsmIdFactory = FSMIdentifierFactory.DEFAULT;
     fsmIdFactory.registerFSMDefId(LibTFSM.NAME);
+    builder.setValue(FSMIdentifierFactory.CONFIG_KEY, fsmIdFactory);
+  }
 
+  private static String getDelaBaseDir() throws URISyntaxException {
+    String jarPath = VoDNatLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+    String delaDir = jarPath;
+    //remove jar name
+    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    //remove bin dir
+    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    return delaDir;
+  }
+
+  private static void setupPaths(Config.Builder builder) throws URISyntaxException {
+    String delaBaseDir = getDelaBaseDir();
+    String webServerConfig = delaBaseDir + File.separator + "config" + File.separator + "config.yml";
+    builder.setValue("system.dir", delaBaseDir);
+    builder.setValue("webservice.server", webServerConfig);
+    Optional<String> librarySummary = builder.readValue("hops.library.type");
+    if(librarySummary.isPresent() && librarySummary.get().toLowerCase().equals("disk")){
+      String librarySummaryPath = delaBaseDir + File.separator + "library.summary";
+      builder.setValue("hops.library.disk.summary", librarySummaryPath);
+    }
+  }
+
+  private static void setupSystem() throws FSMException, URISyntaxException {
     Config.Impl config = (Config.Impl) Kompics.getConfig();
     Config.Builder builder = Kompics.getConfig().modify(UUID.randomUUID());
-    builder.setValue(FSMIdentifierFactory.CONFIG_KEY, fsmIdFactory);
+    setupPaths(builder);
+    setupFSM(builder);
     config.apply(builder.finalise(), (Optional) Optional.absent());
     Kompics.setConfig(config);
   }
 
-  public static void main(String[] args) throws IOException, FSMException {
+  public static void main(String[] args) throws IOException, FSMException, URISyntaxException {
     if (Kompics.isOn()) {
       Kompics.shutdown();
     }
-    setupFSM();
+    setupSystem();
     Kompics.createAndStart(VoDNatLauncher.class, Runtime.getRuntime().availableProcessors(), 20); // Yes 20 is totally arbitrary
     try {
       Kompics.waitForTermination();
