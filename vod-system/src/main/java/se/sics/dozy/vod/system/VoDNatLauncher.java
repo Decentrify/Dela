@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -356,9 +357,18 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
   }
 
+  private static void setupBasic(Config.Builder builder) {
+    Random rand = new Random();
+    Long seed = builder.getValue("system.seed", Long.class);
+    if(seed == null) {
+      builder.setValue("system.seed", rand.nextLong());
+    }
+  }
+  
   private static void setupSystem() throws FSMException, URISyntaxException {
     Config.Impl config = (Config.Impl) Kompics.getConfig();
     Config.Builder builder = Kompics.getConfig().modify(UUID.randomUUID());
+    setupBasic(builder);
     setupPaths(builder);
     setupFSM(builder);
     config.apply(builder.finalise(), (Optional) Optional.absent());
