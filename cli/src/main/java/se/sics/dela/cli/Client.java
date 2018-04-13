@@ -62,6 +62,7 @@ public class Client {
 
   private static String getDelaDir() throws URISyntaxException {
     String jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+//    String jarPath = "/Users/Alex/Documents/_Work/Code/decentrify/run/dela/lib/dela.jar";
     String delaDir = jarPath;
     delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
     delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
@@ -134,14 +135,40 @@ public class Client {
     return jcb.build();
   }
 
+  private static boolean checkDelaVersion(String delaDir, PrintWriter out) 
+    throws UnknownClientException, ManagedClientException {
+    String trackerDelaVersion = Tracker.Ops.delaVersion();
+    String delaVersion = Dela.version(delaDir);
+    String[] v1 = trackerDelaVersion.split("\\.");
+    String[] v2 = delaVersion.split("\\.");
+    if(v1.length != v2.length || v1.length != 3) {
+      out.printf("WARNING! Version structure mismatch. Local:%s - Tracker:%s \n", delaVersion, trackerDelaVersion);
+      return false;
+    }
+    if(!v1[0].equals(v2[0]) || !v1[1].equals(v2[1])) {
+      out.printf("WARNING! Version incompatible. Local:%s - Tracker:%s \n", delaVersion, trackerDelaVersion);
+      return false;
+    }
+    if(!v1[2].equals(v2[2])) {
+      out.printf("Patch version mismatch. Protocol still be compatible. Local:%s - Tracker:%s \n", 
+        delaVersion, trackerDelaVersion);
+      return true;
+    }
+    return true;
+  }
+  
   private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
     switch (cmdName) {
       case Cmds.SERVICE: {
         ServiceCmd cmd = (ServiceCmd) cmds.get(Cmds.SERVICE);
         try {
           boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+          boolean delaVersion = checkDelaVersion(delaDir, out);
           switch (cmd.value()) {
             case START: {
+              if(!delaVersion) {
+                return -1;
+              }
               startDaemon(isWindows, delaDir);
               return 0;
             }
@@ -177,6 +204,9 @@ public class Client {
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         try {
+          if(!checkDelaVersion(delaDir, out)) {
+            return -1;
+          }
           Dela.Ops.contact(delaDir);
           SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.datasetId);
           TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(delaDir, cmd.datasetId);
@@ -200,6 +230,7 @@ public class Client {
       }
       case Cmds.CONTENTS: {
         try {
+          checkDelaVersion(delaDir, out);
           Dela.Ops.contact(delaDir);
           ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
           HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents(delaDir);
@@ -215,6 +246,7 @@ public class Client {
       }
       case Cmds.DETAILS: {
         try {
+          checkDelaVersion(delaDir, out);
           Dela.Ops.contact(delaDir);
           DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
           TorrentExtendedStatusJSON torrent = Dela.Ops.details(delaDir, cmd.datasetId);
@@ -230,6 +262,7 @@ public class Client {
       }
       case Cmds.CANCEL: {
         try {
+          checkDelaVersion(delaDir, out);
           Dela.Ops.contact(delaDir);
           CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
           Dela.Ops.cancel(delaDir, cmd.datasetId);

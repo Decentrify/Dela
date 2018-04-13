@@ -39,13 +39,17 @@ public class Tracker {
     public static String HOPS = "https://hops.site:51081/hops-site/api";
     public static String BBC5 = "https://bbc5.sics.se:43080/hops-site/api";
     public static String BBC5_TEST = "https://bbc5.sics.se:52300/hops-site/api";
-    
+
     public static String used() {
       return HOPS;
     }
   }
 
   public static class Path {
+
+    public static String delaVersion() {
+      return "public/cluster/dela/version";
+    }
 
     public static String search() {
       return "public/dataset/search";
@@ -91,6 +95,29 @@ public class Tracker {
   }
 
   public static class Ops {
+
+    public static String delaVersion() throws UnknownClientException {
+      try (WebClient client = WebClient.httpsInstance()) {
+        WebResponse resp = client
+          .setTarget(Target.used())
+          .setPath(Path.delaVersion())
+          .doGet();
+        if (!resp.statusOk()) {
+          Optional<JsonResponse> errorDesc = getErrorDesc(resp);
+          if (errorDesc.isPresent()) {
+            throw new UnknownClientException(errorDesc.get().getErrorMsg());
+          } else {
+            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
+          }
+        }
+        String delaVersion = resp.readContent(String.class);
+        return delaVersion;
+      } catch (UnknownClientException ex) {
+        throw ex;
+      } catch (Exception ex) {
+        throw new UnknownClientException(ex);
+      }
+    }
 
     public static SearchServiceDTO.Item[] search(String term) throws UnknownClientException {
       try (WebClient client = WebClient.httpsInstance()) {
