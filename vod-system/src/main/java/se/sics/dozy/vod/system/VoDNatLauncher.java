@@ -347,7 +347,7 @@ public class VoDNatLauncher extends ComponentDefinition {
 
   private static void setupPaths(Config.Builder builder) throws URISyntaxException {
     String delaBaseDir = getDelaBaseDir();
-    String webServerConfig = delaBaseDir + File.separator + "config" + File.separator + "config.yml";
+    String webServerConfig = delaBaseDir + File.separator + "conf" + File.separator + "config.yml";
     builder.setValue("system.dir", delaBaseDir);
     builder.setValue("webservice.server", webServerConfig);
     Optional<String> librarySummary = builder.readValue("hops.library.type");

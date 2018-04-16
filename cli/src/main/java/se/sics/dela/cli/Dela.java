@@ -48,7 +48,7 @@ import se.sics.ktoolbox.httpsclient.WebResponse;
  */
 public class Dela {
   private static Config config(String delaDir) throws ManagedClientException {
-    String delaConfigDir = delaDir + File.separator + "config";
+    String delaConfigDir = delaDir + File.separator + "conf";
     File delaConfigFile = new File(delaConfigDir, "application.conf");
     if (!delaConfigFile.exists()) {
       throw new ManagedClientException("no dela config file found at:" + delaConfigDir);
