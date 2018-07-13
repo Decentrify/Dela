@@ -22,9 +22,6 @@ import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class SearchServiceDTO {
 
   @XmlRootElement

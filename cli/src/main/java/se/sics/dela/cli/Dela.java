@@ -43,9 +43,6 @@ import se.sics.dela.cli.util.UnknownClientException;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.httpsclient.WebResponse;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class Dela {
   private static Config config(String delaDir) throws ManagedClientException {
     String delaConfigDir = delaDir + File.separator + "conf";

@@ -24,10 +24,6 @@ import se.sics.kompics.config.TypesafeConfig;
 import se.sics.ktoolbox.util.profiling.KProfilerKConfig;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
 
-/**
- *
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class KProfilerChecker {
     public static void main(String[] args) {
         Config config = TypesafeConfig.load(ConfigFactory.load("alex/nat1/application.conf"));

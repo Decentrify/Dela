@@ -25,9 +25,6 @@ import se.sics.ktoolbox.util.profiling.KProfilerRegistry;
 import se.sics.ktoolbox.util.profiling.KProfilerRegistryConverter;
 import se.sics.nstream.torrent.transfer.TransferComp;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class KProfilerPrinter {
      public static void main(String[] args) {
          Map<String, KProfiler.Type> kProfilerRegistryMap = new HashMap<>();

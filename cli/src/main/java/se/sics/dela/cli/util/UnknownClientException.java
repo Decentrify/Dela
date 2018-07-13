@@ -18,9 +18,6 @@
  */
 package se.sics.dela.cli.util;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class UnknownClientException extends Exception {
   public UnknownClientException(String msg) {
     super(msg);

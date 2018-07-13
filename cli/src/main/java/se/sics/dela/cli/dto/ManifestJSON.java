@@ -21,10 +21,7 @@ package se.sics.dela.cli.dto;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
-  @XmlRootElement
+@XmlRootElement
 public class ManifestJSON {
 
   private String datasetName;

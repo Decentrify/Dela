@@ -18,10 +18,6 @@
  */
 package se.sics.dela.cli.dto;
 
-/**
- *
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class HDFSDetails {
 
   private String file;

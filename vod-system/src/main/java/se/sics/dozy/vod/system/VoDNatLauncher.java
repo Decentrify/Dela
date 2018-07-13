@@ -101,9 +101,6 @@ import se.sics.nstream.torrent.tracking.TorrentStatusPort;
 import se.sics.nstream.torrent.transfer.TransferCtrlPort;
 import se.sics.nstream.util.CoreExtPorts;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class VoDNatLauncher extends ComponentDefinition {
 
   private Logger LOG = LoggerFactory.getLogger(VoDNatLauncher.class);

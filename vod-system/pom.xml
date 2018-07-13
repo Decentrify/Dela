@@ -16,65 +16,16 @@
       <groupId>se.sics.dozy</groupId>
       <artifactId>vod-rest</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId> 
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>                
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>se.sics.dozy</groupId>
       <artifactId>core</artifactId>
       <version>${project.version}</version>
-<!--      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId> 
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-      </exclusions>-->
     </dependency>
     <dependency>
       <groupId>se.sics.dozy</groupId>
       <artifactId>dropwizard</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.yammer.dropwizard</groupId>
-      <artifactId>dropwizard-core</artifactId>
-      <version>${dropwizard.version}</version>
     </dependency>
         
     <dependency>
@@ -363,124 +314,90 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>2.4.1</version>
+        <configuration>
+          <shadedArtifactAttached>true</shadedArtifactAttached> 
+          <shadedClassifierName>dela</shadedClassifierName> 
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+              <mainClass>se.sics.dozy.vod.system.VoDNatLauncher</mainClass> 
+            </transformer>
+          </transformers>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+                <exclude>application.conf</exclude>
+                <exclude>config.yml</exclude>
+                <exclude>log4j.properties</exclude> 
+              </excludes>
+            </filter>
+          </filters>
+          <artifactSet>
+            <excludes>
+              <exclude>application.conf</exclude>
+              <exclude>config.yml</exclude>
+              <exclude>log4j.properties</exclude>
+            </excludes>
+          </artifactSet>
+        </configuration>
         <executions>
           <execution>
-            <id>vod</id>
+            <id>dela</id>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <shadedArtifactAttached>true</shadedArtifactAttached> 
-              <shadedClassifierName>dozy</shadedClassifierName> 
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>se.sics.dozy.vod.system.VoDNatLauncher</mainClass> 
-                </transformer>
-              </transformers>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                    <exclude>application.conf</exclude>
-                    <exclude>config.yml</exclude>
-                    <exclude>log4j.properties</exclude> 
-                  </excludes>
-                </filter>
-              </filters>
-              <artifactSet>
-                <excludes>
-                  <exclude>application.conf</exclude>
-                  <exclude>config.yml</exclude>
-                  <exclude>log4j.properties</exclude>
-                  <!--<exclude>log4j:log4j</exclude>-->
-                  <!--<exclude>ch.qos.logback:logback-classic</exclude>-->
-                  <!--<exclude>ch.qos.logback:logback-core</exclude>--> 
-                  <!--<exclude>org.slf4j:jul-to-slf4j</exclude>-->  
-                  <!--<exclude>org.slf4j:log4j-fa
-                  voer-slf4j</exclude>--> 
-<!--                  <exclude>org.slf4j:slf4j-log4j12</exclude> -->
-                </excludes>
-                                 
-              </artifactSet>
-            </configuration>
           </execution>
         </executions>
-        <!--                <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-shade-plugin</artifactId>
-    <version>2.3</version>
-    <executions>
-        <execution>
-            <id>vod</id>
-            <phase>package</phase>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>se.sics.dozy.vod.system.VoDNatLauncher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
             <goals>
-                <goal>shade</goal>
+              <goal>jar</goal>
             </goals>
-            <configuration>
-                <shadedArtifactAttached>true</shadedArtifactAttached> 
-                <shadedClassifierName>dozy</shadedClassifierName> 
-                <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                        <mainClass>se.sics.dozy.vod.system.VoDNatLauncher</mainClass>
-                    </transformer>
-                </transformers>
-                <filters>
-                    <filter>
-                        <artifact>*:*</artifact>
-                        <excludes>
-                            <exclude>META-INF/*.SF</exclude>
-                            <exclude>META-INF/*.DSA</exclude>
-                            <exclude>META-INF/*.RSA</exclude>
-                            <exclude>application.conf</exclude>
-                            <exclude>config.yml</exclude>
-                            <exclude>log4j.properties</exclude>
-                            <exclude>log4j:log4j:jar</exclude>
-                            <exclude>ch.qos.logback:logback-classic:jar</exclude>
-                            <exclude>ch.qos.logback:logback-core:jar</exclude> 
-                            <exclude>org.slf4j:jul-to-slf4j:jar:</exclude> 
-                            <exclude>org.slf4j:slf4j-log4j12:jar</exclude> 
-                        </excludes>
-                    </filter>
-                </filters>                        
-            </configuration>
-        </execution>-->
-        <!--                    <execution>
-            <id>kafkaConsumer</id>
-            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
             <goals>
-                <goal>shade</goal>
+              <goal>jar</goal>
             </goals>
-            <configuration>
-                <shadedArtifactAttached>true</shadedArtifactAttached> 
-                <shadedClassifierName>consumer</shadedClassifierName> 
-                <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                        <mainClass>se.sics.dozy.vod.system.KafkaConsumer</mainClass>
-                    </transformer>
-                </transformers>
-                <filters>
-                    <filter>
-                        <artifact>*:*</artifact>
-                        <excludes>
-                            <exclude>META-INF/*.SF</exclude>
-                            <exclude>META-INF/*.DSA</exclude>
-                            <exclude>META-INF/*.RSA</exclude>
-                            <exclude>application.conf</exclude>
-                            <exclude>config.yml</exclude>
-                            <exclude>log4j.properties</exclude>
-                        </excludes>
-                    </filter>
-                </filters>                        
-            </configuration>
-        </execution>-->
-        <!--</executions>-->
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

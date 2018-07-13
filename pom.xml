@@ -27,7 +27,6 @@
         <vod.version>0.0.10-SNAPSHOT</vod.version>
         <nat.version>0.0.5-SNAPSHOT</nat.version>
         
-        <dropwizard.version>0.6.2</dropwizard.version>
         <jetty.version>8.1.10.v20130312</jetty.version>
         <logger.version>1.7.5</logger.version>
     </properties>

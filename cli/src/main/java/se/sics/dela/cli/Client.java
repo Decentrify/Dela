@@ -53,9 +53,6 @@ import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.util.ManagedClientException;
 import se.sics.dela.cli.util.UnknownClientException;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class Client {
 
   private static Map<String, Object> cmds = new HashMap<>();

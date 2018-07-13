@@ -23,9 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class DatasetDTO {
   @XmlRootElement
   public static class Search implements Serializable {

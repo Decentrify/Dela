@@ -23,9 +23,6 @@ import se.sics.nstream.hops.kafka.KafkaEndpoint;
 import se.sics.nstream.hops.kafka.KafkaHelper;
 import se.sics.nstream.hops.kafka.KafkaResource;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class KafkaConsumer {
     public static void main(String[] args) {
         if(args.length != 3) {

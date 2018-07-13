@@ -23,9 +23,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 @Parameters(commandDescription = "Dela daemon service. Options: START/STOP/STATUS")
 public class ServiceCmd {
 

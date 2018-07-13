@@ -20,9 +20,6 @@ package se.sics.dela.cli.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 @XmlRootElement
 public class ClusterAddressDTO {
   private String clusterId;

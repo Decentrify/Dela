@@ -18,9 +18,6 @@
  */
 package se.sics.dela.cli.dto;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class HopsContentsSummaryJSON {
   public static class Hops {
 

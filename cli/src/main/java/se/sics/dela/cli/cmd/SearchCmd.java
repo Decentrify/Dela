@@ -21,10 +21,6 @@ package se.sics.dela.cli.cmd;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-/**
- *
- * @author Alex Ormenisan <aaor@kth.se>
- */
 @Parameters(commandDescription="Search for datasets")
 public class SearchCmd {
   @Parameter(description = "term")

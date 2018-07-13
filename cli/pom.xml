@@ -39,7 +39,27 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>2.4.1</version>
+        <configuration>
+          <shadedClassifierName>cli</shadedClassifierName> 
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+              <mainClass>se.sics.dela.cli.Client</mainClass> 
+            </transformer>
+          </transformers>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
         <executions>
           <execution>
             <id>cli</id>
@@ -47,43 +67,51 @@
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <shadedArtifactAttached>true</shadedArtifactAttached> 
-              <shadedClassifierName>shaded</shadedClassifierName> 
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>se.sics.dela.cli.Client</mainClass> 
-                </transformer>
-              </transformers>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                    <!--<exclude>application.conf</exclude>
-                    <exclude>config.yml</exclude> 
-                    <exclude>log4j.properties</exclude> -->
-                  </excludes>
-                </filter>
-              </filters>
-              <artifactSet>
-                <excludes>
-                  <!--<exclude>application.conf</exclude>
-                  <exclude>config.yml</exclude> 
-                  <exclude>log4j.properties</exclude> -->
-                  <!--<exclude>log4j:log4j</exclude>-->
-                  <!--<exclude>ch.qos.logback:logback-classic</exclude>-->
-                  <!--<exclude>ch.qos.logback:logback-core</exclude>--> 
-                  <!--<exclude>org.slf4j:jul-to-slf4j</exclude>-->  
-                  <!--<exclude>org.slf4j:log4j-fa
-                  voer-slf4j</exclude>--> 
-                  <!--                  <exclude>org.slf4j:slf4j-log4j12</exclude> -->
-                </excludes>
-              </artifactSet>
-            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>se.sics.dela.cli.Client</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

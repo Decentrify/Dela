@@ -18,15 +18,21 @@
  */
 package se.sics.dozy.dropwizard;
 
-import com.yammer.dropwizard.Service;
-import com.yammer.dropwizard.assets.AssetsBundle;
-import com.yammer.dropwizard.config.Bootstrap;
-import com.yammer.dropwizard.config.Configuration;
-import com.yammer.dropwizard.config.Environment;
-import com.yammer.dropwizard.config.LoggingConfiguration;
+import io.dropwizard.Application;
+import io.dropwizard.Configuration;
+import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.server.DefaultServerFactory;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
 import java.io.File;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +42,7 @@ import se.sics.dozy.DozySyncI;
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DropwizardDozy extends Service<Configuration> {
+public class DropwizardDozy extends Application<DropwizardConfiguration> {
 
   private static final Logger LOG = LoggerFactory.getLogger(DropwizardDozy.class);
   private String logPrefix = "";
@@ -52,45 +58,69 @@ public class DropwizardDozy extends Service<Configuration> {
   }
 
   @Override
-  public void initialize(Bootstrap<Configuration> bootstrap) {
+  public String getName() {
+    return "Dropwizard";
+  }
+
+  @Override
+  public void initialize(final Bootstrap<DropwizardConfiguration> bootstrap) {
     bootstrap.addBundle(new AssetsBundle("/interface/", "/webapp/"));
   }
 
   @Override
-  public void run(Configuration configuration, Environment environment) throws Exception {
+  public void run(final DropwizardConfiguration configuration,
+    final Environment environment) throws Exception {
     for (DozyResource resource : resources) {
       resource.initialize(syncInterfaces);
-      environment.addProvider(resource);
+      environment.jersey().register(resource);
     }
 
-    /*
-     * To allow cross origin resource request from angular js client
-     */
-    environment.addFilter(CrossOriginFilter.class, "/*").
-      setInitParam("allowedOrigins", "*").
-      setInitParam("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin").
-      setInitParam("allowedMethods", "GET,PUT,POST,DELETE,OPTIONS").
-      setInitParam("preflightMaxAge", "5184000"). // 2 months
-      setInitParam("allowCredentials", "true");
+    setupCors(environment);
 
-    final int webPort = configuration.getHttpConfiguration().getPort();
+    final int webPort = getServerPort(environment);
     LOG.info("{}running on port:{}", logPrefix, webPort);
-    setupFileLogs(configuration);
+//    setupFileLogs(configuration);
   }
 
-  private void setupFileLogs(Configuration configuration) {
-    LoggingConfiguration.FileConfiguration fileConfig
-      = configuration.getLoggingConfiguration().getFileConfiguration();
-    if (fileConfig == null) {
-      fileConfig = new LoggingConfiguration.FileConfiguration();
-      configuration.getLoggingConfiguration().setFileConfiguration(fileConfig);
-    }
-    if (!fileConfig.isConfigured()) {
-      fileConfig.setEnabled(true);
-      String logDir = delaBaseDir + File.separator + "logs" + File.separator;
-      fileConfig.setCurrentLogFilename(logDir + "dela.log");
-      fileConfig.setArchivedLogFilenamePattern(logDir + "dela-%d.log");
-      fileConfig.setArchivedFileCount(10);
-    }
+  /*
+   * To allow cross origin resource request from angular js client
+   */
+  private void setupCors(Environment environment) {
+
+    final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+    // Configure CORS parameters
+    cors.setInitParameter("allowedOrigins", "*");
+    cors.setInitParameter("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin");
+    cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+    cors.setInitParameter("preflightMaxAge", "5184000"); // 2 months
+    cors.setInitParameter("allowCredentials", "true");
+
+    // Add URL mapping
+    cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
   }
+
+  private int getServerPort(Environment environment) {
+    return ((AbstractNetworkConnector) environment.getApplicationContext().getServer().getConnectors()[0])
+      .getLocalPort();
+  }
+
+  @Override
+  protected void bootstrapLogging() {
+  }
+//  private void setupFileLogs(Configuration configuration) {
+//    LoggingConfiguration.FileConfiguration fileConfig
+//      = configuration.getLoggingConfiguration().getFileConfiguration();
+//    if (fileConfig == null) {
+//      fileConfig = new LoggingConfiguration.FileConfiguration();
+//      configuration.getLoggingConfiguration().setFileConfiguration(fileConfig);
+//    }
+//    if (!fileConfig.isConfigured()) {
+//      fileConfig.setEnabled(true);
+//      String logDir = delaBaseDir + File.separator + "logs" + File.separator;
+//      fileConfig.setCurrentLogFilename(logDir + "dela.log");
+//      fileConfig.setArchivedLogFilenamePattern(logDir + "dela-%d.log");
+//      fileConfig.setArchivedFileCount(10);
+//    }
+//  }
 }

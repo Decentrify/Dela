@@ -18,9 +18,6 @@
  */
 package se.sics.dela.cli.util;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class ManagedClientException extends Exception {
   public ManagedClientException(String msg) {
     super(msg);

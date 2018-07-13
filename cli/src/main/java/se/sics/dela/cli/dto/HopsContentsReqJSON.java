@@ -21,9 +21,6 @@ package se.sics.dela.cli.dto;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author Alex Ormenisan <aaor@kth.se>
- */
 public class HopsContentsReqJSON {
 
   private List<Integer> projectIds = new LinkedList<>();
