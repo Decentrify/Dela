@@ -19,6 +19,7 @@
 package se.sics.dozy.vod.system;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.SettableFuture;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,10 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.caracaldb.MessageRegistrator;
 import se.sics.dozy.DozyResource;
+import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncComp;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.DropwizardDozy;
@@ -48,18 +52,17 @@ import se.sics.kompics.ClassMatchedHandler;
 import se.sics.kompics.Component;
 import se.sics.kompics.ComponentDefinition;
 import se.sics.kompics.Handler;
-import se.sics.kompics.Init;
 import se.sics.kompics.Kompics;
 import se.sics.kompics.KompicsEvent;
 import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.config.Config;
-import se.sics.kompics.config.ConfigException;
 import se.sics.kompics.fsm.FSMException;
 import se.sics.kompics.fsm.id.FSMIdentifierFactory;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
 import se.sics.kompics.timer.java.JavaTimer;
+import se.sics.kompics.util.Identifiable;
 import se.sics.ktoolbox.croupier.CroupierSerializerSetup;
 import se.sics.ktoolbox.gradient.GradientSerializerSetup;
 import se.sics.ktoolbox.netmngr.NetworkMngrSerializerSetup;
@@ -80,7 +83,6 @@ import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nstream.TorrentIds;
 import se.sics.nstream.hops.SystemOverlays;
 import se.sics.nstream.hops.libmngr.fsm.LibTFSM;
-import se.sics.nstream.hops.library.HopsHelperPort;
 import se.sics.nstream.hops.library.HopsLibraryProvider;
 import se.sics.nstream.hops.library.HopsTorrentPort;
 import se.sics.nstream.hops.library.event.core.HopsTorrentDownloadEvent;
@@ -103,7 +105,7 @@ import se.sics.nstream.util.CoreExtPorts;
 
 public class VoDNatLauncher extends ComponentDefinition {
 
-  private Logger LOG = LoggerFactory.getLogger(VoDNatLauncher.class);
+  private static Logger LOG = LoggerFactory.getLogger(VoDNatLauncher.class);
   private String logPrefix = "";
 
   //*****************************CONNECTIONS**********************************
@@ -118,50 +120,17 @@ public class VoDNatLauncher extends ComponentDefinition {
   private Component torrentMngrComp;
   private Component storageMngrComp;
   private Component systemSyncIComp;
-  private Component hopsHelperSyncIComp;
   private Component hopsTorrentSyncIComp;
-  private DropwizardDozy webserver;
+  private final Init init;
   //**************************************************************************
-  private OverlayIdFactory torrentIdFactory;
 
-  public VoDNatLauncher() {
+  public VoDNatLauncher(Init init) {
+    this.init = init;
     LOG.info("{}starting...", logPrefix);
 
     subscribe(handleStart, control);
     subscribe(handleNetReady, otherStatusPort);
 
-    systemSetup();
-  }
-
-  private void systemSetup() {
-    //identifier setup
-    TorrentIds.registerDefaults(config().getValue("system.seed", Long.class));
-
-    overlaysSetup();
-    serializersSetup();
-  }
-
-  private void overlaysSetup() {
-    OverlayRegistry.initiate(new SystemOverlays.TypeFactory(), new SystemOverlays.Comparator());
-
-    byte torrentOwnerId = 1;
-    OverlayRegistry.registerPrefix(TorrentIds.TORRENT_OVERLAYS, torrentOwnerId);
-
-    IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
-    torrentIdFactory = new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
-  }
-
-  private void serializersSetup() {
-    MessageRegistrator.register();
-    int serializerId = 128;
-    serializerId = BasicSerializerSetup.registerBasicSerializers(serializerId);
-    serializerId = CroupierSerializerSetup.registerSerializers(serializerId);
-    serializerId = GradientSerializerSetup.registerSerializers(serializerId);
-    serializerId = OMngrSerializerSetup.registerSerializers(serializerId);
-    serializerId = NetworkMngrSerializerSetup.registerSerializers(serializerId);
-    serializerId = StunSerializerSetup.registerSerializers(serializerId);
-    serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
-    serializerId = LedbatSerializerSetup.registerSerializers(serializerId);
   }
 
   Handler handleStart = new Handler<Start>() {
@@ -186,31 +155,26 @@ public class VoDNatLauncher extends ComponentDefinition {
 
   ClassMatchedHandler handleNetReady
     = new ClassMatchedHandler<NetMngrReady, Status.Internal<NetMngrReady>>() {
-      @Override
-      public void handle(NetMngrReady content, Status.Internal<NetMngrReady> container) {
-        LOG.info("{}network mngr ready", logPrefix);
-        selfAdr = content.systemAdr;
+    @Override
+    public void handle(NetMngrReady content, Status.Internal<NetMngrReady> container) {
+      LOG.info("{}network mngr ready", logPrefix);
+      selfAdr = content.systemAdr;
 
-        setStorageMngr();
-        setTorrentMngr();
-        setLibraryMngr();
-        setSystemSyncI();
-        setHopsHelperSyncI();
-        setTorrentSyncI();
-        setWebserver();
+      setStorageMngr();
+      setTorrentMngr();
+      setLibraryMngr();
+      setSystemSyncI();
+      setTorrentSyncI();
 
-        startWebserver();
+      trigger(Start.event, storageMngrComp.control());
+      trigger(Start.event, torrentMngrComp.control());
+      trigger(Start.event, libraryMngrComp.control());
+      trigger(Start.event, systemSyncIComp.control());
+      trigger(Start.event, hopsTorrentSyncIComp.control());
 
-        trigger(Start.event, storageMngrComp.control());
-        trigger(Start.event, torrentMngrComp.control());
-        trigger(Start.event, libraryMngrComp.control());
-        trigger(Start.event, systemSyncIComp.control());
-        trigger(Start.event, hopsHelperSyncIComp.control());
-        trigger(Start.event, hopsTorrentSyncIComp.control());
-
-        LOG.info("{}starting complete...", logPrefix);
-      }
-    };
+      LOG.info("{}starting complete...", logPrefix);
+    }
+  };
 
   private void setStorageMngr() {
     storageMngrComp = create(DStorageMngrComp.class, new DStorageMngrComp.Init(selfAdr.getId()));
@@ -245,22 +209,10 @@ public class VoDNatLauncher extends ComponentDefinition {
     List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
     resp.add(SystemAddressEvent.Response.class);
     systemSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(SystemPort.class, resp));
+    init.systemSyncIComp.setComp(systemSyncIComp);
 
     connect(systemSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
     connect(systemSyncIComp.getNegative(SystemPort.class), libraryMngrComp.getPositive(SystemPort.class),
-      Channel.TWO_WAY);
-  }
-
-  private void setHopsHelperSyncI() {
-    List<Class<? extends KompicsEvent>> resp = new ArrayList<>();
-//        resp.add(HDFSConnectionEvent.Response.class);
-//        resp.add(HDFSFileDeleteEvent.Response.class);
-//        resp.add(HDFSFileCreateEvent.Response.class);
-//        resp.add(HDFSAvroFileCreateEvent.Response.class);
-    hopsHelperSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsHelperPort.class, resp));
-
-    connect(hopsHelperSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
-    connect(hopsHelperSyncIComp.getNegative(HopsHelperPort.class), libraryMngrComp.getPositive(HopsHelperPort.class),
       Channel.TWO_WAY);
   }
 
@@ -276,54 +228,34 @@ public class VoDNatLauncher extends ComponentDefinition {
     resp.add(TorrentExtendedStatusEvent.Response.class);
 
     hopsTorrentSyncIComp = create(DozySyncComp.class, new DozySyncComp.Init(HopsTorrentPort.class, resp));
+    init.hopsTorrentSyncIComp.setComp(hopsTorrentSyncIComp);
 
     connect(hopsTorrentSyncIComp.getNegative(Timer.class), timerComp.getPositive(Timer.class), Channel.TWO_WAY);
     connect(hopsTorrentSyncIComp.getNegative(HopsTorrentPort.class), libraryMngrComp.getPositive(HopsTorrentPort.class),
       Channel.TWO_WAY);
   }
 
-  private void setWebserver() {
-    Map<String, DozySyncI> synchronousInterfaces = new HashMap<>();
-    synchronousInterfaces.put(DozyVoD.systemDozyName, (DozySyncI) systemSyncIComp.getComponent());
-    synchronousInterfaces.put(DozyVoD.hopsHelperDozyName, (DozySyncI) hopsHelperSyncIComp.getComponent());
-    synchronousInterfaces.put(DozyVoD.hopsTorrentDozyName, (DozySyncI) hopsTorrentSyncIComp.getComponent());
+  private static OverlayIdFactory setupOverlayIdFactory() {
+    OverlayRegistry.initiate(new SystemOverlays.TypeFactory(), new SystemOverlays.Comparator());
 
-    List<DozyResource> resources = new ArrayList<>();
-    resources.add(new VoDEndpointREST());
+    byte torrentOwnerId = 1;
+    OverlayRegistry.registerPrefix(TorrentIds.TORRENT_OVERLAYS, torrentOwnerId);
 
-    resources.add(new HTStartDownloadREST.Basic(torrentIdFactory));
-    resources.add(new HTStartDownloadREST.XML(torrentIdFactory));
-    resources.add(new HTAdvanceDownloadREST.Basic(torrentIdFactory));
-    resources.add(new HTAdvanceDownloadREST.XML(torrentIdFactory));
-    resources.add(new HTUploadREST.Basic(torrentIdFactory));
-    resources.add(new HTUploadREST.XML(torrentIdFactory));
-    resources.add(new HTStopREST(torrentIdFactory));
-    resources.add(new HTContentsREST.Basic(torrentIdFactory));
-    resources.add(new HTContentsREST.Hops(torrentIdFactory));
-    resources.add(new TorrentExtendedStatusREST(torrentIdFactory));
-
-//        resources.add(new HDFSConnectionREST.Basic());
-//        resources.add(new HDFSConnectionREST.XML());
-//        resources.add(new HDFSFileDeleteREST());
-//        resources.add(new HDFSFileCreateREST());
-//        resources.add(new HDFSAvroFileCreateREST());
-    String delaBaseDir = config().getValue("system.dir", String.class);
-    webserver = new DropwizardDozy(synchronousInterfaces, resources, delaBaseDir);
+    IdentifierFactory torrentBaseIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.OVERLAY.toString());
+    return new OverlayIdFactory(torrentBaseIdFactory, TorrentIds.Types.TORRENT, torrentOwnerId);
   }
 
-  private void startWebserver() {
-    String webserviceConfig = config().getValue("webservice.server", String.class);
-    LOG.info("{}webservices config:{}", logPrefix, webserviceConfig);
-    String[] args = new String[]{"server", webserviceConfig};
-    try {
-      webserver.run(args);
-    } catch (ConfigException ex) {
-      LOG.error("{}configuration error:{}", logPrefix, ex.getMessage());
-      throw new RuntimeException(ex);
-    } catch (Exception ex) {
-      LOG.error("{}dropwizard error:{}", logPrefix, ex.getMessage());
-      throw new RuntimeException(ex);
-    }
+  private static void setupSerializers() {
+    MessageRegistrator.register();
+    int serializerId = 128;
+    serializerId = BasicSerializerSetup.registerBasicSerializers(serializerId);
+    serializerId = CroupierSerializerSetup.registerSerializers(serializerId);
+    serializerId = GradientSerializerSetup.registerSerializers(serializerId);
+    serializerId = OMngrSerializerSetup.registerSerializers(serializerId);
+    serializerId = NetworkMngrSerializerSetup.registerSerializers(serializerId);
+    serializerId = StunSerializerSetup.registerSerializers(serializerId);
+    serializerId = GVoDSerializerSetup.registerSerializers(serializerId);
+    serializerId = LedbatSerializerSetup.registerSerializers(serializerId);
   }
 
   private static void setupFSM(Config.Builder builder) throws FSMException {
@@ -348,7 +280,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     builder.setValue("system.dir", delaBaseDir);
     builder.setValue("webservice.server", webServerConfig);
     Optional<String> librarySummary = builder.readValue("hops.library.type");
-    if(librarySummary.isPresent() && librarySummary.get().toLowerCase().equals("disk")){
+    if (librarySummary.isPresent() && librarySummary.get().toLowerCase().equals("disk")) {
       String librarySummaryPath = delaBaseDir + File.separator + "library.summary";
       builder.setValue("hops.library.disk.summary", librarySummaryPath);
     }
@@ -357,31 +289,106 @@ public class VoDNatLauncher extends ComponentDefinition {
   private static void setupBasic(Config.Builder builder) {
     Random rand = new Random();
     Long seed = builder.getValue("system.seed", Long.class);
-    if(seed == null) {
+    if (seed == null) {
       builder.setValue("system.seed", rand.nextLong());
     }
   }
-  
-  private static void setupSystem() throws FSMException, URISyntaxException {
+
+  private static OverlayIdFactory setupSystem() throws FSMException, URISyntaxException {
     Config.Impl config = (Config.Impl) Kompics.getConfig();
     Config.Builder builder = Kompics.getConfig().modify(UUID.randomUUID());
     setupBasic(builder);
     setupPaths(builder);
     setupFSM(builder);
+    TorrentIds.registerDefaults(config.getValue("system.seed", Long.class));
+    OverlayIdFactory torrentIdFactory = setupOverlayIdFactory();
+    setupSerializers();
     config.apply(builder.finalise(), (Optional) Optional.absent());
     Kompics.setConfig(config);
+    return torrentIdFactory;
+  }
+
+  private static class FutureComponent implements DozySyncI {
+
+    public final SettableFuture<DozySyncI> futureComp = SettableFuture.create();
+
+    @Override
+    public boolean isReady() {
+      return futureComp.isDone();
+    }
+
+    @Override
+    public <E extends KompicsEvent & Identifiable> DozyResult sendReq(E req, long timeout) {
+      try {
+        return futureComp.get().sendReq(req, timeout);
+      } catch (InterruptedException | ExecutionException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+
+    public void setComp(Component comp) {
+      futureComp.set((DozySyncI) comp.getComponent());
+    }
+  }
+
+  private static Pair<DropwizardDozy, String[]> webServer(Init init, OverlayIdFactory torrentIdFactory) {
+    Map<String, DozySyncI> synchronousInterfaces = new HashMap<>();
+    synchronousInterfaces.put(DozyVoD.systemDozyName, init.systemSyncIComp);
+    synchronousInterfaces.put(DozyVoD.hopsTorrentDozyName, init.hopsTorrentSyncIComp);
+
+    List<DozyResource> resources = new ArrayList<>();
+    resources.add(new VoDEndpointREST());
+
+    resources.add(new HTStartDownloadREST.Basic(torrentIdFactory));
+    resources.add(new HTStartDownloadREST.XML(torrentIdFactory));
+    resources.add(new HTAdvanceDownloadREST.Basic(torrentIdFactory));
+    resources.add(new HTAdvanceDownloadREST.XML(torrentIdFactory));
+    resources.add(new HTUploadREST.Basic(torrentIdFactory));
+    resources.add(new HTUploadREST.XML(torrentIdFactory));
+    resources.add(new HTStopREST(torrentIdFactory));
+    resources.add(new HTContentsREST.Basic(torrentIdFactory));
+    resources.add(new HTContentsREST.Hops(torrentIdFactory));
+    resources.add(new TorrentExtendedStatusREST(torrentIdFactory));
+
+    String delaBaseDir = Kompics.getConfig().getValue("system.dir", String.class);
+    DropwizardDozy webserver = new DropwizardDozy(synchronousInterfaces, resources, delaBaseDir);
+
+    String webserviceConfig = Kompics.getConfig().getValue("webservice.server", String.class);
+    LOG.info("webservices config:{}", webserviceConfig);
+    String[] args = new String[]{"server", webserviceConfig};
+
+    return Pair.with(webserver, args);
   }
 
   public static void main(String[] args) throws IOException, FSMException, URISyntaxException {
+    OverlayIdFactory torrentIdFactory = setupSystem();
+    Init init = new Init();
+    Pair<DropwizardDozy, String[]> webserver = webServer(init, torrentIdFactory);
+    
+    Thread thread = new Thread(() -> {
+      try {
+        webserver.getValue0().run(webserver.getValue1());
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+    thread.start();
+    
     if (Kompics.isOn()) {
       Kompics.shutdown();
     }
-    setupSystem();
-    Kompics.createAndStart(VoDNatLauncher.class, Runtime.getRuntime().availableProcessors(), 20); // Yes 20 is totally arbitrary
+    // Yes 20 is totally arbitrary
+    Kompics.createAndStart(VoDNatLauncher.class, init, Runtime.getRuntime().availableProcessors(), 20);
     try {
       Kompics.waitForTermination();
     } catch (InterruptedException ex) {
       System.exit(1);
     }
+  }
+
+  private static class Init extends se.sics.kompics.Init<VoDNatLauncher> {
+
+    public final FutureComponent systemSyncIComp = new FutureComponent();
+    public final FutureComponent hopsTorrentSyncIComp = new FutureComponent();
   }
 }
