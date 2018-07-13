@@ -25,17 +25,29 @@ logging:
     "se.sics.gvod.stream.congestion.PullLedbat": WARN
     "se.sics.gvod.stream.report.ReportComp": WARN
     "se.sics.nat.stun.client.StunClientComp": WARN
-    "NettyNetwork@41002": WARN
+    "NettyNetwork@30000": WARN
     "NettyNetwork@42002": WARN
     "NettyNetwork@30000": WARN
     "se.sics.ktoolbox.hops.managedStore.storage.HDFSHelper": INFO
     "se.sics.dozy": DEBUG
     "se.sics.ktoolbox.hops.managedStore.storage.cache.HDFSReadCacheImpl": INFO
     "se.sics.nstream.library.LibraryMngrComp": INFO
-    "se.sics.nstream.storage.cache.KCache": INFO
     "se.sics.nstream.torrent.TransferFSM": INFO
     "se.sics.nstream.hops.hdfs.HDFSComp": INFO
     "se.sics.nstream.hops.hdfs.HDFSHelper": INFO
+    "se.sics.nstream.torrent.TorrentComp": INFO
+    "se.sics.nutil.network.bestEffort.BestEffortNetworkComp": INFO
+    "se.sics.nstream.torrent.transfer.DwnlConnComp": INFO
+    "se.sics.nstream.torrent.transfer.UpldConnComp": INFO
+    "se.sics.ktoolbox.util.network.ports.One2NChannel": INFO
+    "se.sics.nstream.storage.cache": WARN
+    "se.sics.nstream.torrent.transfer.tracking": INFO
+    "se.sics.nstream.torrent.transfer": WARN
+    "se.sics.nstream.torrent.tracking": WARN
+    "se.sics.nstream.storage.cache.SimpleKCache": INFO
+    "se.sics.nstream.storage.durable.disk.DiskComp": INFO
+    "se.sics.ledbat.core.RTTEstimator": INFO
+    "se.sics.nutil.tracking.load.NetworkQueueLoadProxy": INFO
     
   console:
       enabled: true

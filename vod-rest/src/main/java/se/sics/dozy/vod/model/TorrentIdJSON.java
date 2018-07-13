@@ -50,7 +50,7 @@ public class TorrentIdJSON {
     }
 
     public static TorrentIdJSON toJSON(OverlayId torrentId) {
-        String sTorrentId = torrentId.toString();
+        String sTorrentId = torrentId.baseId.toString();
         return new TorrentIdJSON(sTorrentId);
     }
 

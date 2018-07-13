@@ -23,6 +23,8 @@ import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.config.LoggingConfiguration;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -35,41 +37,60 @@ import se.sics.dozy.DozySyncI;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class DropwizardDozy extends Service<Configuration> {
-    private static final Logger LOG = LoggerFactory.getLogger(DropwizardDozy.class);
-    private String logPrefix = "";
 
-    private final Map<String, DozySyncI> syncInterfaces;
-    private final List<DozyResource> resources;
-    
-    public DropwizardDozy(Map<String, DozySyncI> syncInterfaces, List<DozyResource> resources) {
-        this.syncInterfaces = syncInterfaces;
-        this.resources = resources;
+  private static final Logger LOG = LoggerFactory.getLogger(DropwizardDozy.class);
+  private String logPrefix = "";
+
+  private final Map<String, DozySyncI> syncInterfaces;
+  private final List<DozyResource> resources;
+  private final String delaBaseDir;
+
+  public DropwizardDozy(Map<String, DozySyncI> syncInterfaces, List<DozyResource> resources, String delaBaseDir) {
+    this.syncInterfaces = syncInterfaces;
+    this.resources = resources;
+    this.delaBaseDir = delaBaseDir;
+  }
+
+  @Override
+  public void initialize(Bootstrap<Configuration> bootstrap) {
+    bootstrap.addBundle(new AssetsBundle("/interface/", "/webapp/"));
+  }
+
+  @Override
+  public void run(Configuration configuration, Environment environment) throws Exception {
+    for (DozyResource resource : resources) {
+      resource.initialize(syncInterfaces);
+      environment.addProvider(resource);
     }
 
-    @Override
-    public void initialize(Bootstrap<Configuration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/interface/", "/webapp/"));
-    }
+    /*
+     * To allow cross origin resource request from angular js client
+     */
+    environment.addFilter(CrossOriginFilter.class, "/*").
+      setInitParam("allowedOrigins", "*").
+      setInitParam("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin").
+      setInitParam("allowedMethods", "GET,PUT,POST,DELETE,OPTIONS").
+      setInitParam("preflightMaxAge", "5184000"). // 2 months
+      setInitParam("allowCredentials", "true");
 
-    @Override
-    public void run(Configuration configuration, Environment environment) throws Exception {
-        for(DozyResource resource : resources) {
-            resource.initialize(syncInterfaces);
-            environment.addProvider(resource);
-        }
-        
-        /*
-         * To allow cross origin resource request from angular js client
-         */
-        environment.addFilter(CrossOriginFilter.class, "/*").
-                setInitParam("allowedOrigins", "*").
-                setInitParam("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin").
-                setInitParam("allowedMethods", "GET,PUT,POST,DELETE,OPTIONS").
-                setInitParam("preflightMaxAge", "5184000"). // 2 months
-                setInitParam("allowCredentials", "true");
-        
-        final int webPort = configuration.getHttpConfiguration().getPort();
-        LOG.info("{}running on port:{}", logPrefix, webPort);
+    final int webPort = configuration.getHttpConfiguration().getPort();
+    LOG.info("{}running on port:{}", logPrefix, webPort);
+    setupFileLogs(configuration);
+  }
+
+  private void setupFileLogs(Configuration configuration) {
+    LoggingConfiguration.FileConfiguration fileConfig
+      = configuration.getLoggingConfiguration().getFileConfiguration();
+    if (fileConfig == null) {
+      fileConfig = new LoggingConfiguration.FileConfiguration();
+      configuration.getLoggingConfiguration().setFileConfiguration(fileConfig);
     }
-    
+    if (!fileConfig.isConfigured()) {
+      fileConfig.setEnabled(true);
+      String logDir = delaBaseDir + File.separator + "logs" + File.separator;
+      fileConfig.setCurrentLogFilename(logDir + "dela.log");
+      fileConfig.setArchivedLogFilenamePattern(logDir + "dela-%d.log");
+      fileConfig.setArchivedFileCount(10);
+    }
+  }
 }

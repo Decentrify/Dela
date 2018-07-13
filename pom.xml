@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.sics</groupId>
     <artifactId>dozy</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Dozy</name>
     
@@ -11,20 +11,21 @@
         <module>api</module>
         <module>core</module>
         <module>dropwizard</module>
-        <module>test-rest</module>
         <module>vod-rest</module>
         <module>vod-system</module>
+        <module>client</module>
+        <module>cli</module>
     </modules>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         
-        <kompics.version>0.9.2-SNAPSHOT</kompics.version>
-        <ktoolbox.version>2.0.1-SNAPSHOT</ktoolbox.version>
-        <vod.version>0.0.8-SNAPSHOT</vod.version>
-        <nat.version>0.0.3-SNAPSHOT</nat.version>
+        <kompics.version>1.0.0</kompics.version>
+        <ktoolbox.version>2.0.4-SNAPSHOT</ktoolbox.version>
+        <vod.version>0.0.10-SNAPSHOT</vod.version>
+        <nat.version>0.0.5-SNAPSHOT</nat.version>
         
         <dropwizard.version>0.6.2</dropwizard.version>
         <jetty.version>8.1.10.v20130312</jetty.version>
@@ -33,11 +34,6 @@
     
     <dependencies>
         <!-- other -->
-        <dependency>
-            <groupId>com.yammer.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>

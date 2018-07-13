@@ -18,7 +18,7 @@
  */
 package se.sics.dozy.vod.model;
 
-import se.sics.gvod.mngr.util.TorrentExtendedStatus;
+import se.sics.nstream.util.TorrentExtendedStatus;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -85,6 +85,6 @@ public class TorrentExtendedStatusJSON {
 
     public static TorrentExtendedStatusJSON resolveToJson(TorrentExtendedStatus tes) {
         return new TorrentExtendedStatusJSON(TorrentIdJSON.toJSON(tes.torrentId), tes.torrentStatus.name(),
-                (long)tes.downloadSpeed, 0, tes.percentageComplete);
+                (long)tes.getDownloadSpeed(), 0, tes.getPercentageComplete());
     }
 }

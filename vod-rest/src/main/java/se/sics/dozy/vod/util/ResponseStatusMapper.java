@@ -141,6 +141,8 @@ public class ResponseStatusMapper {
             case SAFE_EXT_FAILURE:
             case UNSAFE_EXT_FAILURE:
                 return Pair.with(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR, vodResult.getExceptionDescription());
+            case LOGICAL_FAIL:
+                return Pair.with(javax.ws.rs.core.Response.Status.BAD_REQUEST, vodResult.getExceptionDescription());
             default:
                 return Pair.with(javax.ws.rs.core.Response.Status.SEE_OTHER, "undefined");
         }

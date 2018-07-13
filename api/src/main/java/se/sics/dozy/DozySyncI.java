@@ -19,7 +19,7 @@
 package se.sics.dozy;
 
 import se.sics.kompics.KompicsEvent;
-import se.sics.ktoolbox.util.identifiable.Identifiable;
+import se.sics.kompics.util.Identifiable;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -23,85 +23,104 @@ import se.sics.dozy.vod.model.hops.util.HDFSEndpointJSON;
 import se.sics.dozy.vod.model.hops.util.HDFSResourceJSON;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
-import se.sics.nstream.hops.hdfs.HDFSEndpoint;
-import se.sics.nstream.hops.hdfs.HDFSResource;
 import se.sics.nstream.hops.library.event.core.HopsTorrentUploadEvent;
+import se.sics.nstream.hops.storage.hdfs.HDFSEndpoint;
+import se.sics.nstream.hops.storage.hdfs.HDFSResource;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class HTUploadJSON {
 
-    public static class Base {
+  public static class Base {
 
-        private TorrentIdJSON torrentId;
-        private String torrentName;
-        private HDFSResourceJSON manifestHDFSResource;
+    private TorrentIdJSON torrentId;
+    private Integer projectId;
+    private Integer datasetId;
+    private String torrentName;
+    private HDFSResourceJSON manifestHDFSResource;
 
-        public TorrentIdJSON getTorrentId() {
-            return torrentId;
-        }
-
-        public void setTorrentId(TorrentIdJSON torrentId) {
-            this.torrentId = torrentId;
-        }
-
-        public String getTorrentName() {
-            return torrentName;
-        }
-
-        public void setTorrentName(String torrentName) {
-            this.torrentName = torrentName;
-        }
-        
-        public HDFSResourceJSON getManifestHDFSResource() {
-            return manifestHDFSResource;
-        }
-
-        public void setManifestHDFSResource(HDFSResourceJSON manifestHDFSResource) {
-            this.manifestHDFSResource = manifestHDFSResource;
-        }
-
-        protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint, OverlayIdFactory overlayIdFactory) {
-            OverlayId tId = torrentId.resolve(overlayIdFactory);
-            HDFSResource mr = manifestHDFSResource.resolve();
-            return new HopsTorrentUploadEvent.Request(tId, torrentName, hdfsEndpoint, mr);
-        }
+    public TorrentIdJSON getTorrentId() {
+      return torrentId;
     }
 
-    public static class Basic extends Base {
+    public void setTorrentId(TorrentIdJSON torrentId) {
+      this.torrentId = torrentId;
+    }
 
-        private HDFSEndpointJSON.Basic hdfsEndpoint;
+    public String getTorrentName() {
+      return torrentName;
+    }
 
-        public HDFSEndpointJSON.Basic getHdfsEndpoint() {
-            return hdfsEndpoint;
-        }
+    public void setTorrentName(String torrentName) {
+      this.torrentName = torrentName;
+    }
 
-        public void setHdfsEndpoint(HDFSEndpointJSON.Basic hdfsEndpoint) {
-            this.hdfsEndpoint = hdfsEndpoint;
-        }
+    public Integer getProjectId() {
+      return projectId;
+    }
 
-        public HopsTorrentUploadEvent.Request resolve(OverlayIdFactory overlayIdFactory) {
-            HDFSEndpoint he = hdfsEndpoint.resolve();
-            return partialResolve(he, overlayIdFactory);
-        }
+    public void setProjectId(Integer projectId) {
+      this.projectId = projectId;
+    }
+
+    public Integer getDatasetId() {
+      return datasetId;
+    }
+
+    public void setDatasetId(Integer datasetId) {
+      this.datasetId = datasetId;
     }
     
-    public static class XML extends Base {
-        private HDFSEndpointJSON.XML hdfsEndpoint;
-
-        public HDFSEndpointJSON.XML getHdfsEndpoint() {
-            return hdfsEndpoint;
-        }
-
-        public void setHdfsEndpoint(HDFSEndpointJSON.XML hdfsEndpoint) {
-            this.hdfsEndpoint = hdfsEndpoint;
-        }
-        
-        public HopsTorrentUploadEvent.Request resolve(OverlayIdFactory overlayIdFactory) {
-            HDFSEndpoint he = hdfsEndpoint.resolve();
-            return partialResolve(he, overlayIdFactory);
-        }
+    public HDFSResourceJSON getManifestHDFSResource() {
+      return manifestHDFSResource;
     }
+
+    public void setManifestHDFSResource(HDFSResourceJSON manifestHDFSResource) {
+      this.manifestHDFSResource = manifestHDFSResource;
+    }
+
+    protected HopsTorrentUploadEvent.Request partialResolve(HDFSEndpoint hdfsEndpoint, OverlayIdFactory overlayIdFactory) {
+      OverlayId tId = torrentId.resolve(overlayIdFactory);
+      HDFSResource mr = manifestHDFSResource.resolve();
+      return new HopsTorrentUploadEvent.Request(tId, torrentName, projectId, datasetId, hdfsEndpoint, mr);
+    }
+  }
+
+  public static class Basic extends Base {
+
+    private HDFSEndpointJSON.Basic hdfsEndpoint;
+
+    public HDFSEndpointJSON.Basic getHdfsEndpoint() {
+      return hdfsEndpoint;
+    }
+
+    public void setHdfsEndpoint(HDFSEndpointJSON.Basic hdfsEndpoint) {
+      this.hdfsEndpoint = hdfsEndpoint;
+    }
+
+    public HopsTorrentUploadEvent.Request resolve(OverlayIdFactory overlayIdFactory) {
+      HDFSEndpoint he = hdfsEndpoint.resolve();
+      return partialResolve(he, overlayIdFactory);
+    }
+  }
+
+  public static class XML extends Base {
+
+    private HDFSEndpointJSON.XML hdfsEndpoint;
+
+    public HDFSEndpointJSON.XML getHdfsEndpoint() {
+      return hdfsEndpoint;
+    }
+
+    public void setHdfsEndpoint(HDFSEndpointJSON.XML hdfsEndpoint) {
+      this.hdfsEndpoint = hdfsEndpoint;
+    }
+
+    public HopsTorrentUploadEvent.Request resolve(OverlayIdFactory overlayIdFactory) {
+      HDFSEndpoint he = hdfsEndpoint.resolve();
+      return partialResolve(he, overlayIdFactory);
+    }
+  }
 
 }

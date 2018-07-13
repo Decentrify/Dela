@@ -18,70 +18,92 @@
  */
 package se.sics.dozy.vod.model;
 
+import com.google.common.base.Optional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import se.sics.kompics.util.Identifier;
 import se.sics.ktoolbox.util.identifiable.BasicBuilders;
 import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
-import se.sics.ktoolbox.util.identifiable.Identifier;
 import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
 import se.sics.ktoolbox.util.identifiable.IdentifierRegistry;
 import se.sics.ktoolbox.util.identifiable.basic.IntId;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.network.basic.BasicAddress;
+import se.sics.ktoolbox.util.network.nat.NatAwareAddress;
 import se.sics.ktoolbox.util.network.nat.NatAwareAddressImpl;
+import se.sics.ktoolbox.util.network.nat.NatType;
 
 /**
  *
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class AddressJSON {
-    private String ip;
-    private int port;
-    private int id;
-    
-    public AddressJSON(String ip, int port, int id) {
-        this.ip = ip;
-        this.port = port;
-        this.id = id;
-    }
-    
-    public AddressJSON() {}
 
-    public String getIp() {
-        return ip;
-    }
+  private String ip;
+  private int port;
+  private int id;
+  private String nat;
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
+  public AddressJSON(String ip, int port, int id, String nat) {
+    this.ip = ip;
+    this.port = port;
+    this.id = id;
+    this.nat = nat;
+  }
 
-    public int getPort() {
-        return port;
-    }
+  public AddressJSON() {
+  }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
+  public String getIp() {
+    return ip;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 
-    public void setId(int id) {
-        this.id = id;
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public String getNat() {
+    return nat;
+  }
+
+  public void setNat(String nat) {
+    this.nat = nat;
+  }
+
+  public KAddress resolve() {
+    try {
+      IdentifierFactory nodeIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.NODE.toString());
+      Identifier nodeId = nodeIdFactory.id(new BasicBuilders.IntBuilder(id));
+      Optional<NatType> natType = NatType.decode(nat);
+      if(!natType.isPresent()) {
+        throw new RuntimeException("unknown nat");
+      }
+      BasicAddress publicAdr = new BasicAddress(InetAddress.getByName(ip), port, nodeId);
+      KAddress adr = NatAwareAddressImpl.adr(publicAdr, natType.get());
+      return adr;
+    } catch (UnknownHostException ex) {
+      throw new RuntimeException(ex);
     }
-    
-    public KAddress resolve() {
-        try {
-            IdentifierFactory nodeIdFactory = IdentifierRegistry.lookup(BasicIdentifiers.Values.NODE.toString());
-            Identifier nodeId = nodeIdFactory.id(new BasicBuilders.IntBuilder(id));
-            return NatAwareAddressImpl.open(new BasicAddress(InetAddress.getByName(ip), port, nodeId));
-        } catch (UnknownHostException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    public static AddressJSON resolveToJSON(KAddress adr) {
-        return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntId)adr.getId()).id);
-    }
+  }
+  
+  public static AddressJSON resolveToJSON(KAddress adr) {
+    NatType natType = ((NatAwareAddress)adr).getNatType();
+    return new AddressJSON(adr.getIp().getHostAddress(), adr.getPort(), ((IntId) adr.getId()).id, natType.toString());
+  }
 }
