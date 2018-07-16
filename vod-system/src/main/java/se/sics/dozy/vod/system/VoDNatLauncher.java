@@ -300,7 +300,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     setupBasic(builder);
     setupPaths(builder);
     setupFSM(builder);
-    TorrentIds.registerDefaults(config.getValue("system.seed", Long.class));
+    TorrentIds.registerDefaults(builder.getValue("system.seed", Long.class));
     OverlayIdFactory torrentIdFactory = setupOverlayIdFactory();
     setupSerializers();
     config.apply(builder.finalise(), (Optional) Optional.absent());
@@ -365,14 +365,14 @@ public class VoDNatLauncher extends ComponentDefinition {
     Init init = new Init();
     Pair<DropwizardDozy, String[]> webserver = webServer(init, torrentIdFactory);
     
-    Thread thread = new Thread(() -> {
+//    Thread thread = new Thread(() -> {
       try {
         webserver.getValue0().run(webserver.getValue1());
       } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
-    });
-    thread.start();
+//    });
+//    thread.start();
     
     if (Kompics.isOn()) {
       Kompics.shutdown();

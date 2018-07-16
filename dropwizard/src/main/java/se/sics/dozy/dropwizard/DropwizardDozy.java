@@ -19,14 +19,9 @@
 package se.sics.dozy.dropwizard;
 
 import io.dropwizard.Application;
-import io.dropwizard.Configuration;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
-import io.dropwizard.jetty.HttpConnectorFactory;
-import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
