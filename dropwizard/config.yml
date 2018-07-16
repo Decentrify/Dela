@@ -1,0 +1,9 @@
+logging:
+  level: WARN
+  loggers:
+    se.sics: WARN
+    
+http:
+  tls:
+    trustSelfSignedCertificates: true
+    verifyHostname: false

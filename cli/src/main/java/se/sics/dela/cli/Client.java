@@ -52,6 +52,7 @@ import se.sics.dela.cli.dto.SearchServiceDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.util.ManagedClientException;
 import se.sics.dela.cli.util.UnknownClientException;
+import se.sics.ktoolbox.httpsclient.WebClient;
 
 public class Client {
 
@@ -68,6 +69,7 @@ public class Client {
 
   public static void main(String[] args) {
     PrintWriter out = new PrintWriter(System.out);
+    WebClient.setBuilder(new WebClient.BasicBuilder());
     String sourceDir;
     try {
       sourceDir = getDelaDir();

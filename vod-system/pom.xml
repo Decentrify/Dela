@@ -13,6 +13,34 @@
     
   <dependencies>
     <dependency>
+      <groupId>se.sics.kompics.basic</groupId>
+      <artifactId>kompics-component-java-timer</artifactId>
+      <version>${kompics.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jul-to-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId> 
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
       <groupId>se.sics.dozy</groupId>
       <artifactId>vod-rest</artifactId>
       <version>${project.version}</version>
@@ -119,33 +147,6 @@
     <dependency>
       <groupId>se.sics.ktoolbox.overlaymngr</groupId>
       <artifactId>core</artifactId>
-      <version>${ktoolbox.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId> 
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>se.sics.ktoolbox.cc</groupId>
-      <artifactId>mngr</artifactId>
       <version>${ktoolbox.version}</version>
       <exclusions>
         <exclusion>

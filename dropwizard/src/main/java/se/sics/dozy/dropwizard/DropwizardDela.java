@@ -20,11 +20,13 @@ package se.sics.dozy.dropwizard;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import org.eclipse.jetty.server.AbstractNetworkConnector;
@@ -33,20 +35,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
+import se.sics.ktoolbox.httpsclient.WebClient;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class DropwizardDozy extends Application<DropwizardConfiguration> {
+public class DropwizardDela extends Application<DelaConfiguration> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DropwizardDozy.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DropwizardDela.class);
   private String logPrefix = "";
 
   private final Map<String, DozySyncI> syncInterfaces;
   private final List<DozyResource> resources;
   private final String delaBaseDir;
 
-  public DropwizardDozy(Map<String, DozySyncI> syncInterfaces, List<DozyResource> resources, String delaBaseDir) {
+  public DropwizardDela(Map<String, DozySyncI> syncInterfaces, List<DozyResource> resources, String delaBaseDir) {
     this.syncInterfaces = syncInterfaces;
     this.resources = resources;
     this.delaBaseDir = delaBaseDir;
@@ -58,20 +61,21 @@ public class DropwizardDozy extends Application<DropwizardConfiguration> {
   }
 
   @Override
-  public void initialize(final Bootstrap<DropwizardConfiguration> bootstrap) {
+  public void initialize(final Bootstrap<DelaConfiguration> bootstrap) {
     bootstrap.addBundle(new AssetsBundle("/interface/", "/webapp/"));
   }
 
   @Override
-  public void run(final DropwizardConfiguration configuration,
-    final Environment environment) throws Exception {
+  public void run(final DelaConfiguration configuration, final Environment environment) throws Exception {
+    WebClient.setBuilder(new Builder(configuration, environment));
+    
     for (DozyResource resource : resources) {
       resource.initialize(syncInterfaces);
       environment.jersey().register(resource);
     }
 
     setupCors(environment);
-
+    
     final int webPort = getServerPort(environment);
     LOG.info("{}running on port:{}", logPrefix, webPort);
 //    setupFileLogs(configuration);
@@ -118,4 +122,23 @@ public class DropwizardDozy extends Application<DropwizardConfiguration> {
 //      fileConfig.setArchivedFileCount(10);
 //    }
 //  }
+  
+  public static class Builder implements WebClient.Builder {
+    private final JerseyClientBuilder builder;
+    private final Random rand = new Random(1234);
+    
+    public Builder(DelaConfiguration configuration, Environment environment) {
+      builder = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration());
+    }
+    
+    @Override
+    public WebClient httpsInstance() {
+      return new WebClient(builder.build("DelaDropwizardClient_" + rand.nextLong()));
+    }
+
+    @Override
+    public WebClient httpInstance() {
+      return new WebClient(builder.build("DelaDropwizardClient_" + rand.nextLong()));
+    }
+  }
 }

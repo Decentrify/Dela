@@ -33,12 +33,11 @@ import java.util.concurrent.ExecutionException;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.sics.caracaldb.MessageRegistrator;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozyResult;
 import se.sics.dozy.DozySyncComp;
 import se.sics.dozy.DozySyncI;
-import se.sics.dozy.dropwizard.DropwizardDozy;
+import se.sics.dozy.dropwizard.DropwizardDela;
 import se.sics.dozy.vod.DozyVoD;
 import se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST;
 import se.sics.dozy.vod.hops.torrent.HTContentsREST;
@@ -246,7 +245,6 @@ public class VoDNatLauncher extends ComponentDefinition {
   }
 
   private static void setupSerializers() {
-    MessageRegistrator.register();
     int serializerId = 128;
     serializerId = BasicSerializerSetup.registerBasicSerializers(serializerId);
     serializerId = CroupierSerializerSetup.registerSerializers(serializerId);
@@ -331,7 +329,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     }
   }
 
-  private static Pair<DropwizardDozy, String[]> webServer(Init init, OverlayIdFactory torrentIdFactory) {
+  private static Pair<DropwizardDela, String[]> webServer(Init init, OverlayIdFactory torrentIdFactory) {
     Map<String, DozySyncI> synchronousInterfaces = new HashMap<>();
     synchronousInterfaces.put(DozyVoD.systemDozyName, init.systemSyncIComp);
     synchronousInterfaces.put(DozyVoD.hopsTorrentDozyName, init.hopsTorrentSyncIComp);
@@ -351,7 +349,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     resources.add(new TorrentExtendedStatusREST(torrentIdFactory));
 
     String delaBaseDir = Kompics.getConfig().getValue("system.dir", String.class);
-    DropwizardDozy webserver = new DropwizardDozy(synchronousInterfaces, resources, delaBaseDir);
+    DropwizardDela webserver = new DropwizardDela(synchronousInterfaces, resources, delaBaseDir);
 
     String webserviceConfig = Kompics.getConfig().getValue("webservice.server", String.class);
     LOG.info("webservices config:{}", webserviceConfig);
@@ -363,7 +361,7 @@ public class VoDNatLauncher extends ComponentDefinition {
   public static void main(String[] args) throws IOException, FSMException, URISyntaxException {
     OverlayIdFactory torrentIdFactory = setupSystem();
     Init init = new Init();
-    Pair<DropwizardDozy, String[]> webserver = webServer(init, torrentIdFactory);
+    Pair<DropwizardDela, String[]> webserver = webServer(init, torrentIdFactory);
     
 //    Thread thread = new Thread(() -> {
       try {

@@ -15,11 +15,28 @@
     <ktoolbox>2.0.4-SNAPSHOT</ktoolbox>
   </properties>
   
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.dropwizard</groupId>
+        <artifactId>dropwizard-bom</artifactId>
+        <version>${dropwizard.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>se.sics.ktoolbox.httpsclient</groupId>
       <artifactId>core</artifactId>
       <version>${ktoolbox.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
     </dependency>
 
     <dependency>
