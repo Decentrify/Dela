@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Random;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
-import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,15 +67,15 @@ public class DropwizardDela extends Application<DelaConfiguration> {
   @Override
   public void run(final DelaConfiguration configuration, final Environment environment) throws Exception {
     WebClient.setBuilder(new Builder(configuration, environment));
-    
+
     for (DozyResource resource : resources) {
       resource.initialize(syncInterfaces);
       environment.jersey().register(resource);
     }
 
     setupCors(environment);
-    
-    final int webPort = getServerPort(environment);
+
+    final int webPort = configuration.getServerPort();
     LOG.info("{}running on port:{}", logPrefix, webPort);
 //    setupFileLogs(configuration);
   }
@@ -99,11 +98,6 @@ public class DropwizardDela extends Application<DelaConfiguration> {
     cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
   }
 
-  private int getServerPort(Environment environment) {
-    return ((AbstractNetworkConnector) environment.getApplicationContext().getServer().getConnectors()[0])
-      .getLocalPort();
-  }
-
   @Override
   protected void bootstrapLogging() {
   }
@@ -122,15 +116,16 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 //      fileConfig.setArchivedFileCount(10);
 //    }
 //  }
-  
+
   public static class Builder implements WebClient.Builder {
+
     private final JerseyClientBuilder builder;
     private final Random rand = new Random(1234);
-    
+
     public Builder(DelaConfiguration configuration, Environment environment) {
-      builder = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration());
+      builder = new JerseyClientBuilder(environment).using(configuration.getClientConfiguration());
     }
-    
+
     @Override
     public WebClient httpsInstance() {
       return new WebClient(builder.build("DelaDropwizardClient_" + rand.nextLong()));

@@ -11,10 +11,6 @@
   <packaging>jar</packaging>
   <name>Dela CLI</name>
   
-  <properties>
-    <ktoolbox>2.0.4-SNAPSHOT</ktoolbox>
-  </properties>
-  
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -48,6 +44,12 @@
       <groupId>org.javatuples</groupId>
       <artifactId>javatuples</artifactId>
       <version>1.2</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.typesafe</groupId>
+      <artifactId>config</artifactId>
+      <version>${config.version}</version>
     </dependency>
   </dependencies>
   

@@ -38,7 +38,7 @@ public class Tracker {
     public static String BBC5_TEST = "https://bbc5.sics.se:52300/hops-site/api";
 
     public static String used() {
-      return HOPS;
+      return BBC5;
     }
   }
 

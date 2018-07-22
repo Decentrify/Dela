@@ -372,16 +372,16 @@ public class VoDNatLauncher extends ComponentDefinition {
 //    });
 //    thread.start();
     
-    if (Kompics.isOn()) {
-      Kompics.shutdown();
-    }
-    // Yes 20 is totally arbitrary
-    Kompics.createAndStart(VoDNatLauncher.class, init, Runtime.getRuntime().availableProcessors(), 20);
-    try {
-      Kompics.waitForTermination();
-    } catch (InterruptedException ex) {
-      System.exit(1);
-    }
+//    if (Kompics.isOn()) {
+//      Kompics.shutdown();
+//    }
+//    // Yes 20 is totally arbitrary
+//    Kompics.createAndStart(VoDNatLauncher.class, init, Runtime.getRuntime().availableProcessors(), 20);
+//    try {
+//      Kompics.waitForTermination();
+//    } catch (InterruptedException ex) {
+//      System.exit(1);
+//    }
   }
 
   private static class Init extends se.sics.kompics.Init<VoDNatLauncher> {

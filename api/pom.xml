@@ -17,11 +17,10 @@
             <artifactId>kompics-core</artifactId>
             <version>${kompics.version}</version>
         </dependency>
-        
         <dependency>
-            <groupId>se.sics.ktoolbox.util</groupId>
-            <artifactId>core</artifactId>
-            <version>${ktoolbox.version}</version>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>${guava.version}</version>
         </dependency>
     </dependencies>
 </project>

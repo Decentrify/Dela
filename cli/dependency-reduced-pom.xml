@@ -101,8 +101,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <properties>
-    <ktoolbox>2.0.4-SNAPSHOT</ktoolbox>
-  </properties>
 </project>
 
