@@ -18,16 +18,14 @@
  */
 package se.sics.dela.cli;
 
-import com.google.gson.Gson;
 import java.io.PrintWriter;
-import java.util.Optional;
-import java.util.function.Consumer;
-import se.sics.dela.cli.dto.JsonResponse;
+import java.util.function.BiFunction;
 import se.sics.dela.cli.dto.SearchServiceDTO;
-import se.sics.dela.cli.util.ManagedClientException;
-import se.sics.dela.cli.util.UnknownClientException;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.httpsclient.WebResponse;
+import se.sics.ktoolbox.util.trysf.Try;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
+import static se.sics.dela.cli.util.ExHelper.simpleTrackerExMapper;
 
 public class Tracker {
 
@@ -61,20 +59,18 @@ public class Tracker {
     }
   }
 
-  public static class Printers {
+  public static class Printer {
 
-    public static Consumer<SearchServiceDTO.Item[]> searchResultConsolePrinter(final PrintWriter out) {
-      return new Consumer<SearchServiceDTO.Item[]>() {
-        @Override
-        public void accept(SearchServiceDTO.Item[] items) {
-          out.printf("%20s", "DatasetId");
-          out.printf(" | DatasetName\n");
-          for (SearchServiceDTO.Item item : items) {
-            datasetIdFormat(out, item.getPublicDSId());
-            out.printf(" | %s", item.getDataset().getName());
-            out.printf("\n");
-          }
+    public static BiFunction<PrintWriter, SearchServiceDTO.Item[], PrintWriter> itemsPrinter() {
+      return (PrintWriter out, SearchServiceDTO.Item[] items) -> {
+        out.printf("%20s", "DatasetId");
+        out.printf(" | DatasetName\n");
+        for (SearchServiceDTO.Item item : items) {
+          datasetIdFormat(out, item.getPublicDSId());
+          out.printf(" | %s", item.getDataset().getName());
+          out.printf("\n");
         }
+        return out;
       };
     }
 
@@ -91,114 +87,56 @@ public class Tracker {
     }
   }
 
-  public static class Ops {
+  public static class Rest {
 
-    public static String delaVersion() throws UnknownClientException {
+    public static Try<String> delaVersion() {
       try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp = client
+        Try<String> result = client
           .setTarget(Target.used())
           .setPath(Path.delaVersion())
-          .doGet();
-        if (!resp.statusOk()) {
-          Optional<JsonResponse> errorDesc = getErrorDesc(resp);
-          if (errorDesc.isPresent()) {
-            throw new UnknownClientException(errorDesc.get().getErrorMsg());
-          } else {
-            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
-          }
-        }
-        String delaVersion = resp.readContent(String.class);
-        return delaVersion;
-      } catch (UnknownClientException ex) {
-        throw ex;
-      } catch (Exception ex) {
-        throw new UnknownClientException(ex);
+          .tryGet()
+          .flatMap(WebResponse.readContent(String.class, simpleTrackerExMapper()));
+        return result;
       }
     }
 
-    public static SearchServiceDTO.Item[] search(String term) throws UnknownClientException {
+    public static Try<SearchServiceDTO.Item[]> trackerSearch(String term) {
       try (WebClient client = WebClient.httpsInstance()) {
         SearchServiceDTO.Params searchParam = new SearchServiceDTO.Params(term);
         WebResponse resp;
 
-        try {
-          resp = client
-            .setTarget(Target.used())
-            .setPath(Path.search())
-            .setPayload(searchParam)
-            .doPost();
-          if (!resp.statusOk()) {
-            Optional<JsonResponse> errorDesc = getErrorDesc(resp);
-            if (errorDesc.isPresent()) {
-              throw new UnknownClientException(errorDesc.get().getErrorMsg());
-            } else {
-              throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
-            }
-          }
-          SearchServiceDTO.SearchResult pageResult = resp.readContent(SearchServiceDTO.SearchResult.class);
-          resp = client
-            .setPath(Path.searchResult(pageResult.getSessionId(), 0, pageResult.getNrHits()))
-            .setPayload(null)
-            .doGet();
-          if (!resp.statusOk()) {
-            Optional<JsonResponse> errorDesc = getErrorDesc(resp);
-            if (errorDesc.isPresent()) {
-              throw new UnknownClientException(errorDesc.get().getErrorMsg());
-            } else {
-              throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
-            }
-          }
-          SearchServiceDTO.Item[] result = parseSearchResult(resp);
-          return result;
-        } catch (UnknownClientException ex) {
-          throw ex;
-        } catch (Exception ex) {
-          throw new UnknownClientException(ex);
-        }
-      }
-    }
-
-    public static SearchServiceDTO.ItemDetails datasetDetails(String publicDSId) throws
-      UnknownClientException, ManagedClientException {
-      try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp = client
+        Try<SearchServiceDTO.SearchResult> pageResult = client
           .setTarget(Target.used())
-          .setPath(Path.datasetDetails(publicDSId))
-          .doGet();
-        if (!resp.statusOk()) {
-          Optional<JsonResponse> errorDesc = getErrorDesc(resp);
-          if (errorDesc.isPresent()) {
-            if (errorDesc.get().getErrorMsg().equals("no dataset")) {
-              throw new ManagedClientException("wrong dataset id - no such dataset on tracker");
-            } else {
-              throw new UnknownClientException(errorDesc.get().getErrorMsg());
-            }
-          } else {
-            throw new UnknownClientException("tracker communication failed with status:" + resp.response.getStatus());
-          }
+          .setPath(Path.search())
+          .setPayload(searchParam)
+          .tryPost()
+          .flatMap(WebResponse.readContent(SearchServiceDTO.SearchResult.class, simpleTrackerExMapper()));
+        if (pageResult.isFailure()) {
+          return (Try.Failure) pageResult;
         }
-        SearchServiceDTO.ItemDetails result = resp.readContent(SearchServiceDTO.ItemDetails.class);
-        return result;
-      } catch (UnknownClientException | ManagedClientException ex) {
-        throw ex;
-      } catch (Exception ex) {
-        throw new UnknownClientException(ex);
+        Try<SearchServiceDTO.Item[]> itemsResults = client
+          .setTarget(Target.used())
+          .setPath(Path.searchResult(pageResult.get().getSessionId(), 0, pageResult.get().getNrHits()))
+          .setPayload(null)
+          .tryGet()
+          .flatMap(WebResponse.readContent(SearchServiceDTO.Item[].class, simpleTrackerExMapper()));
+        return itemsResults;
       }
     }
 
-    private static SearchServiceDTO.Item[] parseSearchResult(WebResponse wResult) {
-      String sResult = wResult.response.readEntity(String.class);
-      SearchServiceDTO.Item[] result = new Gson().fromJson(sResult, SearchServiceDTO.Item[].class);
-      return result;
-    }
-
-    private static Optional<JsonResponse> getErrorDesc(WebResponse resp) {
-      try {
-        JsonResponse errorDetails = resp.readErrorDetails(JsonResponse.class);
-        return Optional.of(errorDetails);
-      } catch (IllegalStateException ex) {
-        return Optional.empty();
-      }
+    public static <O> BiFunction<O, Throwable, Try<SearchServiceDTO.ItemDetails>>
+      trackerDatasetDetails(String publicDSId) {
+      return tryFSucc0(() -> {
+        try (WebClient client = WebClient.httpsInstance()) {
+          Try<SearchServiceDTO.ItemDetails> result = client
+            .setTarget(Target.used())
+            .setPath(Path.datasetDetails(publicDSId))
+            .setPayload(null)
+            .tryGet()
+            .flatMap(WebResponse.readContent(SearchServiceDTO.ItemDetails.class, simpleTrackerExMapper()));
+          return result;
+        }
+      });
     }
   }
 }

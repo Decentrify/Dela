@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more delaDatasetDetails.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -18,19 +18,31 @@
  */
 package se.sics.dela.cli;
 
+import com.google.gson.Gson;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ConnectException;
 import java.text.DecimalFormat;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import javax.ws.rs.ProcessingException;
+import org.javatuples.Pair;
+import org.javatuples.Triplet;
+import static se.sics.dela.cli.Dela.Setup.delaDownloadDir;
+import se.sics.dela.cli.cmd.DownloadCmd;
 import se.sics.dela.cli.dto.AddressJSON;
 import se.sics.dela.cli.dto.ElementSummaryJSON;
-import se.sics.dela.cli.dto.ErrorDescDTO;
 import se.sics.dela.cli.dto.HDFSEndpoint;
 import se.sics.dela.cli.dto.HDFSResource;
 import se.sics.dela.cli.dto.HopsContentsReqJSON;
@@ -38,35 +50,31 @@ import se.sics.dela.cli.dto.HopsContentsSummaryJSON;
 import se.sics.dela.cli.dto.TorrentDownloadDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.dto.TorrentIdJSON;
-import se.sics.dela.cli.util.ManagedClientException;
-import se.sics.dela.cli.util.UnknownClientException;
 import se.sics.ktoolbox.httpsclient.WebClient;
-import se.sics.ktoolbox.httpsclient.WebResponse;
+import se.sics.ktoolbox.httpsclient.WebClient.ClientException;
+import static se.sics.ktoolbox.httpsclient.WebResponse.readContent;
+import se.sics.ktoolbox.util.trysf.Try;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc2;
+import se.sics.dela.cli.dto.SearchServiceDTO;
+import static se.sics.dela.cli.util.ExHelper.simpleDelaExMapper;
+import static se.sics.dela.cli.util.ExHelper.torrentActiveRecovery;
+import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc1;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc3;
 
 public class Dela {
-  private static Config config(String delaDir) throws ManagedClientException {
-    String delaConfigDir = delaDir + File.separator + "conf";
-    File delaConfigFile = new File(delaConfigDir, "application.conf");
-    if (!delaConfigFile.exists()) {
-      throw new ManagedClientException("no dela config file found at:" + delaConfigDir);
+
+  public static class Target {
+
+    public static Try<String> delaClient(String delaDir) {
+      Try<Config> delaConfig = Setup.config(delaDir);
+      if (delaConfig.isFailure()) {
+        return (Try.Failure) delaConfig;
+      }
+      String port = delaConfig.get().getString("http.port");
+      return new Try.Success("http://localhost:" + port);
     }
-    Config delaConfig = ConfigFactory.parseFile(delaConfigFile);
-    return delaConfig;
-  }
-
-  public static class Targets {
-
-    public static String local(String delaDir) throws ManagedClientException {
-      Config delaConfig = Dela.config(delaDir);
-      String port = delaConfig.getString("http.port");
-      return "http://localhost:" + port;
-    }
-  }
-
-  public static String version(String delaDir) throws ManagedClientException {
-    Config delaConfig = Dela.config(delaDir);
-    String version = delaConfig.getString("version");
-    return version;
   }
 
   public static class WebPath {
@@ -78,44 +86,53 @@ public class Dela {
     public static final String CANCEL = "/torrent/hops/stop";
   }
 
-  public static class Printers {
+  public static class Printer {
 
-    public static Consumer<HopsContentsSummaryJSON.Hops> contentsConsolePrinter(final PrintWriter out) {
-      return new Consumer<HopsContentsSummaryJSON.Hops>() {
-
-        @Override
-        public void accept(HopsContentsSummaryJSON.Hops items) {
-          out.printf("%20s", "DatasetId");
-          out.printf(" | %11s", "Status");
-          out.printf(" | DatasetName\n");
-          for (HopsContentsSummaryJSON.ContentsElement projectItems : items.getContents()) {
-            for (ElementSummaryJSON item : projectItems.projectContents) {
-              datasetIdFormat(out, item.getTorrentId().getVal());
-              out.printf(" | %11s", item.getTorrentStatus());
-              out.printf(" | %s", item.getFileName());
-              out.printf("\n");
-            }
-          }
+    public static BiFunction<PrintWriter, Pair<String, TorrentExtendedStatusJSON>, PrintWriter>
+      delaDownloadDetailsPrinter(String downloadDir, String datasetId) {
+      return (PrintWriter out, Pair<String, TorrentExtendedStatusJSON> details) -> {
+        TorrentExtendedStatusJSON downloadDetails = details.getValue1();
+        String datasetName = details.getValue0();
+        if (downloadDetails.getTorrentStatus().equals("NONE")) {
+          out.printf("Library: %s \n", downloadDir);
+          out.printf("Saving dataset with id: %s as: %s \n", datasetId, datasetName);
+        } else {
+          out.printf("Dataset with id: %s already active \n", datasetId);
         }
+        return out;
       };
     }
 
-    public static Consumer<TorrentExtendedStatusJSON> detailsConsolePrinter(final PrintWriter out) {
-      return new Consumer<TorrentExtendedStatusJSON>() {
-
-        @Override
-        public void accept(TorrentExtendedStatusJSON item) {
-          out.printf("%20s", "DatasetId");
-          out.printf(" | %11s", "Status");
-          out.printf(" | Completed | DownloadSpeed\n");
-          datasetIdFormat(out, item.getTorrentId().getVal());
-          out.printf(" | %11s", item.getTorrentStatus());
-          if (item.getTorrentStatus().equals("DOWNLOADING")) {
-            out.printf(" | %8s%%", Math.round(item.getPercentageCompleted()));
-            downloadSpeed(out, item.getDownloadSpeed());
+    public static BiFunction<PrintWriter, HopsContentsSummaryJSON.Hops, PrintWriter> delaContentsPrinter() {
+      return (PrintWriter out, HopsContentsSummaryJSON.Hops contents) -> {
+        out.printf("%20s", "DatasetId");
+        out.printf(" | %11s", "Status");
+        out.printf(" | DatasetName\n");
+        for (HopsContentsSummaryJSON.ContentsElement project : contents.getContents()) {
+          for (ElementSummaryJSON dataset : project.projectContents) {
+            datasetIdFormat(out, dataset.getTorrentId().getVal());
+            out.printf(" | %11s", dataset.getTorrentStatus());
+            out.printf(" | %s", dataset.getFileName());
+            out.printf("\n");
           }
-          out.printf("\n");
         }
+        return out;
+      };
+    }
+
+    public static BiFunction<PrintWriter, TorrentExtendedStatusJSON, PrintWriter> delaDatasetPrinter() {
+      return (PrintWriter out, TorrentExtendedStatusJSON dataset) -> {
+        out.printf("%20s", "DatasetId");
+        out.printf(" | %11s", "Status");
+        out.printf(" | Completed | DownloadSpeed\n");
+        datasetIdFormat(out, dataset.getTorrentId().getVal());
+        out.printf(" | %11s", dataset.getTorrentStatus());
+        if (dataset.getTorrentStatus().equals("DOWNLOADING")) {
+          out.printf(" | %8s%%", Math.round(dataset.getPercentageCompleted()));
+          downloadSpeed(out, dataset.getDownloadSpeed());
+        }
+        out.printf("\n");
+        return out;
       };
     }
 
@@ -145,174 +162,264 @@ public class Dela {
     }
   }
 
-  public static class Ops {
+  public static class Rest {
 
-    public static boolean delaVersion(String delaDir, String trackerDelaVersion) throws ManagedClientException {
-      return Dela.version(delaDir).equals(trackerDelaVersion);
+    public static BiFunction<Pair<String, String>, Throwable, Try<AddressJSON>> delaContact() {
+      return tryFSucc2((String delaVersion) -> (String delaClient) -> {
+        try (WebClient client = WebClient.httpsInstance()) {
+          Try<AddressJSON> result = client
+            .setTarget(delaClient)
+            .setPath(Dela.WebPath.CONTACT)
+            .setPayload(delaVersion)
+            .tryPost()
+            .flatMap(readContent(AddressJSON.class, simpleDelaExMapper()));
+          return result;
+        }
+      });
     }
 
-    public static void contact(String delaDir) throws UnknownClientException, ManagedClientException {
-      try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp = client
-          .setTarget(Dela.Targets.local(delaDir))
-          .setPath(Dela.WebPath.CONTACT)
-          .setPayload(Dela.version(delaDir))
-          .doPost();
-        if (!resp.statusOk()) {
-          Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
-          if (errorDesc.isPresent()) {
-            throw new UnknownClientException("dela contact download failed with:" + errorDesc.get().getDetails());
-          } else {
-            throw new UnknownClientException("dela contact download failed with status:" + resp.response.getStatus());
-          }
+    public static BiFunction<Triplet<String, String, List<AddressJSON>>, Throwable, Try<String>>
+      delaDownload(String delaDir, String publicDSId) {
+      return tryFSucc3((String delaClient) -> (String datasetName) -> (List<AddressJSON> partners) -> {
+        TorrentIdJSON torrentId = new TorrentIdJSON(publicDSId);
+        HDFSEndpoint endpoint = new HDFSEndpoint();
+        HDFSResource resource = new HDFSResource(delaDownloadDir(delaDir), "manifest.json");
+        TorrentDownloadDTO.Start req = new TorrentDownloadDTO.Start(torrentId, datasetName, -1, -1,
+          resource, partners, endpoint);
+
+        try (WebClient client = WebClient.httpsInstance()) {
+
+          Try<String> result = client
+            .setTarget(delaClient)
+            .setPath(Dela.WebPath.DOWNLOAD)
+            .setPayload(req)
+            .tryPost()
+            .flatMap(readContent(String.class, simpleDelaExMapper()))
+            .recoverWith(torrentActiveRecovery());
+          return result;
         }
-        AddressJSON result = resp.readContent(AddressJSON.class);
-      } catch (UnknownClientException ex) {
-        throw ex;
-      } catch (ProcessingException ex) {
-        if (ex.getCause() != null && ex.getCause() instanceof ConnectException) {
-          throw new ManagedClientException("service offline");
-        } else {
-          throw new UnknownClientException(ex);
-        }
-      } catch (Exception ex) {
-        throw new UnknownClientException(ex);
-      }
+      });
     }
 
-    public static void download(String delaDir, String libDir, String publicDSId, String torrentName, 
-      List<AddressJSON> partners)
-      throws UnknownClientException, ManagedClientException {
-      TorrentIdJSON torrentId = new TorrentIdJSON(publicDSId);
-      HDFSEndpoint endpoint = new HDFSEndpoint();
-      String downloadDir = libDir + File.separator + torrentName;
-      HDFSResource resource = new HDFSResource(downloadDir, "manifest.json");
-      TorrentDownloadDTO.Start req = new TorrentDownloadDTO.Start(torrentId, torrentName, -1, -1,
-        resource, partners, endpoint);
-      WebResponse resp;
-
-      try (WebClient client = WebClient.httpsInstance()) {
-
-        resp = client
-          .setTarget(Dela.Targets.local(delaDir))
-          .setPath(Dela.WebPath.DOWNLOAD)
-          .setPayload(req)
-          .doPost();
-        if (!resp.statusOk()) {
-          Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
-          if (errorDesc.isPresent()) {
-            if (torrentActiveError(errorDesc.get())) {
-              throw new ManagedClientException("torrent: " + req.getTorrentId().getVal() + " already active");
-            } else {
-              throw new UnknownClientException("dela download failed with:" + errorDesc.get().getDetails());
-            }
-          } else {
-            throw new UnknownClientException("dela download failed with status" + resp.response.getStatus());
-          }
-        }
-      } catch (UnknownClientException | ManagedClientException ex) {
-        throw ex;
-      } catch (Exception ex) {
-        throw new UnknownClientException(ex);
-      }
-    }
-
-    public static HopsContentsSummaryJSON.Hops contents(String delaDir) throws UnknownClientException {
-      try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp;
-        HopsContentsReqJSON req = new HopsContentsReqJSON();
-        try {
-          resp = client
-            .setTarget(Dela.Targets.local(delaDir))
+    public static BiFunction<String, Throwable, Try<HopsContentsSummaryJSON.Hops>> delaContents() {
+      return tryFSucc1((String delaClient) -> {
+        try (WebClient client = WebClient.httpsInstance()) {
+          HopsContentsReqJSON req = new HopsContentsReqJSON();
+          Try<HopsContentsSummaryJSON.Hops> result = client
+            .setTarget(delaClient)
             .setPath(Dela.WebPath.CONTENTS)
             .setPayload(req)
-            .doPost();
-          if (!resp.statusOk()) {
-            Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
-            if (errorDesc.isPresent()) {
-              throw new UnknownClientException("dela contents failed with:" + resp.response.getStatus());
-            } else {
-              throw new UnknownClientException("dela contents failed with status" + resp.response.getStatus());
-            }
-          }
-          HopsContentsSummaryJSON.Hops result = resp.readContent(HopsContentsSummaryJSON.Hops.class);
+            .tryPost()
+            .flatMap(readContent(HopsContentsSummaryJSON.Hops.class, simpleDelaExMapper()));
           return result;
-        } catch (UnknownClientException ex) {
-          throw ex;
-        } catch (Exception ex) {
-          throw new UnknownClientException(ex);
         }
-      }
+      });
     }
 
-    public static TorrentExtendedStatusJSON details(String delaDir, String publicDSId) throws UnknownClientException {
-      try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp;
-        TorrentIdJSON req = new TorrentIdJSON(publicDSId);
-        try {
-          resp = client
-            .setTarget(Dela.Targets.local(delaDir))
+    public static BiFunction<String, Throwable, Try<TorrentExtendedStatusJSON>> delaDatasetDetails(String publicDSId) {
+      return tryFSucc1((String delaClient) -> {
+        try (WebClient client = WebClient.httpsInstance()) {
+          Try<TorrentExtendedStatusJSON> result = client
+            .setTarget(delaClient)
             .setPath(Dela.WebPath.DETAILS)
-            .setPayload(req)
-            .doPost();
-          if (!resp.statusOk()) {
-            Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
-            if (errorDesc.isPresent()) {
-              throw new UnknownClientException("dela transfer details failed with:" + resp.response.getStatus());
-            } else {
-              throw new UnknownClientException("dela transfer details failed with status" + resp.response.getStatus());
-            }
-          }
-          TorrentExtendedStatusJSON result = resp.readContent(TorrentExtendedStatusJSON.class);
+            .setPayload(new TorrentIdJSON(publicDSId))
+            .tryPost()
+            .flatMap(readContent(TorrentExtendedStatusJSON.class, simpleDelaExMapper()));
           return result;
-        } catch (UnknownClientException ex) {
-          throw ex;
-        } catch (Exception ex) {
-          throw new UnknownClientException(ex);
         }
-      }
+      });
     }
 
-    public static void cancel(String delaDir, String publicDSId) throws UnknownClientException {
-      try (WebClient client = WebClient.httpsInstance()) {
-        WebResponse resp;
-        TorrentIdJSON req = new TorrentIdJSON(publicDSId);
-        try {
-          resp = client
-            .setTarget(Dela.Targets.local(delaDir))
+    public static BiFunction<String, Throwable, Try<String>> delaDatasetCancel(String publicDSId) {
+      return tryFSucc1((String delaClient) -> {
+        try (WebClient client = WebClient.httpsInstance()) {
+          TorrentIdJSON req = new TorrentIdJSON(publicDSId);
+          Try<String> result = client
+            .setTarget(delaClient)
             .setPath(Dela.WebPath.CANCEL)
             .setPayload(req)
-            .doPost();
-          if (!resp.statusOk()) {
-            Optional<ErrorDescDTO> errorDesc = getErrorDesc(resp);
-            if (errorDesc.isPresent()) {
-              throw new UnknownClientException("dela transfer cancel failed with:" + resp.response.getStatus());
-            } else {
-              throw new UnknownClientException("dela transfer cancel failed with status" + resp.response.getStatus());
-            }
+            .tryPost()
+            .flatMap(readContent(String.class, simpleDelaExMapper()));
+          return result;
+        }
+      });
+    }
+  }
+
+  public static class Daemon {
+
+    public static BiFunction<String, Throwable, Try<String>>
+      startDaemon(PrintWriter out, boolean isWindows, String delaDir) {
+      return tryFSucc0(() -> {
+        ProcessBuilder builder = new ProcessBuilder();
+        if (isWindows) {
+          return new Try.Failure(new ClientException("windows not supported yet"));
+        } else {
+          builder.command("sh", "-c", "./bin/daemon_start");
+        }
+        builder.directory(new File(delaDir));
+
+        try {
+          Process process = builder.start();
+          StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), out::println);
+          ExecutorService es = Executors.newSingleThreadExecutor();
+          Future f = es.submit(outStreamGobbler);
+          if (process.waitFor() != 0) {
+            return new Try.Failure(new ClientException("daemon start - fail"));
           }
-        } catch (UnknownClientException ex) {
-          throw ex;
-        } catch (Exception ex) {
-          throw new UnknownClientException(ex);
+          f.get();
+          es.shutdown();
+          out.flush();
+          return new Try.Success("daemon start - success");
+        } catch (InterruptedException | ExecutionException | IOException ex) {
+          return new Try.Failure(new ClientException(ex));
+        }
+      });
+    }
+
+    public static BiFunction<Boolean, Throwable, Try<String>>
+      stopDaemon(PrintWriter out, boolean isWindows, String delaDir) {
+      return tryFSucc0(() -> {
+        ProcessBuilder builder = new ProcessBuilder();
+        if (isWindows) {
+          return new Try.Failure(new ClientException("windows not supported yet"));
+        } else {
+          builder.command("sh", "-c", "./bin/daemon_stop");
+        }
+        builder.directory(new File(delaDir));
+
+        try {
+          Process process = builder.start();
+          StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), out::println);
+          ExecutorService es = Executors.newSingleThreadExecutor();
+          Future f = es.submit(outStreamGobbler);
+          if (process.waitFor() != 0) {
+            return new Try.Failure(new ClientException("daemon stop - fail"));
+          }
+          f.get();
+          es.shutdown();
+          out.flush();
+          return new Try.Success("daemon stopt - success");
+        } catch (InterruptedException | ExecutionException | IOException ex) {
+          return new Try.Failure(new ClientException(ex));
+        }
+      });
+    }
+
+    public static class StreamGobbler implements Runnable {
+
+      private final InputStream inputStream;
+      private final Consumer<String> consumer;
+
+      public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+        this.inputStream = inputStream;
+        this.consumer = consumer;
+      }
+
+      @Override
+      public void run() {
+        new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
+      }
+    }
+  }
+
+  public static class Util {
+
+    public static BiFunction<SearchServiceDTO.ItemDetails, Throwable, List<AddressJSON>> bootstrap() {
+      return tryFSucc1((SearchServiceDTO.ItemDetails details) -> {
+        List<AddressJSON> result = new LinkedList<>();
+        Gson gson = new Gson();
+        details.getBootstrap().forEach((p) -> {
+          result.add(gson.fromJson(p.getDelaTransferAddress(), AddressJSON.class));
+        });
+        return result;
+      });
+    }
+
+    public static Try<String> checkDelaVersion(String delaDir, PrintWriter out) {
+      Try<String> localDelaVersion = Setup.version(delaDir);
+      Try<String> trackerDelaVersion = Tracker.Rest.delaVersion();
+      Try<String> result = Joiner.combine(localDelaVersion, trackerDelaVersion)
+        .flatMap(processVersion());
+      return result;
+    }
+
+    private static BiFunction<Pair<String, String>, Throwable, Try<String>> processVersion() {
+      return tryFSucc2((String localDelaVersion) -> (String trackerDelaVersion) -> {
+        String[] v1 = trackerDelaVersion.split("\\.");
+        String[] v2 = localDelaVersion.split("\\.");
+        if (v1.length != v2.length || v1.length != 3) {
+          String cause = "WARNING! Version structure mismatch."
+            + " Local:" + localDelaVersion
+            + " - Tracker:" + trackerDelaVersion;
+          return new Try.Failure(new WebClient.ClientException(cause));
+        }
+        if (!v1[0].equals(v2[0]) || !v1[1].equals(v2[1])) {
+          String cause = "WARNING! Version incompatible."
+            + " Local:" + localDelaVersion
+            + " - Tracker:" + trackerDelaVersion;
+          return new Try.Failure(new WebClient.ClientException(cause));
+        }
+        if (!v1[2].equals(v2[2])) {
+          String cause = "Patch version mismatch. Protocol still be compatible."
+            + " Local:" + localDelaVersion
+            + " - Tracker:" + trackerDelaVersion;
+          return new Try.Failure(new WebClient.ClientException(cause));
+        }
+        return new Try.Success("version:" + localDelaVersion);
+      });
+    }
+  }
+
+  public static class Setup {
+
+    private static Try<Config> config(String delaDir) {
+      String delaConfigDir = delaDir + File.separator + "conf";
+      File delaConfigFile = new File(delaConfigDir, "application.conf");
+      if (!delaConfigFile.exists()) {
+        return new Try.Failure(new ClientException("no dela config file found at:" + delaConfigDir));
+      }
+      Config delaConfig = ConfigFactory.parseFile(delaConfigFile);
+      return new Try.Success(delaConfig);
+    }
+
+    public static Try<String> version(String delaDir) {
+      Try<Config> delaConfig = config(delaDir);
+      if (delaConfig.isFailure()) {
+        return (Try.Failure) delaConfig;
+      }
+      String version = delaConfig.get().getString("version");
+      return new Try.Success(version);
+    }
+
+    public static Try<String> datasetName(String delaDir, DownloadCmd cmd) {
+      String datasetName;
+      if (cmd.datasetName != null) {
+        datasetName = cmd.datasetName;
+        if (datasetExists(delaDir, datasetName)) {
+          StringBuilder sb = new StringBuilder();
+          sb.append("Folder for dataset: ").append(cmd.datasetName);
+          sb.append("already exists in library");
+          sb.append("\nDelete folder or rename dataset.");
+          return new Try.Failure(new ClientException(sb.toString()));
+        }
+      } else {
+        datasetName = cmd.datasetId;
+        Random rand = new Random();
+        while (datasetExists(delaDir, datasetName)) {
+          datasetName = cmd.datasetId + "_" + rand.nextInt(Integer.MAX_VALUE);
         }
       }
+      return new Try.Success(datasetName);
     }
 
-    private static boolean torrentActiveError(ErrorDescDTO errorDesc) {
-      if (errorDesc.getDetails().endsWith("active already")) {
-        return true;
-      }
-      return false;
+    private static boolean datasetExists(String delaDir, String datasetName) {
+      File dataset = new File(delaDownloadDir(delaDir), datasetName);
+      return dataset.exists();
     }
 
-    private static Optional<ErrorDescDTO> getErrorDesc(WebResponse resp) {
-      try {
-        ErrorDescDTO errorDetails = resp.readErrorDetails(ErrorDescDTO.class);
-        return Optional.of(errorDetails);
-      } catch (IllegalStateException ex) {
-        return Optional.empty();
-      }
+    public static String delaDownloadDir(String delaDir) {
+      return delaDir + File.separator + "download";
     }
   }
 }

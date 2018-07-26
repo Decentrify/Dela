@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more delaDatasetDetails.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -21,24 +21,28 @@ package se.sics.dela.cli;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
-import com.google.gson.Gson;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
+import static se.sics.dela.cli.Dela.Daemon.startDaemon;
+import static se.sics.dela.cli.Dela.Daemon.stopDaemon;
+import static se.sics.dela.cli.Dela.Setup.datasetName;
+import static se.sics.dela.cli.Dela.Util.bootstrap;
+import static se.sics.dela.cli.Dela.Rest.delaContact;
+import static se.sics.dela.cli.Dela.Rest.delaContents;
+import static se.sics.dela.cli.Dela.Rest.delaDatasetCancel;
+import static se.sics.dela.cli.Dela.Rest.delaDatasetDetails;
+import static se.sics.dela.cli.Dela.Rest.delaDownload;
+import static se.sics.dela.cli.Dela.Printer.delaContentsPrinter;
+import static se.sics.dela.cli.Dela.Printer.delaDatasetPrinter;
+import static se.sics.dela.cli.Dela.Printer.delaDownloadDetailsPrinter;
+import static se.sics.dela.cli.Dela.Target.delaClient;
+import static se.sics.dela.cli.Dela.Util.checkDelaVersion;
+import static se.sics.dela.cli.Tracker.Rest.trackerSearch;
+import static se.sics.dela.cli.Tracker.Printer.itemsPrinter;
 import se.sics.dela.cli.cmd.CancelCmd;
 import se.sics.dela.cli.cmd.ContentsCmd;
 import se.sics.dela.cli.cmd.DetailsCmd;
@@ -46,15 +50,19 @@ import se.sics.dela.cli.cmd.DownloadCmd;
 import se.sics.dela.cli.cmd.SearchCmd;
 import se.sics.dela.cli.cmd.ServiceCmd;
 import se.sics.dela.cli.dto.AddressJSON;
-import se.sics.dela.cli.dto.ClusterAddressDTO;
 import se.sics.dela.cli.dto.HopsContentsSummaryJSON;
 import se.sics.dela.cli.dto.SearchServiceDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
-import se.sics.dela.cli.util.ManagedClientException;
-import se.sics.dela.cli.util.UnknownClientException;
+import se.sics.dela.cli.util.PrintHelper;
 import se.sics.ktoolbox.httpsclient.WebClient;
+import se.sics.ktoolbox.util.trysf.Try;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
+import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
+import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 
 public class Client {
+
+  private static final boolean DEBUG_MODE = false;
 
   private static Map<String, Object> cmds = new HashMap<>();
 
@@ -134,257 +142,91 @@ public class Client {
     return jcb.build();
   }
 
-  private static boolean checkDelaVersion(String delaDir, PrintWriter out) 
-    throws UnknownClientException, ManagedClientException {
-    String trackerDelaVersion = Tracker.Ops.delaVersion();
-    String delaVersion = Dela.version(delaDir);
-    String[] v1 = trackerDelaVersion.split("\\.");
-    String[] v2 = delaVersion.split("\\.");
-    if(v1.length != v2.length || v1.length != 3) {
-      out.printf("WARNING! Version structure mismatch. Local:%s - Tracker:%s \n", delaVersion, trackerDelaVersion);
-      return false;
-    }
-    if(!v1[0].equals(v2[0]) || !v1[1].equals(v2[1])) {
-      out.printf("WARNING! Version incompatible. Local:%s - Tracker:%s \n", delaVersion, trackerDelaVersion);
-      return false;
-    }
-    if(!v1[2].equals(v2[2])) {
-      out.printf("Patch version mismatch. Protocol still be compatible. Local:%s - Tracker:%s \n", 
-        delaVersion, trackerDelaVersion);
-      return true;
-    }
-    return true;
-  }
-  
   private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
+    Try<String> delaVersion = checkDelaVersion(delaDir, out);
+    Try<String> delaClient = delaClient(delaDir);
+    PrintHelper.print(out, DEBUG_MODE, delaVersion);
     switch (cmdName) {
       case Cmds.SERVICE: {
         ServiceCmd cmd = (ServiceCmd) cmds.get(Cmds.SERVICE);
-        try {
-          boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-          boolean delaVersion = checkDelaVersion(delaDir, out);
-          switch (cmd.value()) {
-            case START: {
-              if(!delaVersion) {
-                return -1;
-              }
-              startDaemon(isWindows, delaDir);
-              return 0;
-            }
-            case STOP: {
-              stopDaemon(isWindows, delaDir);
-              return 0;
-            }
-            case STATUS: {
-              Dela.Ops.contact(delaDir);
-              out.write("service online\n");
-              return 0;
-            }
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
+        switch (cmd.value()) {
+          case START: {
+            Try<String> result = delaVersion
+              .flatMap(startDaemon(out, isWindows, delaDir));
+            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            return ret;
           }
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        } catch (ManagedClientException ex) {
-          out.write(ex.getMessage() + "\n");
-          return -1;
+          case STOP: {
+            Try<String> result = tryStart()
+              .flatMap(stopDaemon(out, isWindows, delaDir));
+            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            return ret;
+          }
+          case STATUS: {
+            Try<AddressJSON> result = Joiner.combine(delaVersion, delaClient)
+              .flatMap(delaContact());
+            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            return ret;
+          }
         }
       }
       case Cmds.SEARCH: {
         SearchCmd cmd = (SearchCmd) cmds.get(Cmds.SEARCH);
-        try {
-          SearchServiceDTO.Item[] items = Tracker.Ops.search(cmd.term);
-          Tracker.Printers.searchResultConsolePrinter(out).accept(items);
-          return 0;
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        }
+        Try<SearchServiceDTO.Item[]> items = trackerSearch(cmd.term);
+        int ret = PrintHelper.print(out, DEBUG_MODE, items, itemsPrinter());
+        return ret;
       }
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
-        try {
-          if(!checkDelaVersion(delaDir, out)) {
-            return -1;
-          }
-          Dela.Ops.contact(delaDir);
-          SearchServiceDTO.ItemDetails trackerDetails = Tracker.Ops.datasetDetails(cmd.datasetId);
-          TorrentExtendedStatusJSON delaDetails = Dela.Ops.details(delaDir, cmd.datasetId);
-          if (delaDetails.getTorrentStatus().equals("NONE")) {
-            String datasetName = getDatasetName(delaDir, out, cmd);
-            out.printf("Library: %s \n", delaDownloadDir(delaDir));
-            out.printf("Saving dataset with id: %s as: %s \n", cmd.datasetId, datasetName);
-            Dela.Ops.download(delaDir, delaDownloadDir(delaDir), cmd.datasetId, datasetName,
-              getBootstrap(trackerDetails.getBootstrap()));
-          } else {
-            out.printf("Dataset with id: %s already active \n", cmd.datasetId);
-          }
-          return 0;
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        } catch (ManagedClientException ex) {
-          out.write(ex.getMessage() + "\n");
-          return -1;
-        }
+        Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
+          .flatMap(delaContact());
+        Try<String> downloadSetup = Joiner.map(delaContact, datasetName(delaDir, cmd));
+        Try<List<AddressJSON>> bootstrap = Joiner.map(downloadSetup, Joiner.combine(delaVersion, delaClient))
+          .flatMap(delaContact())
+          .flatMap(trackerDatasetDetails(cmd.datasetId))
+          .map(bootstrap());
+        Try<TorrentExtendedStatusJSON> delaDatasetDetails = Joiner.map(bootstrap, delaClient)
+          .flatMap(delaDatasetDetails(cmd.datasetId));
+        Try<String> delaDownload = Joiner.map(delaDatasetDetails, Joiner.combine(delaClient, downloadSetup, bootstrap))
+          .flatMap(delaDownload(delaDir, cmd.datasetId));
+
+        int ret = PrintHelper.print(out, DEBUG_MODE,
+          Joiner.map(delaDownload, Joiner.combine(downloadSetup, delaDatasetDetails)),
+          delaDownloadDetailsPrinter(Dela.Setup.delaDownloadDir(delaDir), cmd.datasetId));
+        return ret;
       }
       case Cmds.CONTENTS: {
-        try {
-          checkDelaVersion(delaDir, out);
-          Dela.Ops.contact(delaDir);
-          ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
-          HopsContentsSummaryJSON.Hops contents = Dela.Ops.contents(delaDir);
-          Dela.Printers.contentsConsolePrinter(out).accept(contents);
-          return 0;
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        } catch (ManagedClientException ex) {
-          out.write(ex.getMessage() + "\n");
-          return -1;
-        }
+        ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
+        Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
+          .flatMap(delaContact());
+        Try<HopsContentsSummaryJSON.Hops> delaContents = Joiner.map(delaContact, delaClient)
+          .flatMap(delaContents());
+        int ret = PrintHelper.print(out, DEBUG_MODE, delaContents, delaContentsPrinter());
+        return ret;
       }
       case Cmds.DETAILS: {
-        try {
-          checkDelaVersion(delaDir, out);
-          Dela.Ops.contact(delaDir);
-          DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
-          TorrentExtendedStatusJSON torrent = Dela.Ops.details(delaDir, cmd.datasetId);
-          Dela.Printers.detailsConsolePrinter(out).accept(torrent);
-          return 0;
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        } catch (ManagedClientException ex) {
-          out.write(ex.getMessage() + "\n");
-          return -1;
-        }
+        DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
+        Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
+          .flatMap(delaContact());
+        Try<TorrentExtendedStatusJSON> datasetDetails = Joiner.map(delaContact, delaClient)
+          .flatMap(delaDatasetDetails(cmd.datasetId));
+        int ret = PrintHelper.print(out, DEBUG_MODE, datasetDetails, delaDatasetPrinter());
+        return ret;
       }
       case Cmds.CANCEL: {
-        try {
-          checkDelaVersion(delaDir, out);
-          Dela.Ops.contact(delaDir);
-          CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
-          Dela.Ops.cancel(delaDir, cmd.datasetId);
-          return 0;
-        } catch (UnknownClientException ex) {
-          ex.printStackTrace(out);
-          return -1;
-        } catch (ManagedClientException ex) {
-          out.write(ex.getMessage() + "\n");
-          return -1;
-        }
+        CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
+        Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
+          .flatMap(delaContact());
+        Try<String> cancelDataset = Joiner.map(delaContact, delaClient)
+          .flatMap(delaDatasetCancel(cmd.datasetId));
+        int ret = PrintHelper.print(out, DEBUG_MODE, cancelDataset);
+        return ret;
       }
       default:
         return -1;
     }
-  }
-
-  private static void startDaemon(boolean isWindows, String delaDir)
-    throws ManagedClientException, UnknownClientException {
-    ProcessBuilder builder = new ProcessBuilder();
-    if (isWindows) {
-      throw new ManagedClientException("windows not supported yet");
-    } else {
-      builder.command("sh", "-c", "./bin/daemon_start");
-    }
-    builder.directory(new File(delaDir));
-
-    try {
-      Process process = builder.start();
-      StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
-      ExecutorService es = Executors.newSingleThreadExecutor();
-      Future f = es.submit(outStreamGobbler);
-      if (process.waitFor() != 0) {
-        throw new ManagedClientException("daemon start did not finish successfully");
-      }
-      f.get();
-      es.shutdown();
-      System.out.flush();
-    } catch (InterruptedException | ExecutionException | IOException ex) {
-      throw new UnknownClientException(ex);
-    }
-  }
-
-  private static void stopDaemon(boolean isWindows, String delaDir)
-    throws ManagedClientException, UnknownClientException {
-    ProcessBuilder builder = new ProcessBuilder();
-    if (isWindows) {
-      throw new ManagedClientException("windows not supported yet");
-    } else {
-      builder.command("sh", "-c", "./bin/daemon_stop");
-    }
-    builder.directory(new File(delaDir));
-
-    try {
-      Process process = builder.start();
-      StreamGobbler outStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
-      ExecutorService es = Executors.newSingleThreadExecutor();
-      Future f = es.submit(outStreamGobbler);
-      if (process.waitFor() != 0) {
-        throw new ManagedClientException("daemon stop did not finish successfully");
-      }
-      f.get();
-      es.shutdown();
-      System.out.flush();
-    } catch (InterruptedException | ExecutionException | IOException ex) {
-      throw new UnknownClientException(ex);
-    }
-  }
-
-  private static class StreamGobbler implements Runnable {
-
-    private final InputStream inputStream;
-    private final Consumer<String> consumer;
-
-    public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
-      this.inputStream = inputStream;
-      this.consumer = consumer;
-    }
-
-    @Override
-    public void run() {
-      new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
-    }
-  }
-
-  private static String getDatasetName(String delaDir, PrintWriter out, DownloadCmd cmd) throws ManagedClientException {
-    String datasetName;
-    if (cmd.datasetName != null) {
-      datasetName = cmd.datasetName;
-      if (datasetExists(delaDir, datasetName)) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Folder for dataset: ").append(cmd.datasetName);
-        sb.append("already exists in library");
-        sb.append("\nDelete folder or rename dataset.");
-        throw new ManagedClientException(sb.toString());
-      }
-    } else {
-      datasetName = cmd.datasetId;
-      Random rand = new Random();
-      while (datasetExists(delaDir, datasetName)) {
-        datasetName = cmd.datasetId + "_" + rand.nextInt(Integer.MAX_VALUE);
-      }
-    }
-    return datasetName;
-  }
-
-  private static String delaDownloadDir(String delaDir) {
-    return delaDir + File.separator + "download";
-  }
-
-  private static boolean datasetExists(String delaDir, String datasetName) {
-    File dataset = new File(delaDownloadDir(delaDir), datasetName);
-    return dataset.exists();
-  }
-
-  public static List<AddressJSON> getBootstrap(List<ClusterAddressDTO> partners) {
-    List<AddressJSON> result = new LinkedList<>();
-    Gson gson = new Gson();
-    for (ClusterAddressDTO p : partners) {
-      AddressJSON adr = gson.fromJson(p.getDelaTransferAddress(), AddressJSON.class);
-      result.add(adr);
-    }
-    return result;
   }
 
   public static class Cmds {
