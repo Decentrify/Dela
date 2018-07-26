@@ -59,6 +59,7 @@ import se.sics.dela.cli.dto.SearchServiceDTO;
 import static se.sics.dela.cli.util.ExHelper.simpleDelaExMapper;
 import static se.sics.dela.cli.util.ExHelper.torrentActiveRecovery;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFFail;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc1;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc3;
@@ -87,6 +88,21 @@ public class Dela {
   }
 
   public static class Printer {
+
+    public static <O> BiFunction<O, Throwable, Try<String>> statusOK() {
+      return tryFSucc0(() -> {
+        return new Try.Success("dela service: healthy");
+      });
+    }
+
+    public static <O> BiFunction<O, Throwable, Try<String>> statusFail() {
+      return tryFFail((Throwable ex) -> {
+        if (ex instanceof WebClient.CommunicationException) {
+          return new Try.Success("dela service: not running");
+        }
+        return new Try.Failure(ex);
+      });
+    }
 
     public static BiFunction<PrintWriter, Pair<String, TorrentExtendedStatusJSON>, PrintWriter>
       delaDownloadDetailsPrinter(String downloadDir, String datasetId) {
@@ -164,7 +180,7 @@ public class Dela {
 
   public static class Rest {
 
-    public static BiFunction<Pair<String, String>, Throwable, Try<AddressJSON>> delaContact() {
+    public static BiFunction<Pair<String, String>, Throwable, Try<AddressJSON>> contact() {
       return tryFSucc2((String delaVersion) -> (String delaClient) -> {
         try (WebClient client = WebClient.httpsInstance()) {
           Try<AddressJSON> result = client
@@ -249,7 +265,7 @@ public class Dela {
   public static class Daemon {
 
     public static BiFunction<String, Throwable, Try<String>>
-      startDaemon(PrintWriter out, boolean isWindows, String delaDir) {
+      start(PrintWriter out, boolean isWindows, String delaDir) {
       return tryFSucc0(() -> {
         ProcessBuilder builder = new ProcessBuilder();
         if (isWindows) {
@@ -265,20 +281,20 @@ public class Dela {
           ExecutorService es = Executors.newSingleThreadExecutor();
           Future f = es.submit(outStreamGobbler);
           if (process.waitFor() != 0) {
-            return new Try.Failure(new ClientException("daemon start - fail"));
+            return new Try.Failure(new ClientException("daemon start: fail"));
           }
           f.get();
           es.shutdown();
           out.flush();
-          return new Try.Success("daemon start - success");
+          return new Try.Success("daemon start: success");
         } catch (InterruptedException | ExecutionException | IOException ex) {
           return new Try.Failure(new ClientException(ex));
         }
       });
     }
 
-    public static BiFunction<Boolean, Throwable, Try<String>>
-      stopDaemon(PrintWriter out, boolean isWindows, String delaDir) {
+    public static BiFunction<String, Throwable, Try<String>>
+      stop(PrintWriter out, boolean isWindows, String delaDir) {
       return tryFSucc0(() -> {
         ProcessBuilder builder = new ProcessBuilder();
         if (isWindows) {
@@ -294,12 +310,12 @@ public class Dela {
           ExecutorService es = Executors.newSingleThreadExecutor();
           Future f = es.submit(outStreamGobbler);
           if (process.waitFor() != 0) {
-            return new Try.Failure(new ClientException("daemon stop - fail"));
+            return new Try.Failure(new ClientException("daemon stop: fail"));
           }
           f.get();
           es.shutdown();
           out.flush();
-          return new Try.Success("daemon stopt - success");
+          return new Try.Success("daemon stop: success");
         } catch (InterruptedException | ExecutionException | IOException ex) {
           return new Try.Failure(new ClientException(ex));
         }
@@ -366,7 +382,7 @@ public class Dela {
             + " - Tracker:" + trackerDelaVersion;
           return new Try.Failure(new WebClient.ClientException(cause));
         }
-        return new Try.Success("version:" + localDelaVersion);
+        return new Try.Success(localDelaVersion);
       });
     }
   }

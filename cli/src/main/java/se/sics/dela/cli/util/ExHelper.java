@@ -23,6 +23,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import se.sics.dela.cli.dto.ErrorDescDTO;
 import se.sics.dela.cli.dto.JsonResponse;
+import se.sics.ktoolbox.httpsclient.WebClient;
+import se.sics.ktoolbox.httpsclient.WebClient.CommunicationException;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFFail;
 
@@ -71,6 +73,17 @@ public class ExHelper {
     public DelaException(ErrorDescDTO details) {
       super();
       this.details = details;
+    }
+  }
+
+  public static class ClientException extends Exception {
+
+    public ClientException(String msg, Throwable cause) {
+      super(msg, cause);
+    }
+
+    public ClientException(Throwable cause) {
+      super(cause);
     }
   }
 

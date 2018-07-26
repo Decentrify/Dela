@@ -27,11 +27,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static se.sics.dela.cli.Dela.Daemon.startDaemon;
-import static se.sics.dela.cli.Dela.Daemon.stopDaemon;
+import java.util.function.BiFunction;
 import static se.sics.dela.cli.Dela.Setup.datasetName;
 import static se.sics.dela.cli.Dela.Util.bootstrap;
-import static se.sics.dela.cli.Dela.Rest.delaContact;
 import static se.sics.dela.cli.Dela.Rest.delaContents;
 import static se.sics.dela.cli.Dela.Rest.delaDatasetCancel;
 import static se.sics.dela.cli.Dela.Rest.delaDatasetDetails;
@@ -56,13 +54,14 @@ import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.util.PrintHelper;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.util.trysf.Try;
-import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
 import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
+import se.sics.dela.cli.util.ExHelper.ClientException;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 
 public class Client {
 
-  private static final boolean DEBUG_MODE = false;
+  private static final boolean DEBUG_MODE = true;
 
   private static Map<String, Object> cmds = new HashMap<>();
 
@@ -144,29 +143,34 @@ public class Client {
 
   private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
     Try<String> delaVersion = checkDelaVersion(delaDir, out);
+    PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaVersion, "dela version: %s"));
     Try<String> delaClient = delaClient(delaDir);
-    PrintHelper.print(out, DEBUG_MODE, delaVersion);
     switch (cmdName) {
       case Cmds.SERVICE: {
         ServiceCmd cmd = (ServiceCmd) cmds.get(Cmds.SERVICE);
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
         switch (cmd.value()) {
-          case START: {
+          case STOP: {
             Try<String> result = delaVersion
-              .flatMap(startDaemon(out, isWindows, delaDir));
+              .flatMap(Dela.Daemon.stop(out, isWindows, delaDir));
             int ret = PrintHelper.print(out, DEBUG_MODE, result);
             return ret;
           }
-          case STOP: {
-            Try<String> result = tryStart()
-              .flatMap(stopDaemon(out, isWindows, delaDir));
+          case START: {
+            Try<String> daemonStart = delaVersion
+              .flatMap(Dela.Daemon.start(out, isWindows, delaDir))
+              .flatMap(sleep());
+            Try<String> result = Joiner.map(daemonStart, Joiner.combine(delaVersion, delaClient))
+              .flatMap(Dela.Rest.contact())
+              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
             int ret = PrintHelper.print(out, DEBUG_MODE, result);
             return ret;
           }
           case STATUS: {
-            Try<AddressJSON> result = Joiner.combine(delaVersion, delaClient)
-              .flatMap(delaContact());
+            Try<String> result = Joiner.combine(delaVersion, delaClient)
+              .flatMap(Dela.Rest.contact())
+              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
             int ret = PrintHelper.print(out, DEBUG_MODE, result);
             return ret;
           }
@@ -181,10 +185,11 @@ public class Client {
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(delaContact());
+          .flatMap(Dela.Rest.contact());
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
         Try<String> downloadSetup = Joiner.map(delaContact, datasetName(delaDir, cmd));
         Try<List<AddressJSON>> bootstrap = Joiner.map(downloadSetup, Joiner.combine(delaVersion, delaClient))
-          .flatMap(delaContact())
+          .flatMap(Dela.Rest.contact())
           .flatMap(trackerDatasetDetails(cmd.datasetId))
           .map(bootstrap());
         Try<TorrentExtendedStatusJSON> delaDatasetDetails = Joiner.map(bootstrap, delaClient)
@@ -200,7 +205,8 @@ public class Client {
       case Cmds.CONTENTS: {
         ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(delaContact());
+          .flatMap(Dela.Rest.contact());
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
         Try<HopsContentsSummaryJSON.Hops> delaContents = Joiner.map(delaContact, delaClient)
           .flatMap(delaContents());
         int ret = PrintHelper.print(out, DEBUG_MODE, delaContents, delaContentsPrinter());
@@ -209,7 +215,8 @@ public class Client {
       case Cmds.DETAILS: {
         DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(delaContact());
+          .flatMap(Dela.Rest.contact());
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
         Try<TorrentExtendedStatusJSON> datasetDetails = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetDetails(cmd.datasetId));
         int ret = PrintHelper.print(out, DEBUG_MODE, datasetDetails, delaDatasetPrinter());
@@ -218,7 +225,8 @@ public class Client {
       case Cmds.CANCEL: {
         CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(delaContact());
+          .flatMap(Dela.Rest.contact());
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
         Try<String> cancelDataset = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetCancel(cmd.datasetId));
         int ret = PrintHelper.print(out, DEBUG_MODE, cancelDataset);
@@ -237,6 +245,16 @@ public class Client {
     public static final String CONTENTS = "contents";
     public static final String DETAILS = "details";
     public static final String CANCEL = "cancel";
-
+  }
+  
+  public static <O> BiFunction<O, Throwable, Try<String>> sleep() {
+    return tryFSucc0(() -> {
+      try {
+        Thread.sleep(2000);
+        return new Try.Success("slept 2s");
+      } catch (InterruptedException ex) {
+        return new Try.Failure(new ClientException(ex));
+      }
+    });
   }
 }

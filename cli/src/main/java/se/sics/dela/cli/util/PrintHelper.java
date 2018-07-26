@@ -25,13 +25,13 @@ import se.sics.ktoolbox.util.trysf.Try;
 public class PrintHelper {
   public static <O> int print(PrintWriter out, boolean debug, Try<O> result) {
     if (result.isSuccess()) {
-      out.print(result.get().toString());
+      out.println(result.get().toString());
       return 0;
     } else {
       try {
         ((Try.Failure) result).checkedGet();
       } catch (Throwable ex) {
-        out.print(ex.getMessage());
+        out.println(ex.getMessage());
         if(debug) {
           ex.printStackTrace(out);
         }
@@ -49,7 +49,7 @@ public class PrintHelper {
       try {
         ((Try.Failure) result).checkedGet();
       } catch (Throwable ex) {
-        out.print(ex.getMessage());
+        out.println(ex.getMessage());
         if(debug) {
           ex.printStackTrace(out);
         }
