@@ -20,9 +20,13 @@ package se.sics.dela.cli.util;
 
 import java.io.PrintWriter;
 import java.util.function.BiFunction;
+import se.sics.dela.cli.Dela;
+import se.sics.dela.cli.util.ExHelper.DelaException;
+import se.sics.dela.cli.util.ExHelper.TrackerException;
 import se.sics.ktoolbox.util.trysf.Try;
 
 public class PrintHelper {
+
   public static <O> int print(PrintWriter out, boolean debug, Try<O> result) {
     if (result.isSuccess()) {
       out.println(result.get().toString());
@@ -31,16 +35,29 @@ public class PrintHelper {
       try {
         ((Try.Failure) result).checkedGet();
       } catch (Throwable ex) {
-        out.println(ex.getMessage());
-        if(debug) {
-          ex.printStackTrace(out);
+        if (ex instanceof DelaException) {
+          DelaException delaEx = (DelaException) ex;
+          if (Dela.Translate.notReady(result)) {
+            out.println("dela service: not running");
+          } else {
+            out.println("dela exception: " + delaEx.details.toString());
+          }
+        } else if (ex instanceof TrackerException) {
+          TrackerException trackerEx = (TrackerException) ex;
+          out.println("tracker exception:" + trackerEx.details.toString());
+        } else {
+          out.println(ex.getMessage());
+          if (debug) {
+            out.println("=======DEBUG=======");
+            ex.printStackTrace(out);
+          }
         }
       }
       return -1;
     }
   }
-  
-  public static <O> int print(PrintWriter out, boolean debug, Try<O> result, 
+
+  public static <O> int print(PrintWriter out, boolean debug, Try<O> result,
     BiFunction<PrintWriter, O, PrintWriter> resultConsumer) {
     if (result.isSuccess()) {
       resultConsumer.apply(out, result.get());
@@ -49,9 +66,22 @@ public class PrintHelper {
       try {
         ((Try.Failure) result).checkedGet();
       } catch (Throwable ex) {
-        out.println(ex.getMessage());
-        if(debug) {
-          ex.printStackTrace(out);
+        if (ex instanceof DelaException) {
+          DelaException delaEx = (DelaException) ex;
+          if (Dela.Translate.notReady(result)) {
+            out.println("dela service: not running");
+          } else {
+            out.println("dela exception: " + delaEx.details.toString());
+          }
+        } else if (ex instanceof TrackerException) {
+          TrackerException trackerEx = (TrackerException) ex;
+          out.println("tracker exception:" + trackerEx.details.toString());
+        } else {
+          out.println(ex.getMessage());
+          if (debug) {
+            out.println("=======DEBUG=======");
+            ex.printStackTrace(out);
+          }
         }
       }
       return -1;

@@ -24,9 +24,11 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -79,6 +81,7 @@ public class DropwizardDela extends Application<DelaConfiguration> {
     LOG.info("{}running on port:{}", logPrefix, webPort);
 //    setupFileLogs(configuration);
   }
+
 
   /*
    * To allow cross origin resource request from angular js client

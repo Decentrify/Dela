@@ -62,4 +62,13 @@ public class JsonResponse {
   public void setSuccessMessage(String successMessage) {
     this.successMessage = successMessage;
   }
+
+  @Override
+  public String toString() {
+    if (statusCode == 200) {
+      return "successMessage=" + successMessage;
+    } else {
+      return "status=" + status + ", statusCode=" + statusCode + ", errorMsg=" + errorMsg;
+    }
+  }
 }

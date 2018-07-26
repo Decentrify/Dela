@@ -36,11 +36,6 @@
     </dependency>
     
     <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-client</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>1.72</version>
@@ -55,6 +50,11 @@
       <groupId>com.typesafe</groupId>
       <artifactId>config</artifactId>
       <version>${config.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
     </dependency>
   </dependencies>
   

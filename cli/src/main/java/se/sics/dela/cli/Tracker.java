@@ -36,26 +36,26 @@ public class Tracker {
     public static String BBC5_TEST = "https://bbc5.sics.se:52300/hops-site/api";
 
     public static String used() {
-      return BBC5;
+      return HOPS;
     }
   }
 
   public static class Path {
 
     public static String delaVersion() {
-      return "public/cluster/dela/version";
+      return "/public/cluster/dela/version";
     }
 
     public static String search() {
-      return "public/dataset/search";
+      return "/public/dataset/search";
     }
 
     public static String searchResult(String sessionId, int startItem, int nrItems) {
-      return "public/dataset/search/" + sessionId + "/page/" + startItem + "/" + nrItems;
+      return "/public/dataset/search/" + sessionId + "/page/" + startItem + "/" + nrItems;
     }
 
     public static String datasetDetails(String publicDSId) {
-      return "public/dataset/" + publicDSId + "/details";
+      return "/public/dataset/" + publicDSId + "/details";
     }
   }
 

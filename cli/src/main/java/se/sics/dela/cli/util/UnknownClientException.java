@@ -19,6 +19,10 @@
 package se.sics.dela.cli.util;
 
 public class UnknownClientException extends Exception {
+  public UnknownClientException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
+  
   public UnknownClientException(String msg) {
     super(msg);
   }

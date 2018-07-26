@@ -19,12 +19,11 @@
 package se.sics.dela.cli.util;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import se.sics.dela.cli.dto.ErrorDescDTO;
 import se.sics.dela.cli.dto.JsonResponse;
-import se.sics.ktoolbox.httpsclient.WebClient;
-import se.sics.ktoolbox.httpsclient.WebClient.CommunicationException;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFFail;
 
@@ -32,33 +31,29 @@ public class ExHelper {
 
   public static Function<String, Throwable> simpleTrackerExMapper() {
     return (String stringEx) -> {
-      JsonResponse exDesc = new Gson().fromJson(stringEx, JsonResponse.class);
-      return new TrackerException(exDesc);
+      try {
+        JsonResponse exDesc = new Gson().fromJson(stringEx, JsonResponse.class);
+        return new TrackerException(exDesc);
+      } catch (JsonSyntaxException ex) {
+        return new UnknownClientException(stringEx, ex);
+      }
     };
   }
 
   public static Function<String, Throwable> simpleDelaExMapper() {
     return (String stringEx) -> {
-      ErrorDescDTO exDesc = new Gson().fromJson(stringEx, ErrorDescDTO.class);
-      return new DelaException(exDesc);
-    };
-  }
-
-  public static <O> BiFunction<O, Throwable, Try<String>> torrentActiveRecovery() {
-    return tryFFail((Throwable ex) -> {
-      if (ex instanceof DelaException) {
-        DelaException delaEx = (DelaException) ex;
-        if (delaEx.details.getDetails().endsWith("active already")) {
-          return new Try.Success("torrent active");
-        }
+      try {
+        ErrorDescDTO exDesc = new Gson().fromJson(stringEx, ErrorDescDTO.class);
+        return new DelaException(exDesc);
+      } catch (JsonSyntaxException ex) {
+        return new UnknownClientException(stringEx, ex);
       }
-      return new Try.Failure(ex);
-    });
+    };
   }
 
   public static class TrackerException extends Exception {
 
-    public JsonResponse details;
+    public final JsonResponse details;
 
     public TrackerException(JsonResponse exDesc) {
       super("server exception");
@@ -68,7 +63,7 @@ public class ExHelper {
 
   public static class DelaException extends Exception {
 
-    ErrorDescDTO details;
+    public final ErrorDescDTO details;
 
     public DelaException(ErrorDescDTO details) {
       super();

@@ -363,25 +363,25 @@ public class VoDNatLauncher extends ComponentDefinition {
     Init init = new Init();
     Pair<DropwizardDela, String[]> webserver = webServer(init, torrentIdFactory);
     
-//    Thread thread = new Thread(() -> {
+    Thread thread = new Thread(() -> {
       try {
         webserver.getValue0().run(webserver.getValue1());
       } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
-//    });
-//    thread.start();
+    });
+    thread.start();
     
-//    if (Kompics.isOn()) {
-//      Kompics.shutdown();
-//    }
-//    // Yes 20 is totally arbitrary
-//    Kompics.createAndStart(VoDNatLauncher.class, init, Runtime.getRuntime().availableProcessors(), 20);
-//    try {
-//      Kompics.waitForTermination();
-//    } catch (InterruptedException ex) {
-//      System.exit(1);
-//    }
+    if (Kompics.isOn()) {
+      Kompics.shutdown();
+    }
+    // Yes 20 is totally arbitrary
+    Kompics.createAndStart(VoDNatLauncher.class, init, Runtime.getRuntime().availableProcessors(), 20);
+    try {
+      Kompics.waitForTermination();
+    } catch (InterruptedException ex) {
+      System.exit(1);
+    }
   }
 
   private static class Init extends se.sics.kompics.Init<VoDNatLauncher> {

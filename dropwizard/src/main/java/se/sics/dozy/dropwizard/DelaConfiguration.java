@@ -10,6 +10,7 @@ public class DelaConfiguration extends Configuration {
 
   @JsonProperty("jerseyClient")
   private JerseyClientConfiguration clientConfig = new JerseyClientConfiguration();
+
   public DelaConfiguration() {
     super();
   }
@@ -20,7 +21,6 @@ public class DelaConfiguration extends Configuration {
     return connector.getPort();
   }
 
-  @JsonProperty("jerseyClient")
   public JerseyClientConfiguration getClientConfiguration() {
     return clientConfig;
   }

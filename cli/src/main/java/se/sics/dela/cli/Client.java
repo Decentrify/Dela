@@ -58,6 +58,7 @@ import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import se.sics.dela.cli.util.ExHelper.ClientException;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
+import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
 
 public class Client {
 
@@ -152,26 +153,42 @@ public class Client {
 
         switch (cmd.value()) {
           case STOP: {
-            Try<String> result = delaVersion
-              .flatMap(Dela.Daemon.stop(out, isWindows, delaDir));
-            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            Try<String> stop = delaVersion
+              .flatMap(Dela.Daemon.stop(out, isWindows, delaDir))
+              .flatMap(sleep(2000));
+            Try<String> status = Joiner.map(stop, Joiner.combine(delaVersion, delaClient))
+              .flatMap(Dela.Rest.contact())
+              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
+            int ret = PrintHelper.print(out, DEBUG_MODE, status);
             return ret;
           }
           case START: {
-            Try<String> daemonStart = delaVersion
-              .flatMap(Dela.Daemon.start(out, isWindows, delaDir))
-              .flatMap(sleep());
-            Try<String> result = Joiner.map(daemonStart, Joiner.combine(delaVersion, delaClient))
-              .flatMap(Dela.Rest.contact())
-              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
-            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            Try<String> start = delaVersion
+              .flatMap(Dela.Daemon.start(out, isWindows, delaDir));
+            int retries = 5;
+            Try<String> status;
+            long sleepTime = 2000;
+            do {
+              Try<String> sleep = tryStart().flatMap(sleep(sleepTime));
+              status = Joiner.map(start, Joiner.combine(delaVersion, delaClient))
+                .flatMap(Dela.Rest.contact())
+                .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
+              if(Dela.Translate.notReady(status)) {
+                out.print("...");
+                out.flush();
+                retries--;
+              } else {
+                break;
+              }
+            } while (retries > 0);
+            int ret = PrintHelper.print(out, DEBUG_MODE, status);
             return ret;
           }
           case STATUS: {
-            Try<String> result = Joiner.combine(delaVersion, delaClient)
+            Try<String> status = Joiner.combine(delaVersion, delaClient)
               .flatMap(Dela.Rest.contact())
               .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
-            int ret = PrintHelper.print(out, DEBUG_MODE, result);
+            int ret = PrintHelper.print(out, DEBUG_MODE, status);
             return ret;
           }
         }
@@ -186,7 +203,7 @@ public class Client {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
         Try<String> downloadSetup = Joiner.map(delaContact, datasetName(delaDir, cmd));
         Try<List<AddressJSON>> bootstrap = Joiner.map(downloadSetup, Joiner.combine(delaVersion, delaClient))
           .flatMap(Dela.Rest.contact())
@@ -206,7 +223,7 @@ public class Client {
         ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
         Try<HopsContentsSummaryJSON.Hops> delaContents = Joiner.map(delaContact, delaClient)
           .flatMap(delaContents());
         int ret = PrintHelper.print(out, DEBUG_MODE, delaContents, delaContentsPrinter());
@@ -216,7 +233,7 @@ public class Client {
         DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
         Try<TorrentExtendedStatusJSON> datasetDetails = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetDetails(cmd.datasetId));
         int ret = PrintHelper.print(out, DEBUG_MODE, datasetDetails, delaDatasetPrinter());
@@ -226,7 +243,7 @@ public class Client {
         CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - healthy"));
+        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
         Try<String> cancelDataset = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetCancel(cmd.datasetId));
         int ret = PrintHelper.print(out, DEBUG_MODE, cancelDataset);
@@ -246,11 +263,11 @@ public class Client {
     public static final String DETAILS = "details";
     public static final String CANCEL = "cancel";
   }
-  
-  public static <O> BiFunction<O, Throwable, Try<String>> sleep() {
+
+  public static <O> BiFunction<O, Throwable, Try<String>> sleep(long time) {
     return tryFSucc0(() -> {
       try {
-        Thread.sleep(2000);
+        Thread.sleep(time);
         return new Try.Success("slept 2s");
       } catch (InterruptedException ex) {
         return new Try.Failure(new ClientException(ex));

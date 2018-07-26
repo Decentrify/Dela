@@ -56,8 +56,9 @@ import static se.sics.ktoolbox.httpsclient.WebResponse.readContent;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc2;
 import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.util.ExHelper;
+import se.sics.dela.cli.util.ExHelper.DelaException;
 import static se.sics.dela.cli.util.ExHelper.simpleDelaExMapper;
-import static se.sics.dela.cli.util.ExHelper.torrentActiveRecovery;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFFail;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
@@ -91,7 +92,7 @@ public class Dela {
 
     public static <O> BiFunction<O, Throwable, Try<String>> statusOK() {
       return tryFSucc0(() -> {
-        return new Try.Success("dela service: healthy");
+        return new Try.Success("dela service: running");
       });
     }
 
@@ -211,7 +212,7 @@ public class Dela {
             .setPayload(req)
             .tryPost()
             .flatMap(readContent(String.class, simpleDelaExMapper()))
-            .recoverWith(torrentActiveRecovery());
+            .recoverWith(Recover.torrentActive());
           return result;
         }
       });
@@ -436,6 +437,41 @@ public class Dela {
 
     public static String delaDownloadDir(String delaDir) {
       return delaDir + File.separator + "download";
+    }
+  }
+
+  public static class Translate {
+
+    public static boolean notReady(Try delaContact) {
+      if (delaContact.isSuccess()) {
+        return false;
+      }
+      try {
+        ((Try.Failure) delaContact).checkedGet();
+      } catch(Throwable ex) {
+        if(ex instanceof DelaException) {
+          DelaException delaEx = (DelaException)ex;
+          if("vod not ready".equals(delaEx.details.getDetails())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  }
+
+  public static class Recover {
+
+    public static <O> BiFunction<O, Throwable, Try<String>> torrentActive() {
+      return tryFFail((Throwable ex) -> {
+        if (ex instanceof ExHelper.DelaException) {
+          ExHelper.DelaException delaEx = (ExHelper.DelaException) ex;
+          if (delaEx.details.getDetails().endsWith("active already")) {
+            return new Try.Success("torrent active");
+          }
+        }
+        return new Try.Failure(ex);
+      });
     }
   }
 }
