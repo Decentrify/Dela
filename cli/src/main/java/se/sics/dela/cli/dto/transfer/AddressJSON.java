@@ -16,59 +16,64 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.dto.transfer;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class JsonResponse {
+public class AddressJSON {
 
-  private String status;
-  private Integer statusCode;
-  private String errorMsg;
-  private String successMessage;
+  private String ip;
+  private int port;
+  private String id;
+  private String nat;
 
-  public JsonResponse() {
+  public AddressJSON() {
+
   }
 
-  public Integer getStatusCode() {
-    return statusCode;
+  public AddressJSON(String ip, int port, String id, String nat) {
+    this.ip = ip;
+    this.port = port;
+    this.id = id;
+    this.nat = nat;
   }
 
-  public void setStatusCode(Integer statusCode) {
-    this.statusCode = statusCode;
+  public String getIp() {
+    return ip;
   }
 
-  public String getStatus() {
-    return status;
+  public int getPort() {
+    return port;
   }
 
-  public void setStatus(String status) {
-    this.status = status;
+  public String getId() {
+    return id;
   }
 
-  public String getErrorMsg() {
-    return errorMsg;
+  public void setIp(String ip) {
+    this.ip = ip;
   }
 
-  public void setErrorMsg(String errorMsg) {
-    this.errorMsg = errorMsg;
+  public void setPort(int port) {
+    this.port = port;
   }
 
-  public String getSuccessMessage() {
-    return successMessage;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public void setSuccessMessage(String successMessage) {
-    this.successMessage = successMessage;
+  public String getNat() {
+    return nat;
   }
 
+  public void setNat(String nat) {
+    this.nat = nat;
+  }
+  
   @Override
   public String toString() {
-    if (statusCode == 200) {
-      return "successMessage=" + successMessage;
-    } else {
-      return "status=" + status + ", statusCode=" + statusCode + ", errorMsg=" + errorMsg;
-    }
+    return "AddressJSON{" + "ip=" + ip + ", port=" + port + ", id=" + id + ", nat=" + nat + '}';
   }
 }
+

@@ -16,16 +16,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.dto.tracker;
 
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
+import se.sics.dela.cli.dto.ClusterAddressDTO;
+import se.sics.dela.cli.dto.DatasetDTO;
 
 public class SearchServiceDTO {
 
   @XmlRootElement
-  public static class Params implements Serializable {
+  public static class Params {
 
     private String searchTerm;
 
@@ -46,7 +48,7 @@ public class SearchServiceDTO {
   }
 
   @XmlRootElement
-  public static class SearchResult implements Serializable {
+  public static class SearchResult {
 
     private String sessionId;
     private int nrHits;
@@ -77,7 +79,7 @@ public class SearchServiceDTO {
   }
   
   @XmlRootElement
-  public static class Item implements Serializable {
+  public static class Item {
 
     private String publicDSId;
     private DatasetDTO.Search dataset;
@@ -117,7 +119,7 @@ public class SearchServiceDTO {
     }
   }
   
-  public static class ItemDetails implements Serializable {
+  public static class ItemDetails {
     private DatasetDTO.Details dataset;
     private List<ClusterAddressDTO> bootstrap;
 

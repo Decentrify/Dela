@@ -16,64 +16,59 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.dto.tracker;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AddressJSON {
+public class JsonResponse {
 
-  private String ip;
-  private int port;
-  private String id;
-  private String nat;
+  private String status;
+  private Integer statusCode;
+  private String errorMsg;
+  private String successMessage;
 
-  public AddressJSON() {
-
+  public JsonResponse() {
   }
 
-  public AddressJSON(String ip, int port, String id, String nat) {
-    this.ip = ip;
-    this.port = port;
-    this.id = id;
-    this.nat = nat;
+  public Integer getStatusCode() {
+    return statusCode;
   }
 
-  public String getIp() {
-    return ip;
+  public void setStatusCode(Integer statusCode) {
+    this.statusCode = statusCode;
   }
 
-  public int getPort() {
-    return port;
+  public String getStatus() {
+    return status;
   }
 
-  public String getId() {
-    return id;
+  public void setStatus(String status) {
+    this.status = status;
   }
 
-  public void setIp(String ip) {
-    this.ip = ip;
+  public String getErrorMsg() {
+    return errorMsg;
   }
 
-  public void setPort(int port) {
-    this.port = port;
+  public void setErrorMsg(String errorMsg) {
+    this.errorMsg = errorMsg;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public String getSuccessMessage() {
+    return successMessage;
   }
 
-  public String getNat() {
-    return nat;
+  public void setSuccessMessage(String successMessage) {
+    this.successMessage = successMessage;
   }
 
-  public void setNat(String nat) {
-    this.nat = nat;
-  }
-  
   @Override
   public String toString() {
-    return "AddressJSON{" + "ip=" + ip + ", port=" + port + ", id=" + id + ", nat=" + nat + '}';
+    if (statusCode == 200) {
+      return "successMessage=" + successMessage;
+    } else {
+      return "status=" + status + ", statusCode=" + statusCode + ", errorMsg=" + errorMsg;
+    }
   }
 }
-

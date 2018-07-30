@@ -28,17 +28,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import static se.sics.dela.cli.Dela.Setup.datasetName;
-import static se.sics.dela.cli.Dela.Util.bootstrap;
-import static se.sics.dela.cli.Dela.Rest.delaContents;
-import static se.sics.dela.cli.Dela.Rest.delaDatasetCancel;
-import static se.sics.dela.cli.Dela.Rest.delaDatasetDetails;
-import static se.sics.dela.cli.Dela.Rest.delaDownload;
-import static se.sics.dela.cli.Dela.Printer.delaContentsPrinter;
-import static se.sics.dela.cli.Dela.Printer.delaDatasetPrinter;
-import static se.sics.dela.cli.Dela.Printer.delaDownloadDetailsPrinter;
-import static se.sics.dela.cli.Dela.Target.delaClient;
-import static se.sics.dela.cli.Dela.Util.checkDelaVersion;
+import static se.sics.dela.cli.Transfer.Setup.datasetName;
+import static se.sics.dela.cli.Transfer.Util.bootstrap;
+import static se.sics.dela.cli.Transfer.Rest.delaContents;
+import static se.sics.dela.cli.Transfer.Rest.delaDatasetCancel;
+import static se.sics.dela.cli.Transfer.Rest.delaDatasetDetails;
+import static se.sics.dela.cli.Transfer.Rest.delaDownload;
+import static se.sics.dela.cli.Transfer.Printer.delaContentsPrinter;
+import static se.sics.dela.cli.Transfer.Printer.delaDatasetPrinter;
+import static se.sics.dela.cli.Transfer.Printer.delaDownloadDetailsPrinter;
+import static se.sics.dela.cli.Transfer.Target.delaClient;
+import static se.sics.dela.cli.Transfer.Util.checkDelaVersion;
 import static se.sics.dela.cli.Tracker.Rest.trackerSearch;
 import static se.sics.dela.cli.Tracker.Printer.itemsPrinter;
 import se.sics.dela.cli.cmd.CancelCmd;
@@ -47,9 +47,9 @@ import se.sics.dela.cli.cmd.DetailsCmd;
 import se.sics.dela.cli.cmd.DownloadCmd;
 import se.sics.dela.cli.cmd.SearchCmd;
 import se.sics.dela.cli.cmd.ServiceCmd;
-import se.sics.dela.cli.dto.AddressJSON;
+import se.sics.dela.cli.dto.transfer.AddressJSON;
 import se.sics.dela.cli.dto.HopsContentsSummaryJSON;
-import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.util.PrintHelper;
 import se.sics.ktoolbox.httpsclient.WebClient;
@@ -62,16 +62,30 @@ import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
 
 public class Client {
 
-  private static final boolean DEBUG_MODE = true;
+  private static final boolean DEBUG_LOG = true;
+  private static final boolean DEBUG_MODE = false;
 
   private static Map<String, Object> cmds = new HashMap<>();
 
   private static String getDelaDir() throws URISyntaxException {
-    String jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-//    String jarPath = "/Users/Alex/Documents/_Work/Code/decentrify/run/dela/lib/dela.jar";
-    String delaDir = jarPath;
-    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
-    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    String delaDir;
+    if (DEBUG_MODE) {
+      String jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+      delaDir = jarPath;
+      //target dir
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+      //resources dir
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)) 
+        + File.separator + "src"
+        + File.separator + "main"
+        + File.separator + "resources";
+    } else {
+      String jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+      delaDir = jarPath;
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    }
     return delaDir;
   }
 
@@ -144,7 +158,7 @@ public class Client {
 
   private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
     Try<String> delaVersion = checkDelaVersion(delaDir, out);
-    PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaVersion, "dela version: %s"));
+    PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaVersion, "dela version: %s"));
     Try<String> delaClient = delaClient(delaDir);
     switch (cmdName) {
       case Cmds.SERVICE: {
@@ -154,41 +168,43 @@ public class Client {
         switch (cmd.value()) {
           case STOP: {
             Try<String> stop = delaVersion
-              .flatMap(Dela.Daemon.stop(out, isWindows, delaDir))
+              .flatMap(Transfer.Daemon.stop(out, isWindows, delaDir))
               .flatMap(sleep(2000));
             Try<String> status = Joiner.map(stop, Joiner.combine(delaVersion, delaClient))
-              .flatMap(Dela.Rest.contact())
-              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
-            int ret = PrintHelper.print(out, DEBUG_MODE, status);
+              .flatMap(Transfer.Rest.contact())
+              .transform(Transfer.Printer.statusOK(), Transfer.Printer.statusFail());
+            int ret = PrintHelper.print(out, DEBUG_LOG, status);
             return ret;
           }
           case START: {
             Try<String> start = delaVersion
-              .flatMap(Dela.Daemon.start(out, isWindows, delaDir));
+              .flatMap(Transfer.Daemon.start(out, isWindows, delaDir));
             int retries = 5;
             Try<String> status;
             long sleepTime = 2000;
             do {
               Try<String> sleep = tryStart().flatMap(sleep(sleepTime));
               status = Joiner.map(start, Joiner.combine(delaVersion, delaClient))
-                .flatMap(Dela.Rest.contact())
-                .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
-              if(Dela.Translate.notReady(status)) {
+                .flatMap(Transfer.Rest.contact())
+                .transform(Transfer.Printer.statusOK(), Transfer.Printer.statusFail());
+              if (Transfer.Translate.notReady(status)) {
                 out.print("...");
                 out.flush();
                 retries--;
               } else {
+                out.println(" ");
+                out.flush();
                 break;
               }
             } while (retries > 0);
-            int ret = PrintHelper.print(out, DEBUG_MODE, status);
+            int ret = PrintHelper.print(out, DEBUG_LOG, status);
             return ret;
           }
           case STATUS: {
             Try<String> status = Joiner.combine(delaVersion, delaClient)
-              .flatMap(Dela.Rest.contact())
-              .transform(Dela.Printer.statusOK(), Dela.Printer.statusFail());
-            int ret = PrintHelper.print(out, DEBUG_MODE, status);
+              .flatMap(Transfer.Rest.contact())
+              .transform(Transfer.Printer.statusOK(), Transfer.Printer.statusFail());
+            int ret = PrintHelper.print(out, DEBUG_LOG, status);
             return ret;
           }
         }
@@ -196,17 +212,17 @@ public class Client {
       case Cmds.SEARCH: {
         SearchCmd cmd = (SearchCmd) cmds.get(Cmds.SEARCH);
         Try<SearchServiceDTO.Item[]> items = trackerSearch(cmd.term);
-        int ret = PrintHelper.print(out, DEBUG_MODE, items, itemsPrinter());
+        int ret = PrintHelper.print(out, DEBUG_LOG, items, itemsPrinter());
         return ret;
       }
       case Cmds.DOWNLOAD: {
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
+          .flatMap(Transfer.Rest.contact());
+        PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
         Try<String> downloadSetup = Joiner.map(delaContact, datasetName(delaDir, cmd));
         Try<List<AddressJSON>> bootstrap = Joiner.map(downloadSetup, Joiner.combine(delaVersion, delaClient))
-          .flatMap(Dela.Rest.contact())
+          .flatMap(Transfer.Rest.contact())
           .flatMap(trackerDatasetDetails(cmd.datasetId))
           .map(bootstrap());
         Try<TorrentExtendedStatusJSON> delaDatasetDetails = Joiner.map(bootstrap, delaClient)
@@ -214,39 +230,39 @@ public class Client {
         Try<String> delaDownload = Joiner.map(delaDatasetDetails, Joiner.combine(delaClient, downloadSetup, bootstrap))
           .flatMap(delaDownload(delaDir, cmd.datasetId));
 
-        int ret = PrintHelper.print(out, DEBUG_MODE,
+        int ret = PrintHelper.print(out, DEBUG_LOG,
           Joiner.map(delaDownload, Joiner.combine(downloadSetup, delaDatasetDetails)),
-          delaDownloadDetailsPrinter(Dela.Setup.delaDownloadDir(delaDir), cmd.datasetId));
+          delaDownloadDetailsPrinter(Transfer.Setup.delaDownloadDir(delaDir), cmd.datasetId));
         return ret;
       }
       case Cmds.CONTENTS: {
         ContentsCmd cmd = (ContentsCmd) cmds.get(Cmds.CONTENTS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
+          .flatMap(Transfer.Rest.contact());
+        PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
         Try<HopsContentsSummaryJSON.Hops> delaContents = Joiner.map(delaContact, delaClient)
           .flatMap(delaContents());
-        int ret = PrintHelper.print(out, DEBUG_MODE, delaContents, delaContentsPrinter());
+        int ret = PrintHelper.print(out, DEBUG_LOG, delaContents, delaContentsPrinter());
         return ret;
       }
       case Cmds.DETAILS: {
         DetailsCmd cmd = (DetailsCmd) cmds.get(Cmds.DETAILS);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
+          .flatMap(Transfer.Rest.contact());
+        PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
         Try<TorrentExtendedStatusJSON> datasetDetails = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetDetails(cmd.datasetId));
-        int ret = PrintHelper.print(out, DEBUG_MODE, datasetDetails, delaDatasetPrinter());
+        int ret = PrintHelper.print(out, DEBUG_LOG, datasetDetails, delaDatasetPrinter());
         return ret;
       }
       case Cmds.CANCEL: {
         CancelCmd cmd = (CancelCmd) cmds.get(Cmds.CANCEL);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
-          .flatMap(Dela.Rest.contact());
-        PrintHelper.print(out, DEBUG_MODE, Joiner.successMsg(delaContact, "dela client - running"));
+          .flatMap(Transfer.Rest.contact());
+        PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
         Try<String> cancelDataset = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetCancel(cmd.datasetId));
-        int ret = PrintHelper.print(out, DEBUG_MODE, cancelDataset);
+        int ret = PrintHelper.print(out, DEBUG_LOG, cancelDataset);
         return ret;
       }
       default:

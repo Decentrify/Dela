@@ -39,15 +39,15 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
-import static se.sics.dela.cli.Dela.Setup.delaDownloadDir;
+import static se.sics.dela.cli.Transfer.Setup.delaDownloadDir;
 import se.sics.dela.cli.cmd.DownloadCmd;
-import se.sics.dela.cli.dto.AddressJSON;
+import se.sics.dela.cli.dto.transfer.AddressJSON;
 import se.sics.dela.cli.dto.ElementSummaryJSON;
 import se.sics.dela.cli.dto.HDFSEndpoint;
 import se.sics.dela.cli.dto.HDFSResource;
 import se.sics.dela.cli.dto.HopsContentsReqJSON;
 import se.sics.dela.cli.dto.HopsContentsSummaryJSON;
-import se.sics.dela.cli.dto.TorrentDownloadDTO;
+import se.sics.dela.cli.dto.transfer.TorrentDownloadDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.dto.TorrentIdJSON;
 import se.sics.ktoolbox.httpsclient.WebClient;
@@ -55,7 +55,7 @@ import se.sics.ktoolbox.httpsclient.WebClient.ClientException;
 import static se.sics.ktoolbox.httpsclient.WebResponse.readContent;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc2;
-import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
 import se.sics.dela.cli.util.ExHelper;
 import se.sics.dela.cli.util.ExHelper.DelaException;
 import static se.sics.dela.cli.util.ExHelper.simpleDelaExMapper;
@@ -65,7 +65,7 @@ import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc1;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc3;
 
-public class Dela {
+public class Transfer {
 
   public static class Target {
 
@@ -186,7 +186,7 @@ public class Dela {
         try (WebClient client = WebClient.httpsInstance()) {
           Try<AddressJSON> result = client
             .setTarget(delaClient)
-            .setPath(Dela.WebPath.CONTACT)
+            .setPath(Transfer.WebPath.CONTACT)
             .setPayload(delaVersion)
             .tryPost()
             .flatMap(readContent(AddressJSON.class, simpleDelaExMapper()));
@@ -208,7 +208,7 @@ public class Dela {
 
           Try<String> result = client
             .setTarget(delaClient)
-            .setPath(Dela.WebPath.DOWNLOAD)
+            .setPath(Transfer.WebPath.DOWNLOAD)
             .setPayload(req)
             .tryPost()
             .flatMap(readContent(String.class, simpleDelaExMapper()))
@@ -224,7 +224,7 @@ public class Dela {
           HopsContentsReqJSON req = new HopsContentsReqJSON();
           Try<HopsContentsSummaryJSON.Hops> result = client
             .setTarget(delaClient)
-            .setPath(Dela.WebPath.CONTENTS)
+            .setPath(Transfer.WebPath.CONTENTS)
             .setPayload(req)
             .tryPost()
             .flatMap(readContent(HopsContentsSummaryJSON.Hops.class, simpleDelaExMapper()));
@@ -238,7 +238,7 @@ public class Dela {
         try (WebClient client = WebClient.httpsInstance()) {
           Try<TorrentExtendedStatusJSON> result = client
             .setTarget(delaClient)
-            .setPath(Dela.WebPath.DETAILS)
+            .setPath(Transfer.WebPath.DETAILS)
             .setPayload(new TorrentIdJSON(publicDSId))
             .tryPost()
             .flatMap(readContent(TorrentExtendedStatusJSON.class, simpleDelaExMapper()));
@@ -253,7 +253,7 @@ public class Dela {
           TorrentIdJSON req = new TorrentIdJSON(publicDSId);
           Try<String> result = client
             .setTarget(delaClient)
-            .setPath(Dela.WebPath.CANCEL)
+            .setPath(Transfer.WebPath.CANCEL)
             .setPayload(req)
             .tryPost()
             .flatMap(readContent(String.class, simpleDelaExMapper()));

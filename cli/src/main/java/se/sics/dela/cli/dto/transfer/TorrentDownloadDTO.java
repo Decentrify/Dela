@@ -16,10 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.dto.transfer;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
+import se.sics.dela.cli.dto.ExtendedDetails;
+import se.sics.dela.cli.dto.HDFSEndpoint;
+import se.sics.dela.cli.dto.HDFSResource;
+import se.sics.dela.cli.dto.TorrentIdJSON;
 
 public class TorrentDownloadDTO {
 

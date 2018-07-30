@@ -20,7 +20,7 @@ package se.sics.dela.cli;
 
 import java.io.PrintWriter;
 import java.util.function.BiFunction;
-import se.sics.dela.cli.dto.SearchServiceDTO;
+import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
 import se.sics.ktoolbox.httpsclient.WebClient;
 import se.sics.ktoolbox.httpsclient.WebResponse;
 import se.sics.ktoolbox.util.trysf.Try;

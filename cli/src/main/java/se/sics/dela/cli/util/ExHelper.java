@@ -22,8 +22,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import se.sics.dela.cli.dto.ErrorDescDTO;
-import se.sics.dela.cli.dto.JsonResponse;
+import se.sics.dela.cli.dto.transfer.ErrorDescDTO;
+import se.sics.dela.cli.dto.tracker.JsonResponse;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFFail;
 

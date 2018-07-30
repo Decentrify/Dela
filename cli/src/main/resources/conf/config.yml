@@ -1,0 +1,18 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 40003
+jerseyClient:
+  tls:
+    trustSelfSignedCertificates: true
+    verifyHostname: false
+
+logging:
+  level: INFO
+  loggers:
+    "se.sics": INFO
+  appenders:
+    - type: file
+      currentLogFilename: /Users/Alex/Documents/_Work/Code/decentrify/run/dela/logs/dela.log
+      archivedLogFilenamePattern: /Users/Alex/Documents/_Work/Code/decentrify/run/dela/logs/dela-%d.log.gz
+      archivedFileCount: 5

@@ -24,14 +24,14 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import javax.ws.rs.client.Client;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
@@ -131,12 +131,16 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
     @Override
     public WebClient httpsInstance() {
-      return new WebClient(builder.build("DelaDropwizardClient_" + rand.nextLong()));
+      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong())
+        .property(ClientProperties.CONNECT_TIMEOUT, 2000);
+      return new WebClient(client);
     }
 
     @Override
     public WebClient httpInstance() {
-      return new WebClient(builder.build("DelaDropwizardClient_" + rand.nextLong()));
+      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong())
+        .property(ClientProperties.CONNECT_TIMEOUT, 2000);
+      return new WebClient(client);
     }
   }
 }

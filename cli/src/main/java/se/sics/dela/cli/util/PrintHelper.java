@@ -20,7 +20,7 @@ package se.sics.dela.cli.util;
 
 import java.io.PrintWriter;
 import java.util.function.BiFunction;
-import se.sics.dela.cli.Dela;
+import se.sics.dela.cli.Transfer;
 import se.sics.dela.cli.util.ExHelper.DelaException;
 import se.sics.dela.cli.util.ExHelper.TrackerException;
 import se.sics.ktoolbox.util.trysf.Try;
@@ -37,7 +37,7 @@ public class PrintHelper {
       } catch (Throwable ex) {
         if (ex instanceof DelaException) {
           DelaException delaEx = (DelaException) ex;
-          if (Dela.Translate.notReady(result)) {
+          if (Transfer.Translate.notReady(result)) {
             out.println("dela service: not running");
           } else {
             out.println("dela exception: " + delaEx.details.toString());
@@ -68,7 +68,7 @@ public class PrintHelper {
       } catch (Throwable ex) {
         if (ex instanceof DelaException) {
           DelaException delaEx = (DelaException) ex;
-          if (Dela.Translate.notReady(result)) {
+          if (Transfer.Translate.notReady(result)) {
             out.println("dela service: not running");
           } else {
             out.println("dela exception: " + delaEx.details.toString());
