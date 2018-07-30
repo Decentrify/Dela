@@ -31,7 +31,6 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.ws.rs.client.Client;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
@@ -79,9 +78,7 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
     final int webPort = configuration.getServerPort();
     LOG.info("{}running on port:{}", logPrefix, webPort);
-//    setupFileLogs(configuration);
   }
-
 
   /*
    * To allow cross origin resource request from angular js client
@@ -104,21 +101,6 @@ public class DropwizardDela extends Application<DelaConfiguration> {
   @Override
   protected void bootstrapLogging() {
   }
-//  private void setupFileLogs(Configuration configuration) {
-//    LoggingConfiguration.FileConfiguration fileConfig
-//      = configuration.getLoggingConfiguration().getFileConfiguration();
-//    if (fileConfig == null) {
-//      fileConfig = new LoggingConfiguration.FileConfiguration();
-//      configuration.getLoggingConfiguration().setFileConfiguration(fileConfig);
-//    }
-//    if (!fileConfig.isConfigured()) {
-//      fileConfig.setEnabled(true);
-//      String logDir = delaBaseDir + File.separator + "logs" + File.separator;
-//      fileConfig.setCurrentLogFilename(logDir + "dela.log");
-//      fileConfig.setArchivedLogFilenamePattern(logDir + "dela-%d.log");
-//      fileConfig.setArchivedFileCount(10);
-//    }
-//  }
 
   public static class Builder implements WebClient.Builder {
 
@@ -131,15 +113,13 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
     @Override
     public WebClient httpsInstance() {
-      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong())
-        .property(ClientProperties.CONNECT_TIMEOUT, 2000);
+      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong());
       return new WebClient(client);
     }
 
     @Override
     public WebClient httpInstance() {
-      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong())
-        .property(ClientProperties.CONNECT_TIMEOUT, 2000);
+      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong());
       return new WebClient(client);
     }
   }
