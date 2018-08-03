@@ -21,13 +21,19 @@ package se.sics.dela.cli;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static se.sics.dela.cli.Transfer.Setup.datasetName;
 import static se.sics.dela.cli.Transfer.Util.bootstrap;
 import static se.sics.dela.cli.Transfer.Rest.delaContents;
@@ -57,6 +63,8 @@ import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import se.sics.dela.cli.util.ExHelper.ClientException;
+import se.sics.ktoolbox.httpsclient.WebClientBuilder;
+import se.sics.ktoolbox.httpsclient.builder.JerseyClientBuilder;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
 
@@ -76,7 +84,7 @@ public class Client {
       delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
       delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
       //resources dir
-      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)) 
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator))
         + File.separator + "src"
         + File.separator + "main"
         + File.separator + "resources";
@@ -89,13 +97,36 @@ public class Client {
     return delaDir;
   }
 
+  private static String configYmlPath(String delaDir) throws URISyntaxException {
+    String path = delaDir
+      + File.separator + "conf"
+      + File.separator + "config.yml";
+    return path;
+  }
+
+  public static WebClientBuilder webClientBuilder(String configYmlPath) throws IOException {
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    JsonNode config = mapper.readTree(new File(configYmlPath));
+    ClientConfiguration clientConfig = mapper.convertValue(config.get("jerseyClient"), ClientConfiguration.class);
+    JerseyClientBuilder builder = new JerseyClientBuilder()
+      .using(clientConfig.getJerseyClientConfiguration());
+
+    return builder;
+  }
+
   public static void main(String[] args) {
+
     PrintWriter out = new PrintWriter(System.out);
-    WebClient.setBuilder(new WebClient.BasicBuilder());
+    
     String sourceDir;
     try {
       sourceDir = getDelaDir();
+      WebClient.setBuilder(webClientBuilder(configYmlPath(sourceDir)));
     } catch (URISyntaxException ex) {
+      out.write("problems with dela location - source dir not accessible");
+      System.exit(1);
+      return;
+    } catch (IOException ex) {
       out.write("problems with dela location - source dir not accessible");
       System.exit(1);
       return;

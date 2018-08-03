@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
+import se.sics.dozy.dropwizard.util.DropwizardClientBuilder;
 import se.sics.ktoolbox.httpsclient.WebClient;
 
 /**
@@ -67,7 +68,9 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
   @Override
   public void run(final DelaConfiguration configuration, final Environment environment) throws Exception {
-    WebClient.setBuilder(new Builder(configuration, environment));
+    JerseyClientBuilder clientBuilder = new JerseyClientBuilder(environment)
+      .using(configuration.getClientConfiguration());
+    WebClient.setBuilder(new DropwizardClientBuilder(clientBuilder));
 
     for (DozyResource resource : resources) {
       resource.initialize(syncInterfaces);
@@ -100,27 +103,5 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
   @Override
   protected void bootstrapLogging() {
-  }
-
-  public static class Builder implements WebClient.Builder {
-
-    private final JerseyClientBuilder builder;
-    private final Random rand = new Random(1234);
-
-    public Builder(DelaConfiguration configuration, Environment environment) {
-      builder = new JerseyClientBuilder(environment).using(configuration.getClientConfiguration());
-    }
-
-    @Override
-    public WebClient httpsInstance() {
-      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong());
-      return new WebClient(client);
-    }
-
-    @Override
-    public WebClient httpInstance() {
-      Client client = builder.build("DelaDropwizardClient_" + rand.nextLong());
-      return new WebClient(client);
-    }
   }
 }
