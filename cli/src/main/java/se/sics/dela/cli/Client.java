@@ -72,6 +72,7 @@ import se.sics.dela.cli.util.PrintHelper;
 import se.sics.ktoolbox.webclient.WebClient;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
+import se.sics.dela.cli.dto.transfer.SuccessJSON;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import se.sics.dela.cli.util.ExHelper.ClientException;
 import se.sics.ktoolbox.webclient.WebClientBuilder;
@@ -285,12 +286,13 @@ public class Client {
           .map(bootstrap());
         Try<TorrentExtendedStatusJSON> delaDatasetDetails = Joiner.map(bootstrap, delaClient)
           .flatMap(delaDatasetDetails(cmd.datasetId));
-        Try<String> delaDownload = Joiner.map(delaDatasetDetails, Joiner.combine(delaClient, downloadSetup, bootstrap))
+        Try<SuccessJSON> delaDownload = Joiner
+          .map(delaDatasetDetails, Joiner.combine(delaClient, downloadSetup, bootstrap))
           .flatMap(delaDownload(delaDir, cmd.datasetId));
 
         int ret = PrintHelper.print(out, DEBUG_LOG,
-          Joiner.map(delaDownload, Joiner.combine(downloadSetup, delaDatasetDetails)),
-          delaDownloadDetailsPrinter(Transfer.Setup.delaDownloadDir(delaDir), cmd.datasetId));
+          Joiner.combine(downloadSetup, delaDatasetDetails, delaDownload),
+          delaDownloadDetailsPrinter(delaDir, cmd.datasetId));
         return ret;
       }
       case Cmds.CONTENTS: {
@@ -318,7 +320,7 @@ public class Client {
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Transfer.Rest.contact());
         PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
-        Try<String> cancelDataset = Joiner.map(delaContact, delaClient)
+        Try<SuccessJSON> cancelDataset = Joiner.map(delaContact, delaClient)
           .flatMap(delaDatasetCancel(cmd.datasetId));
         int ret = PrintHelper.print(out, DEBUG_LOG, cancelDataset);
         return ret;

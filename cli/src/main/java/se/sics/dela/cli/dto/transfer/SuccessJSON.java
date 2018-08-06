@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package se.sics.dela.cli.dto;
+package se.sics.dela.cli.dto.transfer;
 
 public class SuccessJSON {
 
@@ -26,11 +26,20 @@ public class SuccessJSON {
     this.details = "";
   }
 
+  public SuccessJSON(String details) {
+    this.details = details;
+  }
+
   public String getDetails() {
     return details;
   }
 
   public void setDetails(String details) {
     this.details = details;
+  }
+
+  @Override
+  public String toString() {
+    return details;
   }
 }

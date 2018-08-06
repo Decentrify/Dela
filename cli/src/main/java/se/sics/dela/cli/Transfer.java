@@ -56,6 +56,7 @@ import static se.sics.ktoolbox.webclient.WebResponse.readContent;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc2;
 import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
+import se.sics.dela.cli.dto.transfer.SuccessJSON;
 import se.sics.dela.cli.util.ExHelper;
 import se.sics.dela.cli.util.ExHelper.DelaException;
 import static se.sics.dela.cli.util.ExHelper.simpleDelaExMapper;
@@ -105,14 +106,16 @@ public class Transfer {
       });
     }
 
-    public static BiFunction<PrintWriter, Pair<String, TorrentExtendedStatusJSON>, PrintWriter>
-      delaDownloadDetailsPrinter(String downloadDir, String datasetId) {
-      return (PrintWriter out, Pair<String, TorrentExtendedStatusJSON> details) -> {
+    public static BiFunction<PrintWriter, Triplet<String, TorrentExtendedStatusJSON, SuccessJSON>, PrintWriter>
+      delaDownloadDetailsPrinter(String delaDir, String datasetId) {
+      return (PrintWriter out, Triplet<String, TorrentExtendedStatusJSON, SuccessJSON> details) -> {
         TorrentExtendedStatusJSON downloadDetails = details.getValue1();
         String datasetName = details.getValue0();
+        String resultDetails = details.getValue2().getDetails();
         if (downloadDetails.getTorrentStatus().equals("NONE")) {
-          out.printf("Library: %s \n", downloadDir);
+          out.printf("Dela home directory: %s \n", delaDir);
           out.printf("Saving dataset with id: %s as: %s \n", datasetId, datasetName);
+          out.println(resultDetails);
         } else {
           out.printf("Dataset with id: %s already active \n", datasetId);
         }
@@ -195,23 +198,23 @@ public class Transfer {
       });
     }
 
-    public static BiFunction<Triplet<String, String, List<AddressJSON>>, Throwable, Try<String>>
+    public static BiFunction<Triplet<String, String, List<AddressJSON>>, Throwable, Try<SuccessJSON>>
       delaDownload(String delaDir, String publicDSId) {
       return tryFSucc3((String delaClient) -> (String datasetName) -> (List<AddressJSON> partners) -> {
         TorrentIdJSON torrentId = new TorrentIdJSON(publicDSId);
         HDFSEndpoint endpoint = new HDFSEndpoint();
-        HDFSResource resource = new HDFSResource(delaDownloadDir(delaDir), "manifest.json");
+        HDFSResource resource = new HDFSResource(delaDownloadDir(delaDir, datasetName), "manifest.json");
         TorrentDownloadDTO.Start req = new TorrentDownloadDTO.Start(torrentId, datasetName, -1, -1,
           resource, partners, endpoint);
 
         try (WebClient client = WebClient.httpsInstance()) {
 
-          Try<String> result = client
+          Try<SuccessJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.DOWNLOAD)
             .setPayload(req)
             .tryPost()
-            .flatMap(readContent(String.class, simpleDelaExMapper()))
+            .flatMap(readContent(SuccessJSON.class, simpleDelaExMapper()))
             .recoverWith(Recover.torrentActive());
           return result;
         }
@@ -247,16 +250,16 @@ public class Transfer {
       });
     }
 
-    public static BiFunction<String, Throwable, Try<String>> delaDatasetCancel(String publicDSId) {
+    public static BiFunction<String, Throwable, Try<SuccessJSON>> delaDatasetCancel(String publicDSId) {
       return tryFSucc1((String delaClient) -> {
         try (WebClient client = WebClient.httpsInstance()) {
           TorrentIdJSON req = new TorrentIdJSON(publicDSId);
-          Try<String> result = client
+          Try<SuccessJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.CANCEL)
             .setPayload(req)
             .tryPost()
-            .flatMap(readContent(String.class, simpleDelaExMapper()));
+            .flatMap(readContent(SuccessJSON.class, simpleDelaExMapper()));
           return result;
         }
       });
@@ -431,12 +434,14 @@ public class Transfer {
     }
 
     private static boolean datasetExists(String delaDir, String datasetName) {
-      File dataset = new File(delaDownloadDir(delaDir), datasetName);
+      File dataset = new File(delaDownloadDir(delaDir, datasetName));
       return dataset.exists();
     }
 
-    public static String delaDownloadDir(String delaDir) {
-      return delaDir + File.separator + "download";
+    public static String delaDownloadDir(String delaDir, String datasetDir) {
+      return delaDir 
+        + File.separator + "download"
+        + File.separator + datasetDir;
     }
   }
 
@@ -462,12 +467,12 @@ public class Transfer {
 
   public static class Recover {
 
-    public static <O> BiFunction<O, Throwable, Try<String>> torrentActive() {
+    public static <O> BiFunction<O, Throwable, Try<SuccessJSON>> torrentActive() {
       return tryFFail((Throwable ex) -> {
         if (ex instanceof ExHelper.DelaException) {
           ExHelper.DelaException delaEx = (ExHelper.DelaException) ex;
           if (delaEx.details.getDetails().endsWith("active already")) {
-            return new Try.Success("torrent active");
+            return new Try.Success(new SuccessJSON("torrent active"));
           }
         }
         return new Try.Failure(ex);
