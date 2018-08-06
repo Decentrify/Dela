@@ -1,8 +1,10 @@
 package se.sics.dela.cli;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import se.sics.ktoolbox.httpsclient.builder.JerseyClientConfiguration;
+import se.sics.ktoolbox.webclient.builder.JerseyClientConfiguration;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientConfiguration {
 
   @JsonProperty("jerseyClient")

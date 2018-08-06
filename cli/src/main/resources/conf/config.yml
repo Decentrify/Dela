@@ -3,6 +3,7 @@ server:
     - type: http
       port: 40003
 jerseyClient:
+  connectionTimeout: 2000 ms
   tls:
     trustSelfSignedCertificates: true
     verifyHostname: false

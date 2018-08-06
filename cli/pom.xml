@@ -30,7 +30,7 @@
       <version>${ktoolbox.version}</version>
     </dependency>
     <dependency>
-      <groupId>se.sics.ktoolbox.httpsclient</groupId>
+      <groupId>se.sics.ktoolbox.webclient</groupId>
       <artifactId>core</artifactId>
       <version>${ktoolbox.version}</version>
     </dependency>
@@ -42,6 +42,10 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
@@ -69,6 +73,19 @@
       <version>${config.version}</version>
     </dependency>
     
+    <!-- logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
   </dependencies>
   
   <build>

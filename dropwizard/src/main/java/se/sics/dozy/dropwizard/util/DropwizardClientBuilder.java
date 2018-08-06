@@ -21,8 +21,8 @@ package se.sics.dozy.dropwizard.util;
 import io.dropwizard.client.JerseyClientBuilder;
 import java.util.Random;
 import javax.ws.rs.client.Client;
-import se.sics.ktoolbox.httpsclient.WebClient;
-import se.sics.ktoolbox.httpsclient.WebClientBuilder;
+import se.sics.ktoolbox.webclient.WebClient;
+import se.sics.ktoolbox.webclient.WebClientBuilder;
 
 public class DropwizardClientBuilder implements WebClientBuilder {
 

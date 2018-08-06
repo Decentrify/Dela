@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
 import se.sics.dozy.dropwizard.util.DropwizardClientBuilder;
-import se.sics.ktoolbox.httpsclient.WebClient;
+import se.sics.ktoolbox.webclient.WebClient;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

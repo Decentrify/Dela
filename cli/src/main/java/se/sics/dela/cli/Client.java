@@ -18,12 +18,24 @@
  */
 package se.sics.dela.cli;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.jul.LevelChangePropagator;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,8 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 import static se.sics.dela.cli.Transfer.Setup.datasetName;
 import static se.sics.dela.cli.Transfer.Util.bootstrap;
 import static se.sics.dela.cli.Transfer.Rest.delaContents;
@@ -58,13 +69,13 @@ import se.sics.dela.cli.dto.HopsContentsSummaryJSON;
 import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
 import se.sics.dela.cli.dto.TorrentExtendedStatusJSON;
 import se.sics.dela.cli.util.PrintHelper;
-import se.sics.ktoolbox.httpsclient.WebClient;
+import se.sics.ktoolbox.webclient.WebClient;
 import se.sics.ktoolbox.util.trysf.Try;
 import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import se.sics.dela.cli.util.ExHelper.ClientException;
-import se.sics.ktoolbox.httpsclient.WebClientBuilder;
-import se.sics.ktoolbox.httpsclient.builder.JerseyClientBuilder;
+import se.sics.ktoolbox.webclient.WebClientBuilder;
+import se.sics.ktoolbox.webclient.builder.JerseyClientBuilder;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
 
@@ -104,30 +115,46 @@ public class Client {
     return path;
   }
 
-  public static WebClientBuilder webClientBuilder(String configYmlPath) throws IOException {
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    JsonNode config = mapper.readTree(new File(configYmlPath));
-    ClientConfiguration clientConfig = mapper.convertValue(config.get("jerseyClient"), ClientConfiguration.class);
-    JerseyClientBuilder builder = new JerseyClientBuilder()
-      .using(clientConfig.getJerseyClientConfiguration());
+  public static ObjectMapper configureJacksonMapper() {
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory())
+      .registerModule(new JavaTimeModule())
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return mapper;
+  }
 
+  public static WebClientBuilder jerseyWebClientBuilder(String configYmlPath) throws IOException {
+    ObjectMapper mapper = configureJacksonMapper();
+    JsonNode config = mapper.readTree(new File(configYmlPath));
+    ClientConfiguration clientConfig = mapper.convertValue(config, ClientConfiguration.class);
+    JerseyClientBuilder builder = new JerseyClientBuilder()
+      .using(clientConfig.getJerseyClientConfiguration())
+      .using(mapper);
     return builder;
   }
 
+  public static WebClientBuilder basicWebClientBuilder(String configYmlPath) throws IOException {
+    WebClientBuilder builder = new WebClient.BasicBuilder();
+    return builder;
+  }
+
+  private static void checkLoggerSetup() {
+    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+    StatusPrinter.print(lc);
+  }
+
   public static void main(String[] args) {
+    System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY,
+      "/Users/Alex/Documents/_Work/Code/decentrify/Dela/cli/src/main/resources/conf/logback.xml");
 
     PrintWriter out = new PrintWriter(System.out);
-    
+//    checkLoggerSetup();
     String sourceDir;
     try {
       sourceDir = getDelaDir();
-      WebClient.setBuilder(webClientBuilder(configYmlPath(sourceDir)));
-    } catch (URISyntaxException ex) {
+      WebClient.setBuilder(basicWebClientBuilder(configYmlPath(sourceDir)));
+    } catch (URISyntaxException | IOException ex) {
       out.write("problems with dela location - source dir not accessible");
-      System.exit(1);
-      return;
-    } catch (IOException ex) {
-      out.write("problems with dela location - source dir not accessible");
+      out.flush();
       System.exit(1);
       return;
     }
