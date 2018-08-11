@@ -22,33 +22,17 @@ import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
-import javax.ws.rs.client.Client;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.dozy.DozyResource;
 import se.sics.dozy.DozySyncI;
 import se.sics.ktoolbox.webclient.WebClient;
-import se.sics.ktoolbox.webclient.builder.JerseyClientBuilder;
-import se.sics.ktoolbox.webclient.builder.SimpleSSLConnectionSocketFactory;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -80,9 +64,6 @@ public class DropwizardDela extends Application<DelaConfiguration> {
 
   @Override
   public void run(final DelaConfiguration configuration, final Environment environment) throws Exception {
-    JerseyClientBuilder clientBuilder = new JerseyClientBuilder()
-      .using(configuration.getClientConfiguration());
-    
     WebClient.setBuilder(new WebClient.BasicBuilder());
     for (DozyResource resource : resources) {
       resource.initialize(syncInterfaces);
