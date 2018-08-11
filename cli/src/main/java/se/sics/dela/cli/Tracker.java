@@ -20,6 +20,7 @@ package se.sics.dela.cli;
 
 import java.io.PrintWriter;
 import java.util.function.BiFunction;
+import javax.ws.rs.core.MediaType;
 import se.sics.dela.cli.dto.tracker.SearchServiceDTO;
 import se.sics.ktoolbox.webclient.WebClient;
 import se.sics.ktoolbox.webclient.WebResponse;
@@ -108,7 +109,7 @@ public class Tracker {
         Try<SearchServiceDTO.SearchResult> pageResult = client
           .setTarget(Target.used())
           .setPath(Path.search())
-          .setPayload(searchParam)
+          .setPayload(searchParam, MediaType.APPLICATION_JSON_TYPE)
           .tryPost()
           .flatMap(WebResponse.readContent(SearchServiceDTO.SearchResult.class, simpleTrackerExMapper()));
         if (pageResult.isFailure()) {
@@ -117,7 +118,6 @@ public class Tracker {
         Try<SearchServiceDTO.Item[]> itemsResults = client
           .setTarget(Target.used())
           .setPath(Path.searchResult(pageResult.get().getSessionId(), 0, pageResult.get().getNrHits()))
-          .setPayload(null)
           .tryGet()
           .flatMap(WebResponse.readContent(SearchServiceDTO.Item[].class, simpleTrackerExMapper()));
         return itemsResults;
@@ -131,7 +131,6 @@ public class Tracker {
           Try<SearchServiceDTO.ItemDetails> result = client
             .setTarget(Target.used())
             .setPath(Path.datasetDetails(publicDSId))
-            .setPayload(null)
             .tryGet()
             .flatMap(WebResponse.readContent(SearchServiceDTO.ItemDetails.class, simpleTrackerExMapper()));
           return result;

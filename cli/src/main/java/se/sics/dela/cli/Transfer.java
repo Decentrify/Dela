@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import javax.ws.rs.core.MediaType;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import static se.sics.dela.cli.Transfer.Setup.delaDownloadDir;
@@ -190,7 +191,7 @@ public class Transfer {
           Try<AddressJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.CONTACT)
-            .setPayload(delaVersion)
+            .setPayload(delaVersion, MediaType.APPLICATION_JSON_TYPE)
             .tryPost()
             .flatMap(readContent(AddressJSON.class, simpleDelaExMapper()));
           return result;
@@ -212,7 +213,7 @@ public class Transfer {
           Try<SuccessJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.DOWNLOAD)
-            .setPayload(req)
+            .setPayload(req, MediaType.APPLICATION_JSON_TYPE)
             .tryPost()
             .flatMap(readContent(SuccessJSON.class, simpleDelaExMapper()))
             .recoverWith(Recover.torrentActive());
@@ -228,7 +229,7 @@ public class Transfer {
           Try<HopsContentsSummaryJSON.Hops> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.CONTENTS)
-            .setPayload(req)
+            .setPayload(req, MediaType.APPLICATION_JSON_TYPE)
             .tryPost()
             .flatMap(readContent(HopsContentsSummaryJSON.Hops.class, simpleDelaExMapper()));
           return result;
@@ -242,7 +243,7 @@ public class Transfer {
           Try<TorrentExtendedStatusJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.DETAILS)
-            .setPayload(new TorrentIdJSON(publicDSId))
+            .setPayload(new TorrentIdJSON(publicDSId), MediaType.APPLICATION_JSON_TYPE)
             .tryPost()
             .flatMap(readContent(TorrentExtendedStatusJSON.class, simpleDelaExMapper()));
           return result;
@@ -257,7 +258,7 @@ public class Transfer {
           Try<SuccessJSON> result = client
             .setTarget(delaClient)
             .setPath(Transfer.WebPath.CANCEL)
-            .setPayload(req)
+            .setPayload(req, MediaType.APPLICATION_JSON_TYPE)
             .tryPost()
             .flatMap(readContent(SuccessJSON.class, simpleDelaExMapper()));
           return result;

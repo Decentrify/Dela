@@ -128,8 +128,7 @@ public class Client {
     JsonNode config = mapper.readTree(new File(configYmlPath));
     ClientConfiguration clientConfig = mapper.convertValue(config, ClientConfiguration.class);
     JerseyClientBuilder builder = new JerseyClientBuilder()
-      .using(clientConfig.getJerseyClientConfiguration())
-      .using(mapper);
+      .using(clientConfig.getJerseyClientConfiguration());
     return builder;
   }
 
