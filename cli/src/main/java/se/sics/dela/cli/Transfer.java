@@ -200,11 +200,11 @@ public class Transfer {
     }
 
     public static BiFunction<Triplet<String, String, List<AddressJSON>>, Throwable, Try<SuccessJSON>>
-      delaDownload(String delaDir, String publicDSId) {
+      delaDownload(String libDir, String publicDSId) {
       return tryFSucc3((String delaClient) -> (String datasetName) -> (List<AddressJSON> partners) -> {
         TorrentIdJSON torrentId = new TorrentIdJSON(publicDSId);
         HDFSEndpoint endpoint = new HDFSEndpoint();
-        HDFSResource resource = new HDFSResource(delaDownloadDir(delaDir, datasetName), "manifest.json");
+        HDFSResource resource = new HDFSResource(delaDownloadDir(libDir, datasetName), "manifest.json");
         TorrentDownloadDTO.Start req = new TorrentDownloadDTO.Start(torrentId, datasetName, -1, -1,
           resource, partners, endpoint);
 
@@ -413,11 +413,11 @@ public class Transfer {
       return new Try.Success(version);
     }
 
-    public static Try<String> datasetName(String delaDir, DownloadCmd cmd) {
+    public static Try<String> datasetName(String libDir, DownloadCmd cmd) {
       String datasetName;
       if (cmd.datasetName != null) {
         datasetName = cmd.datasetName;
-        if (datasetExists(delaDir, datasetName)) {
+        if (datasetExists(libDir, datasetName)) {
           StringBuilder sb = new StringBuilder();
           sb.append("Folder for dataset: ").append(cmd.datasetName);
           sb.append("already exists in library");
@@ -427,22 +427,24 @@ public class Transfer {
       } else {
         datasetName = cmd.datasetId;
         Random rand = new Random();
-        while (datasetExists(delaDir, datasetName)) {
+        while (datasetExists(libDir, datasetName)) {
           datasetName = cmd.datasetId + "_" + rand.nextInt(Integer.MAX_VALUE);
         }
       }
       return new Try.Success(datasetName);
     }
 
-    private static boolean datasetExists(String delaDir, String datasetName) {
-      File dataset = new File(delaDownloadDir(delaDir, datasetName));
+    private static boolean datasetExists(String libDir, String datasetName) {
+      File dataset = new File(delaDownloadDir(libDir, datasetName));
       return dataset.exists();
     }
 
     public static String delaDownloadDir(String delaDir, String datasetDir) {
-      return delaDir 
-        + File.separator + "download"
-        + File.separator + datasetDir;
+      if (delaDir.equals("")) {
+        return datasetDir;
+      } else {
+        return delaDir + File.separator + datasetDir;
+      }
     }
   }
 
@@ -454,10 +456,10 @@ public class Transfer {
       }
       try {
         ((Try.Failure) delaContact).checkedGet();
-      } catch(Throwable ex) {
-        if(ex instanceof DelaException) {
-          DelaException delaEx = (DelaException)ex;
-          if("vod not ready".equals(delaEx.details.getDetails())) {
+      } catch (Throwable ex) {
+        if (ex instanceof DelaException) {
+          DelaException delaEx = (DelaException) ex;
+          if ("vod not ready".equals(delaEx.details.getDetails())) {
             return true;
           }
         }

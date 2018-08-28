@@ -18,25 +18,20 @@
  */
 package se.sics.dela.cli;
 
-import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.beust.jcommander.ParameterException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.base.Optional;
+import com.typesafe.config.ConfigFactory;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -75,10 +70,13 @@ import static se.sics.dela.cli.Tracker.Rest.trackerDatasetDetails;
 import se.sics.dela.cli.dto.transfer.SuccessJSON;
 import se.sics.ktoolbox.util.trysf.TryHelper.Joiner;
 import se.sics.dela.cli.util.ExHelper.ClientException;
+import se.sics.kompics.config.Config;
+import se.sics.kompics.config.TypesafeConfig;
 import se.sics.ktoolbox.webclient.WebClientBuilder;
-import se.sics.ktoolbox.webclient.builder.JerseyClientBuilder;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryFSucc0;
 import static se.sics.ktoolbox.util.trysf.TryHelper.tryStart;
+import se.sics.nstream.hops.storage.gcp.GCPConfig;
+import se.sics.nstream.hops.storage.gcp.GCPHelper;
 
 public class Client {
 
@@ -123,15 +121,6 @@ public class Client {
     return mapper;
   }
 
-  public static WebClientBuilder jerseyWebClientBuilder(String configYmlPath) throws IOException {
-    ObjectMapper mapper = configureJacksonMapper();
-    JsonNode config = mapper.readTree(new File(configYmlPath));
-    ClientConfiguration clientConfig = mapper.convertValue(config, ClientConfiguration.class);
-    JerseyClientBuilder builder = new JerseyClientBuilder()
-      .using(clientConfig.getJerseyClientConfiguration());
-    return builder;
-  }
-
   public static WebClientBuilder basicWebClientBuilder(String configYmlPath) throws IOException {
     WebClientBuilder builder = new WebClient.BasicBuilder();
     return builder;
@@ -147,7 +136,6 @@ public class Client {
       "/Users/Alex/Documents/_Work/Code/decentrify/Dela/cli/src/main/resources/conf/logback.xml");
 
     PrintWriter out = new PrintWriter(System.out);
-//    checkLoggerSetup();
     String sourceDir;
     try {
       sourceDir = getDelaDir();
@@ -215,6 +203,11 @@ public class Client {
   }
 
   private static int executeCmd(String delaDir, PrintWriter out, String cmdName) throws ParameterException {
+    Try<Boolean> checkConfig = checkConfig();
+    if (checkConfig.isFailure()) {
+      checkConfig.recoverWith(Transfer.Printer.statusFail());
+      return -1;
+    }
     Try<String> delaVersion = checkDelaVersion(delaDir, out);
     PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaVersion, "dela version: %s"));
     Try<String> delaClient = delaClient(delaDir);
@@ -235,14 +228,14 @@ public class Client {
             return ret;
           }
           case START: {
-            Try<String> start = delaVersion
+            Try<String> checkVersion = delaVersion
               .flatMap(Transfer.Daemon.start(out, isWindows, delaDir));
             int retries = 5;
             Try<String> status;
             long sleepTime = 2000;
             do {
               Try<String> sleep = tryStart().flatMap(sleep(sleepTime));
-              status = Joiner.map(start, Joiner.combine(delaVersion, delaClient))
+              status = Joiner.map(checkVersion, Joiner.combine(delaVersion, delaClient))
                 .flatMap(Transfer.Rest.contact())
                 .transform(Transfer.Printer.statusOK(), Transfer.Printer.statusFail());
               if (Transfer.Translate.notReady(status)) {
@@ -274,11 +267,12 @@ public class Client {
         return ret;
       }
       case Cmds.DOWNLOAD: {
+        String libDir = libDir(delaDir);
         DownloadCmd cmd = (DownloadCmd) cmds.get(Cmds.DOWNLOAD);
         Try<AddressJSON> delaContact = Joiner.combine(delaVersion, delaClient)
           .flatMap(Transfer.Rest.contact());
         PrintHelper.print(out, DEBUG_LOG, Joiner.successMsg(delaContact, "dela client - running"));
-        Try<String> downloadSetup = Joiner.map(delaContact, datasetName(delaDir, cmd));
+        Try<String> downloadSetup = Joiner.map(delaContact, datasetName(libDir, cmd));
         Try<List<AddressJSON>> bootstrap = Joiner.map(downloadSetup, Joiner.combine(delaVersion, delaClient))
           .flatMap(Transfer.Rest.contact())
           .flatMap(trackerDatasetDetails(cmd.datasetId))
@@ -287,7 +281,7 @@ public class Client {
           .flatMap(delaDatasetDetails(cmd.datasetId));
         Try<SuccessJSON> delaDownload = Joiner
           .map(delaDatasetDetails, Joiner.combine(delaClient, downloadSetup, bootstrap))
-          .flatMap(delaDownload(delaDir, cmd.datasetId));
+          .flatMap(delaDownload(libDir, cmd.datasetId));
 
         int ret = PrintHelper.print(out, DEBUG_LOG,
           Joiner.combine(downloadSetup, delaDatasetDetails, delaDownload),
@@ -326,6 +320,37 @@ public class Client {
       }
       default:
         return -1;
+    }
+  }
+
+  private static Try<Boolean> checkConfig() {
+    Config config = TypesafeConfig.load();
+    String storageType = config.getValue("hops.storage.type", String.class);
+    if (storageType.toLowerCase().equals("gcp")) {
+      try {
+        GCPConfig gcpConfig = GCPConfig.read(config).checkedGet();
+        Try<Boolean> testCredentials
+          = GCPHelper.testCredentials(gcpConfig.credentials, gcpConfig.project, gcpConfig.bucket);
+        return testCredentials;
+      } catch (Throwable ex) {
+        return new Try.Failure(ex);
+      }
+    }
+    return new Try.Success(true);
+  }
+
+  private static String libDir(String delaDir) {
+    Config config = TypesafeConfig.load();
+    String storageType = config.getValue("hops.storage.type", String.class);
+    if (storageType.toLowerCase().equals("gcp")) {
+      try {
+        GCPConfig gcpConfig = GCPConfig.read(config).checkedGet();
+        return "";
+      } catch (Throwable ex) {
+        throw new RuntimeException(ex);
+      }
+    } else {
+      return delaDir + File.separator + "download";
     }
   }
 

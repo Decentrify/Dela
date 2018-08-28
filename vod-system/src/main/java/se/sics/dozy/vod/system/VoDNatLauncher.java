@@ -106,6 +106,7 @@ public class VoDNatLauncher extends ComponentDefinition {
 
   private static Logger LOG = LoggerFactory.getLogger(VoDNatLauncher.class);
   private String logPrefix = "";
+  private static final boolean DEBUG_MODE = false;
 
   //*****************************CONNECTIONS**********************************
   //********************INTERNAL_DO_NOT_CONNECT_TO****************************
@@ -265,11 +266,20 @@ public class VoDNatLauncher extends ComponentDefinition {
   private static String getDelaBaseDir() throws URISyntaxException {
     String jarPath = VoDNatLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
     String delaDir = jarPath;
-    //remove jar name
-    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
-    //remove bin dir
-    delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator));
+    if (DEBUG_MODE) {
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)); //remove last /
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)); //remove classes
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)); //remove target
+      delaDir += File.separator + "src"
+        + File.separator + "main"
+        + File.separator + "resources"
+        + File.separator + "cli";
+    } else {
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)); //remove jar name
+      delaDir = delaDir.substring(0, delaDir.lastIndexOf(File.separator)); //remove bin dir
+    }
     return delaDir;
+
   }
 
   private static void setupPaths(Config.Builder builder) throws URISyntaxException {
@@ -362,7 +372,7 @@ public class VoDNatLauncher extends ComponentDefinition {
     OverlayIdFactory torrentIdFactory = setupSystem();
     Init init = new Init();
     Pair<DropwizardDela, String[]> webserver = webServer(init, torrentIdFactory);
-    
+
     Thread thread = new Thread(() -> {
       try {
         webserver.getValue0().run(webserver.getValue1());
@@ -371,7 +381,7 @@ public class VoDNatLauncher extends ComponentDefinition {
       }
     });
     thread.start();
-    
+
     if (Kompics.isOn()) {
       Kompics.shutdown();
     }

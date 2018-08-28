@@ -1,0 +1,1009 @@
+INFO  [2018-08-16 12:49:29,139] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 12:49:29,142] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 12:49:29,142] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 12:49:29,210] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 12:49:29,216] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 12:49:29,378] org.eclipse.jetty.setuid.SetUIDListener: Opened application@732120bf{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:49:29,379] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@68992ce8{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:49:29,382] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 12:49:30,480] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 12:49:30,483] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@73b86e65{/,null,AVAILABLE}
+INFO  [2018-08-16 12:49:30,491] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 12:49:30,491] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 12:49:30,501] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@6295756c{/,null,AVAILABLE}
+INFO  [2018-08-16 12:49:30,520] org.eclipse.jetty.server.AbstractConnector: Started application@732120bf{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:49:30,522] org.eclipse.jetty.server.AbstractConnector: Started admin@68992ce8{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:49:30,523] org.eclipse.jetty.server.Server: Started @10808ms
+INFO  [2018-08-16 12:50:29,175] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:50:29,192] se.sics.dozy.DozyResource: vod endpoint:4fdbf31f-54aa-4fb7-b899-73990452ae03 status:OK details:
+INFO  [2018-08-16 12:50:29,914] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:50:29,914] se.sics.dozy.DozyResource: vod endpoint:d3ed4536-d603-4bd2-9d99-02ec1ce6c0e2 status:OK details:
+INFO  [2018-08-16 12:50:30,684] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 12:50:30,706] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@37949a92
+WARN  [2018-08-16 12:50:30,707] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 12:50:30,712] se.sics.dozy.DozyResource: hops contents:1d7542be-ac59-4e05-a5fb-a196cf0a2302 status:OK details:
+INFO  [2018-08-16 12:50:33,704] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 12:51:00,927] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<6b76ece0-6c9a-47ff-bcbf-45b2a1b3b204> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 12:52:52,590] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 12:52:52,593] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 12:52:52,593] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 12:52:52,641] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 12:52:52,643] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 12:52:52,829] org.eclipse.jetty.setuid.SetUIDListener: Opened application@4fe9e524{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:52:52,830] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@6eb3d2b6{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:52:52,835] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 12:52:54,038] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 12:52:54,040] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@2564b098{/,null,AVAILABLE}
+INFO  [2018-08-16 12:52:54,046] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 12:52:54,046] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 12:52:54,057] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@ce65101{/,null,AVAILABLE}
+INFO  [2018-08-16 12:52:54,066] org.eclipse.jetty.server.AbstractConnector: Started application@4fe9e524{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:52:54,067] org.eclipse.jetty.server.AbstractConnector: Started admin@6eb3d2b6{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:52:54,067] org.eclipse.jetty.server.Server: Started @8158ms
+INFO  [2018-08-16 12:53:13,616] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:53:13,628] se.sics.dozy.DozyResource: vod endpoint:293d2d39-7a33-4d17-926f-740990ca9f40 status:OK details:
+INFO  [2018-08-16 12:53:14,504] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:53:14,505] se.sics.dozy.DozyResource: vod endpoint:e7b6a6c8-da25-4207-8015-47583fa063d7 status:OK details:
+INFO  [2018-08-16 12:53:15,320] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 12:53:15,343] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@4ebd22ed
+WARN  [2018-08-16 12:53:15,345] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 12:53:15,349] se.sics.dozy.DozyResource: hops contents:3c76819a-bf9d-4c44-bb3c-13976cc4107e status:OK details:
+INFO  [2018-08-16 12:53:18,583] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 12:53:45,599] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<80dcbecf-567c-4338-93ef-2fc916048976> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 12:55:09,661] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:699871484>connecting endpoint:0
+INFO  [2018-08-16 12:55:09,668] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:699871484>initiating...
+INFO  [2018-08-16 12:55:09,669] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:699871484>starting
+INFO  [2018-08-16 12:55:21,569] se.sics.nstream.torrent.TorrentMngrComp: <nid:699871484>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 12:55:21,577] se.sics.nstream.torrent.TorrentComp: <nid:699871484,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 12:55:21,578] se.sics.nstream.torrent.TorrentComp: <nid:699871484,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 12:55:21,823] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 12:55:21,828] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 12:55:21,829] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 12:55:21,829] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 12:55:21,829] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 12:55:21,829] se.sics.nstream.torrent.TorrentMngrComp: <nid:699871484>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 12:55:21,889] se.sics.nstream.torrent.conn.ConnectionComp: <nid:699871484,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 12:55:24,230] se.sics.nstream.torrent.conn.ConnectionComp: <nid:699871484,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 12:55:24,285] se.sics.nstream.torrent.conn.ConnectionComp: <nid:699871484,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 12:55:28,212] se.sics.nstream.torrent.conn.ConnectionComp: <nid:699871484,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 12:55:28,336] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 12:55:29,472] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 12:55:29,473] se.sics.nstream.torrent.conn.ConnectionComp: <nid:699871484,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@3b6ee2e1
+INFO  [2018-08-16 12:55:37,696] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:699871484>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 12:58:03,382] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 12:58:03,384] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 12:58:03,384] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 12:58:03,451] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 12:58:03,458] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 12:58:03,656] org.eclipse.jetty.setuid.SetUIDListener: Opened application@4ddeedb2{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:58:03,657] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@5c55953b{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:58:03,662] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 12:58:04,805] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 12:58:04,807] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@38825e3b{/,null,AVAILABLE}
+INFO  [2018-08-16 12:58:04,814] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 12:58:04,814] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 12:58:04,822] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@43a121bc{/,null,AVAILABLE}
+INFO  [2018-08-16 12:58:04,830] org.eclipse.jetty.server.AbstractConnector: Started application@4ddeedb2{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 12:58:04,832] org.eclipse.jetty.server.AbstractConnector: Started admin@5c55953b{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 12:58:04,832] org.eclipse.jetty.server.Server: Started @10869ms
+INFO  [2018-08-16 12:58:20,666] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:58:20,684] se.sics.dozy.DozyResource: vod endpoint:91b90c08-8a99-4b5b-8412-76be935e0ee2 status:OK details:
+INFO  [2018-08-16 12:58:21,470] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 12:58:21,470] se.sics.dozy.DozyResource: vod endpoint:0e0b58d3-2cc3-4b42-85d6-e355993962a2 status:OK details:
+INFO  [2018-08-16 12:58:22,163] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 12:58:22,180] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@279d02f0
+WARN  [2018-08-16 12:58:22,181] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 12:58:22,186] se.sics.dozy.DozyResource: hops contents:7270af13-66e2-4f0c-8ab2-f30538fa7a88 status:OK details:
+INFO  [2018-08-16 12:58:27,311] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 12:58:52,396] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<f17ba45d-12d9-4196-98e0-dab031b42a1c> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:07:16,519] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:07:16,521] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:07:16,521] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:07:16,572] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:07:16,574] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:07:16,766] org.eclipse.jetty.setuid.SetUIDListener: Opened application@45f0724e{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:07:16,767] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@7c5cc45b{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:07:16,774] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:07:18,083] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:07:18,086] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@59dac97b{/,null,AVAILABLE}
+INFO  [2018-08-16 13:07:18,092] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:07:18,092] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:07:18,100] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@3e6f7009{/,null,AVAILABLE}
+INFO  [2018-08-16 13:07:18,110] org.eclipse.jetty.server.AbstractConnector: Started application@45f0724e{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:07:18,111] org.eclipse.jetty.server.AbstractConnector: Started admin@7c5cc45b{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:07:18,112] org.eclipse.jetty.server.Server: Started @8858ms
+INFO  [2018-08-16 13:07:30,964] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:07:30,974] se.sics.dozy.DozyResource: vod endpoint:8f40cc47-6269-442c-b14b-655d7ca86366 status:OK details:
+INFO  [2018-08-16 13:07:31,846] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:07:31,847] se.sics.dozy.DozyResource: vod endpoint:8c80d708-9ce7-44b3-88b8-132eaaa549dd status:OK details:
+INFO  [2018-08-16 13:07:32,636] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:07:32,657] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@1120940e
+WARN  [2018-08-16 13:07:32,659] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:07:32,664] se.sics.dozy.DozyResource: hops contents:041f6dfa-d3be-4154-be8e-64a24d80dc99 status:OK details:
+INFO  [2018-08-16 13:07:39,757] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:07:41,903] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-414420885>connecting endpoint:0
+INFO  [2018-08-16 13:07:52,473] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-414420885>initiating...
+INFO  [2018-08-16 13:08:02,891] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<ba157024-e142-4b0f-8345-982146f54029> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:08:11,766] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-414420885>starting
+INFO  [2018-08-16 13:09:52,613] se.sics.nstream.torrent.TorrentMngrComp: <nid:-414420885>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:09:54,654] se.sics.nstream.torrent.TorrentComp: <nid:-414420885,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:10:58,617] se.sics.nstream.torrent.TorrentComp: <nid:-414420885,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:10:58,847] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:10:58,851] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 13:10:58,852] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 13:10:58,853] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:10:58,853] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:10:58,853] se.sics.nstream.torrent.TorrentMngrComp: <nid:-414420885>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:10:58,914] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-414420885,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:10:59,001] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-414420885,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:10:59,122] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-414420885,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:11:06,344] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-414420885,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:11:06,478] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:11:07,612] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:11:07,612] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-414420885,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@4c9e46
+INFO  [2018-08-16 13:11:13,536] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:-414420885>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:11:28,609] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:11:28,611] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:11:28,611] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:11:28,648] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:11:28,649] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:11:28,759] org.eclipse.jetty.setuid.SetUIDListener: Opened application@5b94f96c{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:11:28,760] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@5e1ddcb0{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:11:28,762] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:11:29,897] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:11:29,898] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@520dc607{/,null,AVAILABLE}
+INFO  [2018-08-16 13:11:29,904] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:11:29,904] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:11:29,911] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@6a8450fe{/,null,AVAILABLE}
+INFO  [2018-08-16 13:11:29,919] org.eclipse.jetty.server.AbstractConnector: Started application@5b94f96c{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:11:29,919] org.eclipse.jetty.server.AbstractConnector: Started admin@5e1ddcb0{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:11:29,920] org.eclipse.jetty.server.Server: Started @9657ms
+INFO  [2018-08-16 13:11:45,659] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:11:45,675] se.sics.dozy.DozyResource: vod endpoint:1da850f6-d2c7-49bf-a3ed-4a69ce14d39d status:OK details:
+INFO  [2018-08-16 13:11:46,292] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:11:46,292] se.sics.dozy.DozyResource: vod endpoint:3dc33a86-73a2-4c70-b35d-b07baedf1989 status:OK details:
+INFO  [2018-08-16 13:11:46,975] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:11:46,990] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@4ec1de9d
+WARN  [2018-08-16 13:11:46,991] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:11:46,994] se.sics.dozy.DozyResource: hops contents:0be7501d-3884-4adb-936f-e463e1077fb9 status:OK details:
+INFO  [2018-08-16 13:11:49,519] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:11:50,927] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-888590073>connecting endpoint:0
+INFO  [2018-08-16 13:11:50,938] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-888590073>initiating...
+INFO  [2018-08-16 13:11:50,939] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-888590073>starting
+INFO  [2018-08-16 13:11:59,824] se.sics.nstream.torrent.TorrentMngrComp: <nid:-888590073>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:11:59,829] se.sics.nstream.torrent.TorrentComp: <nid:-888590073,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:11:59,829] se.sics.nstream.torrent.TorrentComp: <nid:-888590073,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:12:00,047] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:12:00,053] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:12:00,054] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:12:00,054] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:12:00,054] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:12:00,054] se.sics.nstream.torrent.TorrentMngrComp: <nid:-888590073>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:12:00,136] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-888590073,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:12:17,194] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<a6b90862-3342-45df-bf98-8af2c784ed50> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:12:25,244] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-888590073,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:12:25,306] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-888590073,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:13:17,251] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:13:17,253] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:13:17,253] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:13:17,322] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:13:17,326] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:13:17,522] org.eclipse.jetty.setuid.SetUIDListener: Opened application@4c25b2a1{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:13:17,522] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@718feeb6{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:13:17,526] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:13:18,848] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:13:18,852] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5930147f{/,null,AVAILABLE}
+INFO  [2018-08-16 13:13:18,869] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:13:18,869] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:13:18,883] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@3622d6af{/,null,AVAILABLE}
+INFO  [2018-08-16 13:13:18,895] org.eclipse.jetty.server.AbstractConnector: Started application@4c25b2a1{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:13:18,897] org.eclipse.jetty.server.AbstractConnector: Started admin@718feeb6{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:13:18,897] org.eclipse.jetty.server.Server: Started @7365ms
+INFO  [2018-08-16 13:13:25,415] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:13:25,430] se.sics.dozy.DozyResource: vod endpoint:c5ef40fe-6504-4dad-be96-422e5941b5dc status:OK details:
+INFO  [2018-08-16 13:13:26,004] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:13:26,005] se.sics.dozy.DozyResource: vod endpoint:fbed790d-3515-4e8a-9be8-1628740cd9b0 status:OK details:
+INFO  [2018-08-16 13:13:26,714] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:13:26,730] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@3ae0f167
+WARN  [2018-08-16 13:13:26,731] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:13:26,734] se.sics.dozy.DozyResource: hops contents:7b033817-5d85-44dd-bd6c-0ef56a3242a2 status:OK details:
+INFO  [2018-08-16 13:13:28,489] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:13:29,245] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-373122481>connecting endpoint:0
+INFO  [2018-08-16 13:13:29,261] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-373122481>initiating...
+INFO  [2018-08-16 13:13:29,262] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-373122481>starting
+INFO  [2018-08-16 13:13:30,195] se.sics.nstream.torrent.TorrentMngrComp: <nid:-373122481>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:13:30,200] se.sics.nstream.torrent.TorrentComp: <nid:-373122481,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:13:30,201] se.sics.nstream.torrent.TorrentComp: <nid:-373122481,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:13:30,410] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:13:30,417] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:13:30,419] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:13:30,419] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:13:30,419] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:13:30,419] se.sics.nstream.torrent.TorrentMngrComp: <nid:-373122481>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:13:30,503] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-373122481,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:13:32,755] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-373122481,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:13:32,781] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-373122481,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:13:40,405] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-373122481,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:13:40,519] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:13:41,648] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:13:41,649] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-373122481,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@382d5331
+INFO  [2018-08-16 13:13:47,802] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:-373122481>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:13:56,928] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<9a146b1c-f640-4e86-bc84-24c1bfec56ab> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:14:16,362] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:14:16,364] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:14:16,364] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:14:16,420] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:14:16,421] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:14:16,542] org.eclipse.jetty.setuid.SetUIDListener: Opened application@1c67b8b4{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:14:16,542] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@53124985{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:14:16,546] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:14:18,556] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:14:18,561] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5e60c189{/,null,AVAILABLE}
+INFO  [2018-08-16 13:14:18,572] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:14:18,572] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:14:18,586] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@3938e739{/,null,AVAILABLE}
+INFO  [2018-08-16 13:14:18,618] org.eclipse.jetty.server.AbstractConnector: Started application@1c67b8b4{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:14:18,624] org.eclipse.jetty.server.AbstractConnector: Started admin@53124985{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:14:18,627] org.eclipse.jetty.server.Server: Started @9492ms
+INFO  [2018-08-16 13:14:20,764] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:14:20,779] se.sics.dozy.DozyResource: vod endpoint:66cb6e1d-d1c6-4ae8-be62-ee19e0dd2354 status:OK details:
+INFO  [2018-08-16 13:14:21,679] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:14:21,679] se.sics.dozy.DozyResource: vod endpoint:14ca0694-a72b-4c93-9fd0-8331f189036a status:OK details:
+INFO  [2018-08-16 13:14:22,356] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:14:22,372] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@65ca3859
+WARN  [2018-08-16 13:14:22,373] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:14:22,377] se.sics.dozy.DozyResource: hops contents:c4fb3d9e-4e2d-495f-aa88-e692fb05ff75 status:OK details:
+INFO  [2018-08-16 13:14:24,061] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:14:24,608] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-1351498167>connecting endpoint:0
+INFO  [2018-08-16 13:14:24,629] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1351498167>initiating...
+INFO  [2018-08-16 13:14:24,631] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1351498167>starting
+INFO  [2018-08-16 13:14:25,169] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1351498167>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:14:25,174] se.sics.nstream.torrent.TorrentComp: <nid:-1351498167,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:14:25,174] se.sics.nstream.torrent.TorrentComp: <nid:-1351498167,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:14:25,379] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:14:25,383] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 13:14:25,385] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 13:14:25,385] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:14:25,385] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:14:25,386] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1351498167>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:14:25,452] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1351498167,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:14:26,383] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1351498167,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:14:26,436] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1351498167,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:14:58,151] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:14:58,154] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:14:58,154] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:14:58,200] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:14:58,203] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:14:58,329] org.eclipse.jetty.setuid.SetUIDListener: Opened application@13db7014{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:14:58,329] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@378dd9cb{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:14:58,332] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:14:59,264] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:14:59,266] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@2f4c772d{/,null,AVAILABLE}
+INFO  [2018-08-16 13:14:59,271] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:14:59,271] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:14:59,279] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@78d6444a{/,null,AVAILABLE}
+INFO  [2018-08-16 13:14:59,287] org.eclipse.jetty.server.AbstractConnector: Started application@13db7014{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:14:59,288] org.eclipse.jetty.server.AbstractConnector: Started admin@378dd9cb{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:14:59,289] org.eclipse.jetty.server.Server: Started @5844ms
+INFO  [2018-08-16 13:15:05,635] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:15:05,645] se.sics.dozy.DozyResource: vod endpoint:605bfa3d-480b-4f67-9fc7-6dc8f89ab880 status:OK details:
+INFO  [2018-08-16 13:15:06,272] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:15:06,273] se.sics.dozy.DozyResource: vod endpoint:5e8f949e-4398-4c39-8d17-bbc48af4e698 status:OK details:
+INFO  [2018-08-16 13:15:06,957] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:15:06,972] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@4b9df5bd
+WARN  [2018-08-16 13:15:06,973] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:15:06,977] se.sics.dozy.DozyResource: hops contents:c4e8b24a-6409-490b-b675-b73c3dbfc802 status:OK details:
+INFO  [2018-08-16 13:15:08,756] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:15:09,337] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-974760407>connecting endpoint:0
+INFO  [2018-08-16 13:15:09,355] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-974760407>initiating...
+INFO  [2018-08-16 13:15:09,357] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-974760407>starting
+INFO  [2018-08-16 13:15:10,124] se.sics.nstream.torrent.TorrentMngrComp: <nid:-974760407>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:15:10,136] se.sics.nstream.torrent.TorrentComp: <nid:-974760407,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:15:10,136] se.sics.nstream.torrent.TorrentComp: <nid:-974760407,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:15:10,390] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:15:10,395] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:15:10,396] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:15:10,396] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:15:10,396] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:15:10,396] se.sics.nstream.torrent.TorrentMngrComp: <nid:-974760407>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:15:10,481] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-974760407,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:15:12,617] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-974760407,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:15:12,682] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-974760407,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:15:37,191] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<a0d675a0-2d1e-417a-905e-e9687abd3b99> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:15:58,929] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-974760407,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:15:59,060] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:18:26,437] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:18:26,440] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:18:26,440] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:18:26,486] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:18:26,488] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:18:26,618] org.eclipse.jetty.setuid.SetUIDListener: Opened application@2d7d39eb{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:18:26,619] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@40bd5aed{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:18:26,622] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:18:27,606] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:18:27,608] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@536a0a5c{/,null,AVAILABLE}
+INFO  [2018-08-16 13:18:27,614] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:18:27,615] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:18:27,622] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5138339e{/,null,AVAILABLE}
+INFO  [2018-08-16 13:18:27,636] org.eclipse.jetty.server.AbstractConnector: Started application@2d7d39eb{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:18:27,636] org.eclipse.jetty.server.AbstractConnector: Started admin@40bd5aed{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:18:27,637] org.eclipse.jetty.server.Server: Started @12512ms
+INFO  [2018-08-16 13:18:44,175] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:18:44,188] se.sics.dozy.DozyResource: vod endpoint:2c1b3b4f-fe1f-4549-9284-cbd46f513cff status:OK details:
+INFO  [2018-08-16 13:18:44,717] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:18:44,717] se.sics.dozy.DozyResource: vod endpoint:e63daf2d-1f35-42e8-91e4-c4ec251ef9e6 status:OK details:
+INFO  [2018-08-16 13:18:45,420] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:18:45,437] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@6d1a3ad3
+WARN  [2018-08-16 13:18:45,438] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:18:45,441] se.sics.dozy.DozyResource: hops contents:e89d3b74-701a-4b3b-a36c-01fc049d52bc status:OK details:
+INFO  [2018-08-16 13:18:47,903] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:18:49,477] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:59376559>connecting endpoint:0
+INFO  [2018-08-16 13:18:49,486] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:59376559>initiating...
+INFO  [2018-08-16 13:18:49,486] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:59376559>starting
+INFO  [2018-08-16 13:18:50,655] se.sics.nstream.torrent.TorrentMngrComp: <nid:59376559>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:18:50,662] se.sics.nstream.torrent.TorrentComp: <nid:59376559,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:18:50,663] se.sics.nstream.torrent.TorrentComp: <nid:59376559,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:18:50,921] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:18:50,926] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:18:50,927] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:18:50,927] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:18:50,928] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:18:50,928] se.sics.nstream.torrent.TorrentMngrComp: <nid:59376559>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:18:51,024] se.sics.nstream.torrent.conn.ConnectionComp: <nid:59376559,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:18:52,316] se.sics.nstream.torrent.conn.ConnectionComp: <nid:59376559,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:18:52,369] se.sics.nstream.torrent.conn.ConnectionComp: <nid:59376559,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:18:55,997] se.sics.nstream.torrent.conn.ConnectionComp: <nid:59376559,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:18:56,125] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:19:11,260] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:19:15,654] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<8497c3b4-8f27-4811-b64b-ae71f82d2558> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:19:17,747] se.sics.nstream.torrent.conn.ConnectionComp: <nid:59376559,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@3dbc9abf
+INFO  [2018-08-16 13:41:09,044] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:41:09,047] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:41:09,048] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:41:09,101] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:41:09,104] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:41:09,349] org.eclipse.jetty.setuid.SetUIDListener: Opened application@5da9b7cc{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:41:09,349] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@1664ea73{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:41:09,352] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:41:10,473] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:41:10,476] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@3f01b0d7{/,null,AVAILABLE}
+INFO  [2018-08-16 13:41:10,484] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:41:10,484] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:41:10,493] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@11a4c1fc{/,null,AVAILABLE}
+INFO  [2018-08-16 13:41:10,503] org.eclipse.jetty.server.AbstractConnector: Started application@5da9b7cc{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:41:10,504] org.eclipse.jetty.server.AbstractConnector: Started admin@1664ea73{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:41:10,504] org.eclipse.jetty.server.Server: Started @11222ms
+INFO  [2018-08-16 13:41:34,510] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:41:34,532] se.sics.dozy.DozyResource: vod endpoint:fcc5048a-dd08-4aab-97cd-b33183de8c3f status:OK details:
+INFO  [2018-08-16 13:41:35,293] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:41:35,294] se.sics.dozy.DozyResource: vod endpoint:a769cb79-d536-4219-b48b-89d68f6c9935 status:OK details:
+INFO  [2018-08-16 13:41:36,092] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:41:36,115] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@13e807b5
+WARN  [2018-08-16 13:41:36,116] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:41:36,120] se.sics.dozy.DozyResource: hops contents:3d78f03d-8a3a-47ae-b9c3-991410640156 status:OK details:
+INFO  [2018-08-16 13:41:37,530] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:41:38,592] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-1134717845>connecting endpoint:0
+INFO  [2018-08-16 13:41:38,610] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1134717845>initiating...
+INFO  [2018-08-16 13:41:38,611] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1134717845>starting
+INFO  [2018-08-16 13:41:41,770] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1134717845>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:41:41,776] se.sics.nstream.torrent.TorrentComp: <nid:-1134717845,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:41:41,777] se.sics.nstream.torrent.TorrentComp: <nid:-1134717845,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:41:42,048] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:41:42,054] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:41:42,056] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:41:42,056] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:41:42,057] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:41:42,057] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1134717845>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:41:42,143] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1134717845,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:41:44,862] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1134717845,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:41:44,914] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1134717845,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:41:48,886] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1134717845,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:41:49,006] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:41:53,722] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:41:53,723] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1134717845,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@26044e8d
+INFO  [2018-08-16 13:42:06,392] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<42e875e8-9cdc-41f1-b3ab-a4216905c3a1> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:43:36,190] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:43:36,194] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:43:36,194] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:43:36,253] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:43:36,255] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:43:36,415] org.eclipse.jetty.setuid.SetUIDListener: Opened application@3c6dc71d{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:43:36,415] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@276ee850{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:43:36,421] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:43:37,757] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:43:37,759] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@6a7b3cb2{/,null,AVAILABLE}
+INFO  [2018-08-16 13:43:37,771] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:43:37,771] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:43:37,784] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@1515af24{/,null,AVAILABLE}
+INFO  [2018-08-16 13:43:37,795] org.eclipse.jetty.server.AbstractConnector: Started application@3c6dc71d{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:43:37,796] org.eclipse.jetty.server.AbstractConnector: Started admin@276ee850{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:43:37,796] org.eclipse.jetty.server.Server: Started @7425ms
+INFO  [2018-08-16 13:43:44,979] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:43:44,990] se.sics.dozy.DozyResource: vod endpoint:69de015a-9222-421b-89e6-a04c6ae622ce status:OK details:
+INFO  [2018-08-16 13:43:45,652] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:43:45,653] se.sics.dozy.DozyResource: vod endpoint:3b8abb11-4568-4e42-89cd-788984deec68 status:OK details:
+INFO  [2018-08-16 13:43:46,391] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:43:46,406] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@21ad5dd
+WARN  [2018-08-16 13:43:46,406] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:43:46,410] se.sics.dozy.DozyResource: hops contents:6bb518cc-9c7b-4f3d-bae9-faa12cc0621e status:OK details:
+INFO  [2018-08-16 13:43:53,873] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:43:56,261] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-1811664130>connecting endpoint:0
+INFO  [2018-08-16 13:43:56,269] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1811664130>initiating...
+INFO  [2018-08-16 13:43:56,270] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-1811664130>starting
+INFO  [2018-08-16 13:43:56,270] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1811664130>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:43:56,276] se.sics.nstream.torrent.TorrentComp: <nid:-1811664130,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:43:56,276] se.sics.nstream.torrent.TorrentComp: <nid:-1811664130,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:43:56,513] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:43:56,517] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 13:43:56,519] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 13:43:56,518] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:43:56,519] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:43:56,519] se.sics.nstream.torrent.TorrentMngrComp: <nid:-1811664130>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:43:56,575] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1811664130,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:43:56,630] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1811664130,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:43:56,656] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1811664130,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:43:59,085] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1811664130,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:43:59,207] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:44:00,358] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:44:00,359] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-1811664130,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@6ae9a269
+INFO  [2018-08-16 13:44:16,643] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<682886f9-ecc5-4983-a796-6faf757cc1f0> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:44:28,499] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:-1811664130>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:51:41,733] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:51:41,735] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:51:41,735] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:51:41,778] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:51:41,781] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:51:41,937] org.eclipse.jetty.setuid.SetUIDListener: Opened application@21ce3dbf{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:51:41,937] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@489636d9{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:51:41,940] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:51:43,236] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:51:43,239] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5e82de63{/,null,AVAILABLE}
+INFO  [2018-08-16 13:51:43,246] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:51:43,246] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:51:43,257] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@54625421{/,null,AVAILABLE}
+INFO  [2018-08-16 13:51:43,266] org.eclipse.jetty.server.AbstractConnector: Started application@21ce3dbf{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:51:43,267] org.eclipse.jetty.server.AbstractConnector: Started admin@489636d9{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:51:43,268] org.eclipse.jetty.server.Server: Started @6900ms
+INFO  [2018-08-16 13:52:07,690] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:52:07,704] se.sics.dozy.DozyResource: vod endpoint:e9bf723d-2901-43eb-abc1-43f7f089459f status:OK details:
+INFO  [2018-08-16 13:52:08,451] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:52:08,452] se.sics.dozy.DozyResource: vod endpoint:5944e9fe-d45c-46fe-a789-33bc085d47ca status:OK details:
+INFO  [2018-08-16 13:52:09,173] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:52:09,190] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@7aa6dd00
+WARN  [2018-08-16 13:52:09,191] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:52:09,194] se.sics.dozy.DozyResource: hops contents:570dfec9-54e9-4468-88dd-f95d4dabc03d status:OK details:
+INFO  [2018-08-16 13:52:13,285] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:52:13,305] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-297739331>connecting endpoint:0
+INFO  [2018-08-16 13:52:13,319] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-297739331>initiating...
+INFO  [2018-08-16 13:52:13,320] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-297739331>starting
+INFO  [2018-08-16 13:52:13,321] se.sics.nstream.torrent.TorrentMngrComp: <nid:-297739331>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:52:13,329] se.sics.nstream.torrent.TorrentComp: <nid:-297739331,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:52:13,329] se.sics.nstream.torrent.TorrentComp: <nid:-297739331,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:52:13,612] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:52:13,616] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:52:13,617] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:52:13,617] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:52:13,618] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:52:13,618] se.sics.nstream.torrent.TorrentMngrComp: <nid:-297739331>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:52:13,672] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-297739331,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:52:13,760] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-297739331,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:52:13,820] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-297739331,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:52:15,871] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-297739331,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:52:16,015] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:52:17,173] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:52:17,174] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-297739331,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@472e45e
+INFO  [2018-08-16 13:52:24,064] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:-297739331>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:52:39,401] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<c42ec6d1-a0a6-494c-b0c9-900cb8f34aad> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:53:15,653] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:53:15,656] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:53:15,656] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:53:15,740] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:53:15,745] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:53:15,956] org.eclipse.jetty.setuid.SetUIDListener: Opened application@6beaac61{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:53:15,957] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@1822005c{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:53:15,963] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:53:17,263] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:53:17,267] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@4984cba2{/,null,AVAILABLE}
+INFO  [2018-08-16 13:53:17,274] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:53:17,275] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:53:17,285] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5325755d{/,null,AVAILABLE}
+INFO  [2018-08-16 13:53:17,297] org.eclipse.jetty.server.AbstractConnector: Started application@6beaac61{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:53:17,298] org.eclipse.jetty.server.AbstractConnector: Started admin@1822005c{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:53:17,298] org.eclipse.jetty.server.Server: Started @10828ms
+INFO  [2018-08-16 13:53:28,644] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:53:28,654] se.sics.dozy.DozyResource: vod endpoint:8d51bba7-6cff-4084-850c-836a9edf9438 status:OK details:
+INFO  [2018-08-16 13:53:29,184] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:53:29,185] se.sics.dozy.DozyResource: vod endpoint:a8ba79dc-d7a9-422a-b626-443cd735701b status:OK details:
+INFO  [2018-08-16 13:53:29,876] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:53:29,893] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@56f426c3
+WARN  [2018-08-16 13:53:29,894] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:53:29,898] se.sics.dozy.DozyResource: hops contents:7a1c88db-de32-4237-8e67-d90259db6d07 status:OK details:
+INFO  [2018-08-16 13:53:30,098] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:53:30,107] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:-385380291>connecting endpoint:0
+INFO  [2018-08-16 13:53:30,117] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-385380291>initiating...
+INFO  [2018-08-16 13:53:30,118] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:-385380291>starting
+INFO  [2018-08-16 13:53:30,119] se.sics.nstream.torrent.TorrentMngrComp: <nid:-385380291>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:53:30,124] se.sics.nstream.torrent.TorrentComp: <nid:-385380291,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:53:30,124] se.sics.nstream.torrent.TorrentComp: <nid:-385380291,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:53:30,338] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:53:30,344] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+INFO  [2018-08-16 13:53:30,346] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:53:30,346] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+DEBUG [2018-08-16 13:53:30,346] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:53:30,347] se.sics.nstream.torrent.TorrentMngrComp: <nid:-385380291>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:53:30,425] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-385380291,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:53:30,501] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-385380291,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:53:30,531] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-385380291,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:53:38,651] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-385380291,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:53:38,767] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:53:44,902] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:53:44,903] se.sics.nstream.torrent.conn.ConnectionComp: <nid:-385380291,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@46b9f509
+INFO  [2018-08-16 13:53:51,732] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:-385380291>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:54:00,102] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<643b453a-76dc-4f68-b062-a84aa1654b02> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:55:08,728] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:55:08,730] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:55:08,730] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:55:08,765] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:55:08,767] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:55:08,883] org.eclipse.jetty.setuid.SetUIDListener: Opened application@5e1598b4{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:55:08,883] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@26361310{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:55:08,885] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:55:10,155] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:55:10,157] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@72d8311f{/,null,AVAILABLE}
+INFO  [2018-08-16 13:55:10,168] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:55:10,168] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:55:10,178] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@14927ed1{/,null,AVAILABLE}
+INFO  [2018-08-16 13:55:10,191] org.eclipse.jetty.server.AbstractConnector: Started application@5e1598b4{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:55:10,192] org.eclipse.jetty.server.AbstractConnector: Started admin@26361310{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:55:10,193] org.eclipse.jetty.server.Server: Started @7497ms
+INFO  [2018-08-16 13:55:25,515] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:55:25,528] se.sics.dozy.DozyResource: vod endpoint:845aa14c-1ccc-42c7-ac07-b27a44cb5dd1 status:OK details:
+INFO  [2018-08-16 13:55:26,075] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:55:26,076] se.sics.dozy.DozyResource: vod endpoint:acce0cab-094c-4d34-832e-dd5d7d1a820a status:OK details:
+INFO  [2018-08-16 13:55:26,765] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:55:26,779] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@775058e7
+WARN  [2018-08-16 13:55:26,780] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:55:26,782] se.sics.dozy.DozyResource: hops contents:13cc4612-cd51-4560-a43e-b959e0b4d18c status:OK details:
+INFO  [2018-08-16 13:55:27,008] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:55:27,018] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:411907383>connecting endpoint:0
+INFO  [2018-08-16 13:55:27,035] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:411907383>initiating...
+INFO  [2018-08-16 13:55:27,036] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:411907383>starting
+INFO  [2018-08-16 13:55:27,037] se.sics.nstream.torrent.TorrentMngrComp: <nid:411907383>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:55:27,045] se.sics.nstream.torrent.TorrentComp: <nid:411907383,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:55:27,045] se.sics.nstream.torrent.TorrentComp: <nid:411907383,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:55:27,321] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:55:27,327] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 13:55:27,329] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 13:55:27,328] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:55:27,329] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:55:27,330] se.sics.nstream.torrent.TorrentMngrComp: <nid:411907383>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:55:27,404] se.sics.nstream.torrent.conn.ConnectionComp: <nid:411907383,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:55:27,487] se.sics.nstream.torrent.conn.ConnectionComp: <nid:411907383,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:55:27,531] se.sics.nstream.torrent.conn.ConnectionComp: <nid:411907383,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:55:29,926] se.sics.nstream.torrent.conn.ConnectionComp: <nid:411907383,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:55:30,053] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:55:51,640] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:55:53,966] se.sics.nstream.torrent.conn.ConnectionComp: <nid:411907383,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@27bfadef
+INFO  [2018-08-16 13:55:57,014] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<f8d037aa-4895-4c7a-8f3b-22abe187e23f> status:Service Unavailable details:vod unavailable
+INFO  [2018-08-16 13:57:40,642] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:411907383>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:59:32,735] io.dropwizard.server.DefaultServerFactory: Registering jersey handler with root path prefix: /
+INFO  [2018-08-16 13:59:32,737] io.dropwizard.server.DefaultServerFactory: Registering admin handler with root path prefix: /
+INFO  [2018-08-16 13:59:32,737] io.dropwizard.assets.AssetsBundle: Registering AssetBundle with name: assets for path /webapp/*
+INFO  [2018-08-16 13:59:32,788] se.sics.dozy.dropwizard.DropwizardDela: running on port:40003
+INFO  [2018-08-16 13:59:32,790] io.dropwizard.server.ServerFactory: Starting Dropwizard
+INFO  [2018-08-16 13:59:32,947] org.eclipse.jetty.setuid.SetUIDListener: Opened application@16c33fed{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:59:32,947] org.eclipse.jetty.setuid.SetUIDListener: Opened admin@59af3252{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:59:32,949] org.eclipse.jetty.server.Server: jetty-9.4.11.v20180605; built: 2018-06-05T18:24:03.829Z; git: d5fc0523cfa96bfebfbda19606cad384d772f04c; jvm 1.8.0_162-b12
+INFO  [2018-08-16 13:59:34,003] io.dropwizard.jersey.DropwizardResourceConfig: The following paths were found for the configured resources:
+
+    POST    /library/basiccontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Basic)
+    POST    /library/extended (se.sics.dozy.vod.library.TorrentExtendedStatusREST)
+    POST    /library/hopscontents (se.sics.dozy.vod.hops.torrent.HTContentsREST.Hops)
+    POST    /torrent/hops/download/advance/basic (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.Basic)
+    POST    /torrent/hops/download/advance/xml (se.sics.dozy.vod.hops.torrent.HTAdvanceDownloadREST.XML)
+    POST    /torrent/hops/download/start/basic (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.Basic)
+    POST    /torrent/hops/download/start/xml (se.sics.dozy.vod.hops.torrent.HTStartDownloadREST.XML)
+    POST    /torrent/hops/stop (se.sics.dozy.vod.hops.torrent.HTStopREST)
+    POST    /torrent/hops/upload/basic (se.sics.dozy.vod.hops.torrent.HTUploadREST.Basic)
+    POST    /torrent/hops/upload/xml (se.sics.dozy.vod.hops.torrent.HTUploadREST.XML)
+    POST    /vod/endpoint (se.sics.dozy.vod.system.VoDEndpointREST)
+
+INFO  [2018-08-16 13:59:34,004] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@5a630bf2{/,null,AVAILABLE}
+INFO  [2018-08-16 13:59:34,010] io.dropwizard.setup.AdminEnvironment: tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+WARN  [2018-08-16 13:59:34,011] io.dropwizard.setup.AdminEnvironment: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!    THIS APPLICATION HAS NO HEALTHCHECKS. THIS MEANS YOU WILL NEVER KNOW      !
+!     IF IT DIES IN PRODUCTION, WHICH MEANS YOU WILL NEVER KNOW IF YOU'RE      !
+!    LETTING YOUR USERS DOWN. YOU SHOULD ADD A HEALTHCHECK FOR EACH OF YOUR    !
+!         APPLICATION'S DEPENDENCIES WHICH FULLY (BUT LIGHTLY) TESTS IT.       !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INFO  [2018-08-16 13:59:34,018] org.eclipse.jetty.server.handler.ContextHandler: Started i.d.j.MutableServletContextHandler@2973970e{/,null,AVAILABLE}
+INFO  [2018-08-16 13:59:34,026] org.eclipse.jetty.server.AbstractConnector: Started application@16c33fed{HTTP/1.1,[http/1.1]}{0.0.0.0:40003}
+INFO  [2018-08-16 13:59:34,027] org.eclipse.jetty.server.AbstractConnector: Started admin@59af3252{HTTP/1.1,[http/1.1]}{0.0.0.0:8081}
+INFO  [2018-08-16 13:59:34,028] org.eclipse.jetty.server.Server: Started @9710ms
+INFO  [2018-08-16 13:59:52,976] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:59:52,986] se.sics.dozy.DozyResource: vod endpoint:23957950-f3b6-4983-b4e7-6f51c239c099 status:OK details:
+INFO  [2018-08-16 13:59:53,546] se.sics.dozy.DozyResource: received vod endpoint request
+INFO  [2018-08-16 13:59:53,547] se.sics.dozy.DozyResource: vod endpoint:187a7ec7-25c4-4e86-87cc-9202d69f24c1 status:OK details:
+INFO  [2018-08-16 13:59:54,230] se.sics.dozy.DozyResource: received library extended request
+INFO  [2018-08-16 13:59:54,244] se.sics.kompics.fsm.FSMachine: not handling event:se.sics.nstream.library.event.torrent.TorrentExtendedStatusEvent$Request@9b902b9
+WARN  [2018-08-16 13:59:54,245] se.sics.nstream.hops.libmngr.HopsLibraryMngr: torrent:TORRENT,o:01,bId:birds_200_2011_1 not found
+INFO  [2018-08-16 13:59:54,248] se.sics.dozy.DozyResource: hops contents:fd9b3eb8-f57e-4a6c-a3e9-fa8eca7616af status:OK details:
+INFO  [2018-08-16 13:59:54,450] se.sics.nstream.hops.libmngr.fsm.LibTFSM: birds_200_2011_1accepting new download:birds_200_2011_1
+INFO  [2018-08-16 13:59:54,462] se.sics.nstream.storage.durable.DStorageMngrComp: <nid:715181467>connecting endpoint:0
+INFO  [2018-08-16 13:59:54,469] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:715181467>initiating...
+INFO  [2018-08-16 13:59:54,470] se.sics.nstream.storage.durable.DStreamMngrComp: <nid:715181467>starting
+INFO  [2018-08-16 13:59:54,470] se.sics.nstream.torrent.TorrentMngrComp: <nid:715181467>starting torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:59:54,475] se.sics.nstream.torrent.TorrentComp: <nid:715181467,tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:59:54,476] se.sics.nstream.torrent.TorrentComp: <nid:715181467,tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:59:54,737] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>initiating...
+INFO  [2018-08-16 13:59:54,744] se.sics.nstream.torrent.tracking.TorrentTrackingComp: reporting in:null and/or to:https://hops.site:51081/hops-site/api
+DEBUG [2018-08-16 13:59:54,746] se.sics.nstream.torrent.tracking.TorrentTrackingComp: Started!
+INFO  [2018-08-16 13:59:54,746] se.sics.nutil.network.bestEffort.BestEffortNetworkComp: <TORRENT,o:01,bId:birds_200_2011_1>starting...
+DEBUG [2018-08-16 13:59:54,746] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>starting...
+INFO  [2018-08-16 13:59:54,747] se.sics.nstream.torrent.TorrentMngrComp: <nid:715181467>started torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 13:59:54,822] se.sics.nstream.torrent.conn.ConnectionComp: <nid:715181467,oid:TORRENT,o:01,bId:birds_200_2011_1> starting
+INFO  [2018-08-16 13:59:54,909] se.sics.nstream.torrent.conn.ConnectionComp: <nid:715181467,oid:TORRENT,o:01,bId:birds_200_2011_1> connected to seeder:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:59:54,935] se.sics.nstream.torrent.conn.ConnectionComp: <nid:715181467,oid:TORRENT,o:01,bId:birds_200_2011_1> detailed state - received
+INFO  [2018-08-16 13:59:56,060] se.sics.nstream.torrent.conn.ConnectionComp: <nid:715181467,oid:TORRENT,o:01,bId:birds_200_2011_1> transfer definition leecher - received from:109.225.89.18:42002<1509573128>:PFW
+INFO  [2018-08-16 13:59:56,185] se.sics.ledbat.core.CongestionWindowHandler: init cwnd:2048.0
+INFO  [2018-08-16 13:59:59,690] se.sics.nstream.torrent.tracking.TorrentTrackingComp: <tid:TORRENT,o:01,bId:birds_200_2011_1>download - got manifest
+INFO  [2018-08-16 13:59:59,691] se.sics.nstream.torrent.conn.ConnectionComp: <nid:715181467,oid:TORRENT,o:01,bId:birds_200_2011_1> closing conn:se.sics.nstream.torrent.conn.event.CloseTransfer$Request@301bece6
+INFO  [2018-08-16 14:00:16,426] se.sics.nstream.torrent.resourceMngr.ResourceMngrComp: <nid:715181467>preparing resources for torrent:TORRENT,o:01,bId:birds_200_2011_1
+INFO  [2018-08-16 14:00:24,456] se.sics.dozy.DozyResource: download:TORRENT,o:01,bId:birds_200_2011_1<96436b32-89bd-4774-a0d1-b0381e8c2e68> status:Service Unavailable details:vod unavailable

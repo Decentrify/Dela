@@ -1,0 +1,26 @@
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 40003
+jerseyClient:
+  connectionTimeout: 2000ms
+    
+logging:
+  level: INFO
+  loggers:
+    "se.sics.ktoolbox.util.network.ports.One2NChannel": WARN
+    "se.sics.ledbat.core.util.ThroughputHandler": WARN
+    "se.sics.nutil.tracking.load.NetworkQueueLoadProxy": WARN
+    "se.sics.nstream.torrent.transfer.TransferComp": WARN
+    "se.sics.kompics.fsm.MultiFSM": WARN
+    "se.sics.dozy.DozySyncComp": WARN
+    "se.sics.nstream.torrent.transfer.DwnlConnComp": WARN
+    "se.sics.nstream.storage.cache.SimpleKCache": WARN
+    "se.sics.nstream.torrent.tracking.TorrentTrackingComp": DEBUG
+
+  appenders:
+    - type: file
+      currentLogFilename: /Users/Alex/Documents/_Work/Code/decentrify/Dela/vod-system/src/main/resources/cli/logs/dela.log
+      archivedLogFilenamePattern: /Users/Alex/Documents/_Work/Code/decentrify/Dela/vod-system/src/main/resources/cli/logs/dela-%d.log.gz
+      archivedFileCount: 5
